@@ -1,0 +1,415 @@
+---
+openapi: 3.0.0
+
+info:
+  title: WASAPhoto
+  description: Keep in touch with your friends by sharing photos of special moments, thanks to WASAPhoto! You can upload your photos directly from your PC, and they will be visible to everyone following you.
+    
+  version: 1.0.0
+paths:
+  /session:
+    post:
+      tags: ["login"]
+      summary: Logs in the user 
+      description: |
+              If the user does not exist, it will be created,
+              and an identifier is returned.
+              If the user exists, the user identifier is returned.
+      operationId: doLogin 
+      requestBody:
+        description: User details 
+        content:
+          application/json: 
+            schema:
+              type: object 
+              properties:
+                name:
+                  type: string 
+                  example: Maria 
+                  pattern: 'ˆ.*?$' 
+                  minLength: 3 
+                  maxLength: 16
+        required: true 
+      responses:
+        '201':
+          description: User log-in action successful 
+          content:
+            application/json: 
+              schema:
+                type: object 
+                properties:
+                  identifier:
+                    type: string
+                    example: "abcdef012345"
+  
+  /me: 
+    get:
+      tags: ["MyProfile"]
+      summary: session user profile
+      description: |
+      operationId: getMyProfile
+      parameters:
+        - $ref: '#/components/parameters/myid'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profile'
+      
+  /me/setMyUsername:
+    post:
+      tags: ["setMyUsername"]
+      summary: set username
+      description: change the user session's name
+      operationId: setMyUsername
+      parameters:
+        - $ref: '#/components/parameters/myid'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '201':
+          description: successful operation
+        '400': 
+          description: Bad Request
+          
+  /me/photo:
+    put:
+      tags: ["uploadPhoto"]
+      summary: upload Photo on user profile
+      operationId: uploadPhoto
+      parameters:
+        - $ref: '#/components/parameters/myid'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Image'
+      responses:
+        '201':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Photo'
+        '400':
+          description: Bad Request
+  
+  /profile/{pid}/followUser:
+    post:
+      tags: ["followUser"]
+      summary: follow user
+      description: follow user allow you see their photos
+      operationId: followUser
+      parameters:
+        - $ref: '#/components/parameters/pid'
+      responses:
+        '200': 
+          description: successful operation
+        '400':
+          description: Bad Request
+  
+  /profile/{pid}/unfollowUser:
+    post:
+      tags: ["unfollowUser"]
+      summary: unfollow a user
+      description: no longer see user's photo updates
+      operationId: unfollowUser
+      parameters:
+        - $ref: '#/components/parameters/pid'
+      responses:
+        '200': 
+          description: successful operation
+        '400': 
+          description: bad request
+    
+  /me/banned/{pid}:
+    post: 
+      tags: ["banUser"]
+      summary: ban a user
+      description: |
+      operationId: banUser
+      parameters:
+        - $ref: '#/components/parameters/myid'
+        - name: pid
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/pid'
+      responses:
+        '200':
+          description: successful operation
+        '400':
+          description: bad request
+    delete:
+      tags: ["unbanUser"]
+      summary: unban user
+      description: user's profile will be visible again
+      parameters:
+        - $ref: '#/components/parameters/myid'
+        - name: pid
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/pid'
+      responses:
+        '200':
+          description: successful operation
+        '404':
+          description: bad request
+    
+  /profile/{pid}:
+    get:
+      tags: ["getUserProfile"]
+      summary: get a user profile
+      description: get a user profile with the given id
+      operationId: getUserProfile
+      parameters: 
+        - $ref: '#/components/parameters/pid'
+      responses:
+        '200':
+          description: get profile action successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profile'
+        '400':
+          description: Bad Request
+                
+  /home:
+    get:
+      tags: ["getMyStream"]
+      summary: get stream
+      description: the stream is composed by following user photos
+      operationId: getMyStream
+      parameters:
+        - $ref: '#/components/parameters/myid'
+      responses:
+        '200':
+          description: get profile action successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Stream'
+        '400':
+          description: Bad Request
+                
+  /photo/{phid}/like:
+    post:
+      tags: ["likePhoto"]
+      summary: like photo
+      description: |
+      operationId: likePhoto
+      parameters:
+        - $ref: '#/components/parameters/phid'
+      responses: 
+        '200':
+          description: successful operation
+    delete:
+      tags: ["unlikePhoto"]
+      summary: unlike photo
+      description: remove like from the given photo id
+      operationId: unlikePhoto
+      parameters:
+        - $ref: '#/components/parameters/phid'
+      responses:
+        '204':
+          description: sucessful operation
+        '404':
+          description: error request
+    
+      
+  /photo/{phid}/comment:
+    post:
+      tags: ["commentPhoto"]
+      summary: comment a photo
+      description: |
+      operationId: commentPhoto
+      parameters: 
+        - $ref: '#/components/parameters/phid'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Comment'
+      responses: 
+        '201':
+          description: photo commented
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Comment'
+        '400':
+          description: bad request
+  
+  /photo/{phid}/comment/{cid}:        
+    delete:
+      tags: ["uncommentPhoto"]
+      operationId: uncommentPhoto
+      summary: Remove a comment
+      description: Remove a comment from the photo
+      parameters: 
+        - $ref: '#/components/parameters/phid'
+        - name: cid
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/cid'
+      responses:
+        "204": 
+          description: Comment deleted successfully
+        "404": 
+          description: Comment not found 
+          
+  /me/photo/{phid}:
+    delete:
+      tags: ["deletePhoto"]
+      summary: delete photo
+      description: remove a photo from user profile
+      parameters:
+        - $ref: '#/components/parameters/myid'
+        - $ref: '#/components/parameters/phid'
+      responses:
+        "204": 
+          description: Photo deleted successfully
+        "404": 
+          description: Photo not found 
+
+components:
+  parameters:
+    myid:
+      name: myid
+      in: query
+      required: true
+      schema: 
+        $ref: '#/components/schemas/myid'
+    
+    pid:
+      name: pid
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/pid'
+    
+    phid:
+      name: phid
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/phid'
+  schemas:
+    Profile: 
+      title: Profile
+      description: the object represents a profile 
+      type: object
+      properties:
+        pid:
+          $ref: '#/components/schemas/pid'
+        name: 
+          $ref: '#/components/schemas/User'
+        following:
+          description: number of following
+          type: integer
+          example: 110
+        follower:
+          description: number of follower
+          type: integer
+          example: 210
+        photos: 
+          properties:
+            number:
+              description: number of photos uploaded
+              type: integer
+              example: 50
+            photo:
+              $ref: '#/components/schemas/Stream'
+              
+    myid: 
+      title: myid
+      description: session id
+      type: integer
+      example: 1
+    
+    pid: 
+      title: pid
+      description: profile id
+      type: integer
+      example: 1
+      
+    phid: 
+      title: phid
+      description: photo id
+      type: integer
+      example: 1
+      
+    cid: 
+      title: cid
+      description: comment id
+      type: integer
+      example: 1
+    
+    Photo:
+      title: Photo
+      description : "The object respresents a Photo"
+      type: object
+      properties: 
+        id: 
+          $ref: '#/components/schemas/phid'
+        user: 
+          description: "The owner of the Photo"
+          type: object
+          properties:
+            userID:
+              description: "UserId chosen by the user when registering"
+              type: string
+        image:
+          $ref: '#/components/schemas/Image'
+        likes: 
+          description: "number of users like the photo"
+          type: integer
+        comments:
+          type: array
+          items:
+            $ref: '#/components/schemas/Comment'
+    
+    Image: 
+      title: image
+      type: string
+      format:  base64
+          
+    Stream:
+      title: Stream
+      description: photos of the following users
+      type: array
+      items:
+        $ref: '#/components/schemas/Photo'
+    
+    User:
+      title: User
+      description: the object represents an user
+      type: object
+      properties: 
+        username:
+          description: represents the name of the user
+          type: string
+          example: 'Beatrice'
+  
+    Comment: 
+      description: ""
+      type: object
+      properties:
+        cid:
+          $ref: '#/components/schemas/cid'
+        user:
+          $ref: '#/components/schemas/User'
+        text:
+          type: string
+          example: "Great photo!"
+        date: 
+          type: string
+          example: 2023-11-08T12:00:00
+           
