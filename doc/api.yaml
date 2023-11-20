@@ -52,6 +52,7 @@ paths:
         - $ref: '#/components/parameters/myid'
       responses:
         '200':
+          description: successful operation
           content:
             application/json:
               schema:
@@ -235,7 +236,8 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Comment'
+              type: string
+              example: "Nice photo!"
       responses: 
         '201':
           description: photo commented
@@ -412,4 +414,3 @@ components:
         date: 
           type: string
           example: 2023-11-08T12:00:00
-           
