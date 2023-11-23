@@ -45,8 +45,8 @@ paths:
   /me: 
     get:
       tags: ["MyProfile"]
-      summary: session user profile
-      description: |
+      summary: user profile
+      description: get session user's profile
       operationId: getMyProfile
       parameters:
         - $ref: '#/components/parameters/myid'
@@ -146,7 +146,7 @@ paths:
     post: 
       tags: ["banUser"]
       summary: ban a user
-      description: |
+      description: banned user's profile will not visible
       operationId: banUser
       parameters:
         - $ref: '#/components/parameters/myid'
@@ -209,7 +209,6 @@ paths:
     post:
       tags: ["likePhoto"]
       summary: like photo
-      description: |
       operationId: likePhoto
       parameters:
         - $ref: '#/components/parameters/phid'
@@ -234,7 +233,6 @@ paths:
     post:
       tags: ["commentPhoto"]
       summary: comment a photo
-      description: |
       operationId: commentPhoto
       parameters: 
         - $ref: '#/components/parameters/phid'
