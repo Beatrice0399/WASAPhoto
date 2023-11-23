@@ -60,7 +60,7 @@ paths:
       
   /me/setMyUsername:
     post:
-      tags: ["setMyUsername"]
+      tags: ["MyProfile"]
       summary: set username
       description: change the user session's name
       operationId: setMyUsername
@@ -72,14 +72,13 @@ paths:
             schema:
               $ref: '#/components/schemas/User'
       responses:
-        '201':
-          description: successful operation
-        '400': 
-          description: Bad Request
+        '201': {$ref: '#/components/responses/SuccessfulOperation'}
+        '400': {$ref: '#/components/responses/BadRequest'}
+                
           
   /me/photo:
     put:
-      tags: ["uploadPhoto"]
+      tags: ["MyProfile"]
       summary: upload Photo on user profile
       operationId: uploadPhoto
       parameters:
@@ -96,40 +95,35 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Photo'
-        '400':
-          description: Bad Request
+        '400': {$ref: '#/components/responses/BadRequest'}
   
   /profile/{pid}/followUser:
     post:
-      tags: ["followUser"]
+      tags: ["User", "follow"]
       summary: follow user
       description: follow user allow you see their photos
       operationId: followUser
       parameters:
         - $ref: '#/components/parameters/pid'
       responses:
-        '200': 
-          description: successful operation
-        '400':
-          description: Bad Request
+        '201': {$ref: '#/components/responses/SuccessfulOperation'}
+        '400': {$ref: '#/components/responses/BadRequest'}
   
   /profile/{pid}/unfollowUser:
     post:
-      tags: ["unfollowUser"]
+      tags: ["User", "unfollow"]
       summary: unfollow a user
       description: no longer see user's photo updates
       operationId: unfollowUser
       parameters:
         - $ref: '#/components/parameters/pid'
       responses:
-        '200': 
-          description: successful operation
-        '400': 
-          description: bad request
+        '201': {$ref: '#/components/responses/SuccessfulOperation'}
+        '400': {$ref: '#/components/responses/BadRequest'}
     
   /me/banned:
     get:
-      tags: ["getBannedUsers"]
+      tags: ["MyProfile", "ban"]
       summary: get banned users
       description: get a list of banned users by the user's session
       parameters:
@@ -141,10 +135,11 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/BannedUsers'
-    
+        '400': {$ref: '#/components/responses/BadRequest'}
+
   /me/banned/{pid}:
     post: 
-      tags: ["banUser"]
+      tags: ["MyProfile", "ban"]
       summary: ban a user
       description: banned user's profile will not visible
       operationId: banUser
@@ -152,26 +147,24 @@ paths:
         - $ref: '#/components/parameters/myid'
         - $ref: '#/components/parameters/pid'
       responses:
-        '200':
-          description: successful operation
-        '400':
-          description: bad request
+        '201': {$ref: '#/components/responses/SuccessfulOperation'}
+        '400': {$ref: '#/components/responses/BadRequest'}
+
     delete:
-      tags: ["unbanUser"]
+      tags: ["MyProfile", "ban"]
       summary: unban user
       description: user's profile will be visible again
       parameters:
         - $ref: '#/components/parameters/myid'
         - $ref: '#/components/parameters/pid'
       responses:
-        '200':
-          description: successful operation
-        '404':
-          description: bad request
+        '204':
+          description: successful operation   
+        '404': {$ref: '#/components/responses/NotFound'}
     
   /profile/{pid}:
     get:
-      tags: ["getUserProfile"]
+      tags: ["User", "Profile"]
       summary: get a user profile
       description: get a user profile with the given id
       operationId: getUserProfile
@@ -184,12 +177,11 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Profile'
-        '400':
-          description: Bad Request
+        '400': {$ref: '#/components/responses/BadRequest'}
                 
   /home:
     get:
-      tags: ["getMyStream"]
+      tags: ["Stream"]
       summary: get stream
       description: the stream is composed by following user photos
       operationId: getMyStream
@@ -202,21 +194,19 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Stream'
-        '400':
-          description: Bad Request
+        '400': { $ref: '#/components/responses/BadRequest'}
                 
-  /photo/{phid}/like:
+  /photo/{phid}/like/:
     post:
-      tags: ["likePhoto"]
+      tags: ["Photo", "like"]
       summary: like photo
       operationId: likePhoto
       parameters:
         - $ref: '#/components/parameters/phid'
       responses: 
-        '200':
-          description: successful operation
+        '201': { $ref: '#/components/responses/SuccessfulOperation'}
     delete:
-      tags: ["unlikePhoto"]
+      tags: ["Photo", "unlike"]
       summary: unlike photo
       description: remove like from the given photo id
       operationId: unlikePhoto
@@ -225,13 +215,11 @@ paths:
       responses:
         '204':
           description: sucessful operation
-        '404':
-          description: error request
+        '404': { $ref: '#/components/responses/NotFound'}
     
-      
-  /photo/{phid}/comment:
+  /photo/{phid}/comment/:
     post:
-      tags: ["commentPhoto"]
+      tags: ["Photo", "Comment"]
       summary: comment a photo
       operationId: commentPhoto
       parameters: 
@@ -250,12 +238,11 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Comment'
-        '400':
-          description: bad request
+        '400': {$ref: '#/components/responses/BadRequest'}
   
   /photo/{phid}/comment/{cid}:        
     delete:
-      tags: ["uncommentPhoto"]
+      tags: ["Photo", "Comment"]
       operationId: uncommentPhoto
       summary: Remove a comment
       description: Remove a comment from the photo
@@ -269,12 +256,11 @@ paths:
       responses:
         "204": 
           description: Comment deleted successfully
-        "404": 
-          description: Comment not found 
+        "404": { $ref: '#/components/responses/NotFound'}
           
   /me/photo/{phid}:
     delete:
-      tags: ["deletePhoto"]
+      tags: ["MyProfile", "Photo"]
       summary: delete photo
       description: remove a photo from user profile
       parameters:
@@ -283,12 +269,41 @@ paths:
       responses:
         "204": 
           description: Photo deleted successfully
-        "404": 
-          description: Photo not found 
+        "404": { $ref: '#/components/responses/NotFound'}
 
 components:
+  responses:
+    BadRequest:
+      description: response of bad request
+      content:
+        application/json:
+          schema:
+            type: string
+            minLength: 4
+            maxLength: 30 
+            pattern: '^.*?$' 
+    SuccessfulOperation:
+      description: response of successful operation
+      content:
+        application/json:
+          schema:
+            type: string
+            minLength: 4
+            maxLength: 30 
+            pattern: '^.*?$' 
+    NotFound:
+      description: element not found
+      content:
+        application/json:
+          schema:
+            type: string
+            minLength: 4
+            maxLength: 30 
+            pattern: '^.*?$' 
+
   parameters:
     myid:
+      description: user session id
       name: myid
       in: query
       required: true
@@ -296,6 +311,7 @@ components:
         $ref: '#/components/schemas/myid'
     
     pid:
+      description: profile id
       name: pid
       in: path
       required: true
@@ -303,6 +319,7 @@ components:
         $ref: '#/components/schemas/pid'
     
     phid:
+      description: photo id
       name: phid
       in: path
       required: true
@@ -383,8 +400,11 @@ components:
     
     Image: 
       title: image
+      description: string format for an image
       type: string
       format:  base64
+      minLength: 1
+      maxLength: 9999
           
     Stream:
       title: Stream
@@ -403,12 +423,13 @@ components:
         username:
           description: represents the name of the user
           type: string
+          pattern: '^.*?$' 
           minLength: 4
           maxLength: 16
           example: 'Beatrice'
   
     Comment: 
-      description: ""
+      description: photo's comment composed by the username who commented and the text they wrote
       type: object
       properties:
         cid:
@@ -417,6 +438,7 @@ components:
           $ref: '#/components/schemas/User'
         text:
           type: string
+          pattern: '^.*?$' 
           minLength: 1
           maxLength: 400
           example: "Great photo!"
