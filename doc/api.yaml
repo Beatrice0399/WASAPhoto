@@ -127,6 +127,21 @@ paths:
         '400': 
           description: bad request
     
+  /me/banned:
+    get:
+      tags: ["getBannedUsers"]
+      summary: get banned users
+      description: get a list of banned users by the user's session
+      parameters:
+        - $ref: '#/components/parameters/myid'
+      responses:
+        '200':  
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BannedUsers'
+    
   /me/banned/{pid}:
     post: 
       tags: ["banUser"]
@@ -135,11 +150,7 @@ paths:
       operationId: banUser
       parameters:
         - $ref: '#/components/parameters/myid'
-        - name: pid
-          in: path
-          required: true
-          schema:
-            $ref: '#/components/schemas/pid'
+        - $ref: '#/components/parameters/pid'
       responses:
         '200':
           description: successful operation
@@ -151,11 +162,7 @@ paths:
       description: user's profile will be visible again
       parameters:
         - $ref: '#/components/parameters/myid'
-        - name: pid
-          in: path
-          required: true
-          schema:
-            $ref: '#/components/schemas/pid'
+        - $ref: '#/components/parameters/pid'
       responses:
         '200':
           description: successful operation
@@ -303,6 +310,7 @@ components:
       required: true
       schema:
         $ref: '#/components/schemas/phid'
+
   schemas:
     Profile: 
       title: Profile
@@ -362,12 +370,7 @@ components:
         id: 
           $ref: '#/components/schemas/phid'
         user: 
-          description: "The owner of the Photo"
-          type: object
-          properties:
-            userID:
-              description: "UserId chosen by the user when registering"
-              type: string
+          $ref: '#/components/schemas/User'
         image:
           $ref: '#/components/schemas/Image'
         likes: 
@@ -375,6 +378,8 @@ components:
           type: integer
         comments:
           type: array
+          minLength: 0
+          maxLength: 1000
           items:
             $ref: '#/components/schemas/Comment'
     
@@ -387,6 +392,8 @@ components:
       title: Stream
       description: photos of the following users
       type: array
+      minLength: 0
+      maxLength: 500
       items:
         $ref: '#/components/schemas/Photo'
     
@@ -398,6 +405,8 @@ components:
         username:
           description: represents the name of the user
           type: string
+          minLength: 4
+          maxLength: 16
           example: 'Beatrice'
   
     Comment: 
@@ -410,7 +419,17 @@ components:
           $ref: '#/components/schemas/User'
         text:
           type: string
+          minLength: 1
+          maxLength: 400
           example: "Great photo!"
         date: 
           type: string
           example: 2023-11-08T12:00:00
+    
+    BannedUsers:
+      description: list of banned users
+      type: array
+      minLength: 0
+      maxLength: 200
+      items:
+        $ref: '#/components/schemas/User'
