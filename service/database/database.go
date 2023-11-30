@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"log"
 )
 
 /*
@@ -28,33 +29,36 @@ func OpenDBConnection() (*sql.DB, error) {
 */
 
 type AppDatabase interface {
-	DoLogin(username string) (uint64, error)
+	DoLogin(username string) (int, error)
 	MyProfile() (Profile, error)
-	SetMyUsername(id uint64, name string) error
-	UploadPhoto(id uint64, img []byte) (Photo, error)
-	FollowUser(myId uint64, idProfile uint64) error
-	UnfollowUser(myId uint64, idProfile uint64) error
-	BanUser(myId uint64, idProfile uint64) error
-	BannedUser(myId uint64) ([]User, error)
-	UnbanUser(myId uint64, idProfile uint64) error
-	GetUserProfile(id uint64) (Profile, error)
-	GetMyStream(myId uint64) ([]Photo, error)
-	LikePhoto(phId uint64, uid uint64) error
-	//UnlikePhoto(id uint64) error
-	//CommentPhoto(id uint64, text string) (Comment, error)
-	//UncommentPhoto(id uint64) error
-	//DeletePhoto(id uint64) error
-	IsBanned(myId uint64, idProfile uint64) (bool, error)
-	GetPhotoUser(id uint64) ([]Photo, error)
-	GetPhotoComments(phId uint64) ([]Comment, error)
-	GetFollower(id uint64) ([]User, error)
-	GetFollowing(followedBy uint64) ([]User, error)
+	SetMyUsername(id int, name string) error
+	UploadPhoto(id int, img []byte) (Photo, error)
+	FollowUser(myId int, username string) error
+	UnfollowUser(myId int, idProfile int) error
+	BanUser(myId int, idProfile int) error
+	BannedUser(myId int) ([]User, error)
+	UnbanUser(myId int, idProfile int) error
+	GetUserProfile(id int) (Profile, error)
+	GetMyStream(myId int) ([]Photo, error)
+	LikePhoto(phId int, uid int) error
+	//UnlikePhoto(id int) error
+	//CommentPhoto(id int, text string) (Comment, error)
+	//UncommentPhoto(id int) error
+	//DeletePhoto(id int) error
+
+	IsBanned(myId int, idProfile int) (bool, error)
+	GetPhotoUser(id int) ([]Photo, error)
+	GetPhotoComments(phId int) ([]Comment, error)
+	GetFollower(id int) ([]User, error)
+	GetFollowing(followedBy int) ([]User, error)
+	GetId(username string) (int, error)
 
 	Ping() error
 
 	//utilities function
-	GetAllUsers() ([]User, error)
-	GetAllProfiles() (*sql.Rows, error)
+	GetAllProfiles() ([]Profile, error)
+	GetAllUsers() (*sql.Rows, error)
+	GetTableFollow() (*sql.Rows, error)
 }
 
 var ErrProfileDoesNotExist = errors.New("Profile doesn't exist")
@@ -62,6 +66,7 @@ var ErrAlreadyFollowed = errors.New("Profile already followed")
 var ErrAlreadyBanned = errors.New("Profile already banned")
 var ErrAlreadyLiked = errors.New("Already liked")
 var ErrUsernameUsed = errors.New("Username already used")
+var ErrWithForeignKey = errors.New("Error turning on foreign key")
 
 type appdbimpl struct {
 	c *sql.DB
@@ -71,13 +76,38 @@ func New(db *sql.DB) (AppDatabase, error) {
 	if db == nil {
 		return nil, errors.New("Database is required whem building a AppDatabase")
 	}
+
+	//DROP TABLE
+	tableName := "User" // Sostituisci con il nome effettivo della tua tabella
+	_, erro := db.Exec("DROP TABLE IF EXISTS " + tableName)
+	if erro != nil {
+		fmt.Println(erro)
+		return nil, erro
+	}
+	tableName = "Profile" // Sostituisci con il nome effettivo della tua tabella
+	_, erro = db.Exec("DROP TABLE IF EXISTS " + tableName)
+	if erro != nil {
+		fmt.Println(erro)
+		return nil, erro
+	}
+	tableName = "Follow" // Sostituisci con il nome effettivo della tua tabella
+	_, erro = db.Exec("DROP TABLE IF EXISTS " + tableName)
+	if erro != nil {
+		fmt.Println(erro)
+		return nil, erro
+	}
+
 	//controllare se va qui
-	db.Exec("PRAGMA foreign_keys ON;")
+	_, err := db.Exec("PRAGMA foreign_keys = ON;")
+	if err != nil {
+		fmt.Println(err)
+		return nil, ErrWithForeignKey
+	}
 
 	var User string
-	err := db.QueryRow(`SELECT name FROM sqlite_master WHERE type='table' AND name='User';`).Scan(&User)
+	err = db.QueryRow(`SELECT name FROM sqlite_master WHERE type='table' AND name='User';`).Scan(&User)
 	if errors.Is(err, sql.ErrNoRows) {
-		sqlStmt := `CREATE TABLE IF NOT EXISTS User (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, username TEXT NOT NULL);`
+		sqlStmt := `CREATE TABLE IF NOT EXISTS User (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, username TEXT UNIQUE NOT NULL);`
 		_, err = db.Exec(sqlStmt)
 		if err != nil {
 			return nil, fmt.Errorf("error creating database structure User: %w", err)
@@ -87,8 +117,8 @@ func New(db *sql.DB) (AppDatabase, error) {
 	var Profile string
 	err = db.QueryRow(`SELECT name FROM sqlite_master WHERE type='table' AND name='Profile';`).Scan(&Profile)
 	if errors.Is(err, sql.ErrNoRows) {
-		sqlStmt := `CREATE TABLE IF NOT EXISTS Profile (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, user INTEGER NOT NULL, follower INTEGER, following INTEGER
-			nPhoto INTEGER, FOREIGN KEY (user) REFERENCES User(id));`
+		sqlStmt := `CREATE TABLE IF NOT EXISTS Profile (id INTEGER NOT NULL PRIMARY KEY, user TEXT NOT NULL, follower INTEGER, following INTEGER
+			nPhoto INTEGER, FOREIGN KEY (id) REFERENCES User(id), FOREIGN KEY (user) REFERENCES User(username));`
 		_, err = db.Exec(sqlStmt)
 		if err != nil {
 			return nil, fmt.Errorf("error creating database structure Profile: %w", err)
@@ -149,6 +179,26 @@ func New(db *sql.DB) (AppDatabase, error) {
 		if err != nil {
 			return nil, fmt.Errorf("error creating database structure Likes: %w", err)
 		}
+	}
+
+	// Verifica se le chiavi esterne sono abilitate
+	rows, errF := db.Query("PRAGMA foreign_keys;")
+	if errF != nil {
+		fmt.Println(errF)
+		return nil, errF
+	}
+	var foreignKeysEnabled int
+	for rows.Next() {
+		err := rows.Scan(&foreignKeysEnabled)
+		if err != nil {
+			fmt.Println(err)
+			return nil, err
+		}
+	}
+	if foreignKeysEnabled == 1 {
+		log.Print("Le chiavi esterne sono abilitate.")
+	} else {
+		log.Print("Le chiavi esterne non sono abilitate.")
 	}
 
 	return &appdbimpl{

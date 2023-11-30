@@ -2,7 +2,7 @@ package database
 
 import "time"
 
-func (db *appdbimpl) UploadPhoto(id uint64, img []byte) (Photo, error) {
+func (db *appdbimpl) UploadPhoto(id int, img []byte) (Photo, error) {
 	var photo Photo
 	photo.Image = img
 	istante := time.Now()
@@ -19,6 +19,6 @@ func (db *appdbimpl) UploadPhoto(id uint64, img []byte) (Photo, error) {
 		return photo, err
 	}
 
-	photo.ID = uint64(lastInsertID)
+	photo.ID = int(lastInsertID)
 	return photo, nil
 }

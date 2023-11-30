@@ -39,8 +39,8 @@ paths:
                 type: object 
                 properties:
                   identifier:
-                    type: string
-                    example: "abcdef012345"
+                    type: integer
+                    example: 1
   
   /me: 
     get:
@@ -104,6 +104,7 @@ paths:
       description: follow user allow you see their photos
       operationId: followUser
       parameters:
+        - $ref: '#/components/parameters/myid'
         - $ref: '#/components/parameters/pid'
       responses:
         '201': {$ref: '#/components/responses/SuccessfulOperation'}

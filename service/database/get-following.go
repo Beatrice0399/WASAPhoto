@@ -1,7 +1,8 @@
 package database
 
-func (db *appdbimpl) GetFollowing(followedBy uint64) ([]User, error) {
-	rows, err := db.c.Query(`SELECT followed FROM Follow WHERE followedBy=?`, followedBy)
+func (db *appdbimpl) GetFollowing(followedBy int) ([]User, error) {
+	rows, err := db.c.Query(`SELECT u.* FROM User u
+							JOIN Follow f ON u.id=f.followedBy WHERE f.followedBy=?`, followedBy)
 	if err != nil {
 		return nil, err
 	}

@@ -1,6 +1,6 @@
 package database
 
-func (db *appdbimpl) BannedUser(myId uint64) ([]User, error) {
+func (db *appdbimpl) BannedUser(myId int) ([]User, error) {
 	var ret []User
 	rows, err := db.c.Query(`SELECT u FROM Ban b, User u WHERE whoBan=?`, myId)
 	if err != nil {

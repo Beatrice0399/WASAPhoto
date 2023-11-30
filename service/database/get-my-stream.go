@@ -1,6 +1,6 @@
 package database
 
-func (db *appdbimpl) GetMyStream(myid uint64) ([]Photo, error) {
+func (db *appdbimpl) GetMyStream(myid int) ([]Photo, error) {
 
 	var stream []Photo
 	rows, err := db.c.Query(`SELECT p.* 	

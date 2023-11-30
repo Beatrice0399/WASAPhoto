@@ -1,6 +1,6 @@
 package database
 
-func (db *appdbimpl) GetPhotoComments(phId uint64) ([]Comment, error) {
+func (db *appdbimpl) GetPhotoComments(phId int) ([]Comment, error) {
 	var comments []Comment
 	rows, err := db.c.Query(`SELECT * FROM Comment WHERE photo=?`, phId)
 	if err != nil {

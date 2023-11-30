@@ -1,6 +1,6 @@
 package database
 
-func (db *appdbimpl) GetPhotoUser(id uint64) ([]Photo, error) {
+func (db *appdbimpl) GetPhotoUser(id int) ([]Photo, error) {
 	var photos []Photo
 	rows, err := db.c.Query(`SELECT * FROM Photo WHERE user=? ORDER BY date DESC`, id)
 	if err != nil {

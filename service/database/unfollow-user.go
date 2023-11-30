@@ -1,6 +1,6 @@
 package database
 
-func (db *appdbimpl) UnfollowUser(myId uint64, idProfile uint64) error {
+func (db *appdbimpl) UnfollowUser(myId int, idProfile int) error {
 	res, err := db.c.Exec(`DELETE FROM Follow WHERE user=? AND followedBy=?`, idProfile, myId)
 	if err != nil {
 		return err

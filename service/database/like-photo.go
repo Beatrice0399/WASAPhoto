@@ -1,6 +1,6 @@
 package database
 
-func (db *appdbimpl) LikePhoto(phId uint64, uid uint64) error {
+func (db *appdbimpl) LikePhoto(phId int, uid int) error {
 	exist, err := db.c.Query(`SELECT * FROM Likes WHERE phId=? AND uid=?`, phId, uid)
 	if err != nil {
 		return err

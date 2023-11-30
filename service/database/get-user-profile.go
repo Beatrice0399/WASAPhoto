@@ -1,10 +1,11 @@
 package database
 
-func (db *appdbimpl) GetUserProfile(id uint64) (Profile, error) {
+func (db *appdbimpl) GetUserProfile(id int) (Profile, error) {
 	row := db.c.QueryRow(`SELECT * FROM Profile WHERE id=?`, id)
 
 	var profile Profile
 	err := row.Scan(&profile.ID, &profile.Name, &profile.Follower, &profile.Following, &profile.NumberPhotos, &profile.Photos)
+
 	if err != nil {
 		return profile, ErrProfileDoesNotExist
 	}

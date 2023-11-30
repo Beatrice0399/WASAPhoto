@@ -1,6 +1,6 @@
 package database
 
-func (db *appdbimpl) UnbanUser(myId uint64, idProfile uint64) error {
+func (db *appdbimpl) UnbanUser(myId int, idProfile int) error {
 	res, err := db.c.Exec(`DELETE FROM Ban WHERE user=? AND from=?`, idProfile, myId)
 	if err != nil {
 		return err
