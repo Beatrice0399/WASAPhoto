@@ -1,6 +1,9 @@
 package database
 
-import "database/sql"
+import (
+	"database/sql"
+	"log"
+)
 
 func (db *appdbimpl) GetAllProfiles() ([]Profile, error) {
 	var profiles []Profile
@@ -12,8 +15,10 @@ func (db *appdbimpl) GetAllProfiles() ([]Profile, error) {
 	var name string
 	for rows.Next() {
 		err = rows.Scan(&id, &name)
+		log.Printf("id: %d, name: %s\n", id, name)
 		u, _ := db.GetUserProfile(id)
 		profiles = append(profiles, u)
+		//log.Printf("id: %d, name: %s, follower: %d, following: %d, pho: %d\n", u.ID, u.Name, u.Follower, u.Following, &u.NumberPhotos)
 		/*
 			err = rows.Scan(&u.ID, &u.Name, &u.Follower, &u.Following, &u.NumberPhotos)
 			if err != nil {
@@ -49,4 +54,31 @@ func (db *appdbimpl) GetTableFollow() (*sql.Rows, error) {
 		return rows, err
 	}
 	return rows, nil
+}
+
+func (db *appdbimpl) GetTableBan() (*sql.Rows, error) {
+	rows, err := db.c.Query("SELECT * FROM Ban")
+	if err != nil {
+		return rows, err
+	}
+	return rows, nil
+}
+
+func (db *appdbimpl) GetBanned(myId int) ([]User, error) {
+	var users []User
+	rows, err := db.c.Query(`SELECT u.*
+							FROM User u JOIN Ban b ON b.whoBan=u.id WHERE b.whoBan=?`, myId)
+	if err != nil {
+		log.Print("ERRORE GetBanned")
+		return users, err
+	}
+	for rows.Next() {
+		var u User
+		_ = rows.Scan(&u.ID, &u.Name)
+		log.Printf("id: %d, name: %s\n", u.ID, u.Name)
+		users = append(users, u)
+
+	}
+
+	return users, nil
 }

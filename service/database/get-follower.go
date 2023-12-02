@@ -1,5 +1,7 @@
 package database
 
+import "log"
+
 func (db *appdbimpl) GetFollower(id int) ([]User, error) {
 	rows, err := db.c.Query(`SELECT f.followedBy
 							FROM Follow f
@@ -21,6 +23,7 @@ func (db *appdbimpl) GetFollower(id int) ([]User, error) {
 		if err != nil {
 			return nil, err
 		}
+		log.Printf("Function GetFollower. id: %d, name: %s\n", u.ID, u.Name)
 		users = append(users, u)
 	}
 	return users, err

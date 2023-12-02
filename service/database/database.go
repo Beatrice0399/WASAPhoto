@@ -31,13 +31,13 @@ func OpenDBConnection() (*sql.DB, error) {
 type AppDatabase interface {
 	DoLogin(username string) (int, error)
 	MyProfile() (Profile, error)
-	SetMyUsername(id int, name string) error
+	SetMyUsername(id int, name string) (string, error)
 	UploadPhoto(id int, img []byte) (Photo, error)
 	FollowUser(myId int, username string) error
-	UnfollowUser(myId int, idProfile int) error
-	BanUser(myId int, idProfile int) error
+	UnfollowUser(myId int, username string) error
+	BanUser(myId int, username string) error
 	BannedUser(myId int) ([]User, error)
-	UnbanUser(myId int, idProfile int) error
+	UnbanUser(myId int, user string) error
 	GetUserProfile(id int) (Profile, error)
 	GetMyStream(myId int) ([]Photo, error)
 	LikePhoto(phId int, uid int) error
@@ -59,6 +59,8 @@ type AppDatabase interface {
 	GetAllProfiles() ([]Profile, error)
 	GetAllUsers() (*sql.Rows, error)
 	GetTableFollow() (*sql.Rows, error)
+	GetBanned(myId int) ([]User, error)
+	GetTableBan() (*sql.Rows, error)
 }
 
 var ErrProfileDoesNotExist = errors.New("Profile doesn't exist")
@@ -78,26 +80,38 @@ func New(db *sql.DB) (AppDatabase, error) {
 	}
 
 	//DROP TABLE
-	tableName := "User" // Sostituisci con il nome effettivo della tua tabella
-	_, erro := db.Exec("DROP TABLE IF EXISTS " + tableName)
-	if erro != nil {
-		fmt.Println(erro)
-		return nil, erro
-	}
-	tableName = "Profile" // Sostituisci con il nome effettivo della tua tabella
-	_, erro = db.Exec("DROP TABLE IF EXISTS " + tableName)
-	if erro != nil {
-		fmt.Println(erro)
-		return nil, erro
-	}
-	tableName = "Follow" // Sostituisci con il nome effettivo della tua tabella
-	_, erro = db.Exec("DROP TABLE IF EXISTS " + tableName)
-	if erro != nil {
-		fmt.Println(erro)
-		return nil, erro
-	}
-
-	//controllare se va qui
+	/*
+		tableName := "User" // Sostituisci con il nome effettivo della tua tabella
+		_, erro := db.Exec("DROP TABLE IF EXISTS " + tableName)
+		if erro != nil {
+			fmt.Println(erro)
+			return nil, erro
+		}
+		tableName = "Profile" // Sostituisci con il nome effettivo della tua tabella
+		_, erro = db.Exec("DROP TABLE IF EXISTS " + tableName)
+		if erro != nil {
+			fmt.Println(erro)
+			return nil, erro
+		}
+		tableName = "Follow" // Sostituisci con il nome effettivo della tua tabella
+		_, erro = db.Exec("DROP TABLE IF EXISTS " + tableName)
+		if erro != nil {
+			fmt.Println(erro)
+			return nil, erro
+		}
+		tableName = "Ban" // Sostituisci con il nome effettivo della tua tabella
+		_, erro = db.Exec("DROP TABLE IF EXISTS " + tableName)
+		if erro != nil {
+			fmt.Println(erro)
+			return nil, erro
+		}
+		tableName = "Likes" // Sostituisci con il nome effettivo della tua tabella
+		_, erro = db.Exec("DROP TABLE IF EXISTS " + tableName)
+		if erro != nil {
+			fmt.Println(erro)
+			return nil, erro
+		}
+	*/
 	_, err := db.Exec("PRAGMA foreign_keys = ON;")
 	if err != nil {
 		fmt.Println(err)
@@ -113,17 +127,18 @@ func New(db *sql.DB) (AppDatabase, error) {
 			return nil, fmt.Errorf("error creating database structure User: %w", err)
 		}
 	}
-
-	var Profile string
-	err = db.QueryRow(`SELECT name FROM sqlite_master WHERE type='table' AND name='Profile';`).Scan(&Profile)
-	if errors.Is(err, sql.ErrNoRows) {
-		sqlStmt := `CREATE TABLE IF NOT EXISTS Profile (id INTEGER NOT NULL PRIMARY KEY, user TEXT NOT NULL, follower INTEGER, following INTEGER
-			nPhoto INTEGER, FOREIGN KEY (id) REFERENCES User(id), FOREIGN KEY (user) REFERENCES User(username));`
-		_, err = db.Exec(sqlStmt)
-		if err != nil {
-			return nil, fmt.Errorf("error creating database structure Profile: %w", err)
+	/*
+		var Profile string
+		err = db.QueryRow(`SELECT name FROM sqlite_master WHERE type='table' AND name='Profile';`).Scan(&Profile)
+		if errors.Is(err, sql.ErrNoRows) {
+			sqlStmt := `CREATE TABLE IF NOT EXISTS Profile (id INTEGER NOT NULL PRIMARY KEY, user TEXT NOT NULL, follower INTEGER, following INTEGER
+				nPhoto INTEGER, FOREIGN KEY (id) REFERENCES User(id), FOREIGN KEY (user) REFERENCES User(username));`
+			_, err = db.Exec(sqlStmt)
+			if err != nil {
+				return nil, fmt.Errorf("error creating database structure Profile: %w", err)
+			}
 		}
-	}
+	*/
 
 	var Photo string
 	err = db.QueryRow(`SELECT name FROM sqlite_master WHERE type='table' AND name='Photo';`).Scan(&Photo)
@@ -152,7 +167,7 @@ func New(db *sql.DB) (AppDatabase, error) {
 	err = db.QueryRow(`SELECT name FROM sqlite_master WHERE type='table' AND name='Follow';`).Scan(&Follow)
 	if errors.Is(err, sql.ErrNoRows) {
 		sqlStmt := `CREATE TABLE IF NOT EXISTS Follow (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, user INTEGER NOT NULL, followedBy INTEGER NOT NULL,
-			FOREIGN KEY (user) REFERENCES User(id), FOREIGN KEY (followedBy) REFERENCES User(id));`
+			UNIQUE(user, followedBy), FOREIGN KEY (user) REFERENCES User(id), FOREIGN KEY (followedBy) REFERENCES User(id));`
 		_, err = db.Exec(sqlStmt)
 		if err != nil {
 			return nil, fmt.Errorf("error creating database structure Follow: %w", err)
@@ -163,7 +178,7 @@ func New(db *sql.DB) (AppDatabase, error) {
 	err = db.QueryRow(`SELECT name FROM sqlite_master WHERE type='table' AND name='Ban';`).Scan(&Ban)
 	if errors.Is(err, sql.ErrNoRows) {
 		sqlStmt := `CREATE TABLE IF NOT EXISTS Ban (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, banned INTEGER NOT NULL, whoBan INTEGER NOT NULL,
-			FOREIGN KEY (banned) REFERENCES User(id), FOREIGN KEY (whoBan) REFERENCES User(id));`
+			UNIQUE(banned, whoBan), FOREIGN KEY (banned) REFERENCES User(id), FOREIGN KEY (whoBan) REFERENCES User(id));`
 		_, err = db.Exec(sqlStmt)
 		if err != nil {
 			return nil, fmt.Errorf("error creating database structure Ban: %w", err)
@@ -174,7 +189,7 @@ func New(db *sql.DB) (AppDatabase, error) {
 	err = db.QueryRow(`SELECT name FROM sqlite_master WHERE type='table' AND name='Likes';`).Scan(&Likes)
 	if errors.Is(err, sql.ErrNoRows) {
 		sqlStmt := `CREATE TABLE IF NOT EXISTS Likes (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, phId INTEGER NOT NULL, uid INTEGER NOT NULL,
-					FOREIGN KEY (phId) REFERENCES Photo(id), FOREIGN KEY (uid) REFERENCES User(id));`
+					UNIQUE(phId, uid), FOREIGN KEY (phId) REFERENCES Photo(id), FOREIGN KEY (uid) REFERENCES User(id));`
 		_, err = db.Exec(sqlStmt)
 		if err != nil {
 			return nil, fmt.Errorf("error creating database structure Likes: %w", err)

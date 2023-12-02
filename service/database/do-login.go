@@ -18,10 +18,12 @@ func (db *appdbimpl) DoLogin(username string) (int, error) {
 		}
 		row = db.c.QueryRow(`SELECT id FROM User WHERE username=?;`, username)
 		row.Scan(&id)
-		_, err = db.c.Exec(`INSERT INTO Profile (id, user) VALUES (?,?);`, id, username)
-		if err != nil {
-			return 0, err
-		}
+		/*
+			_, err = db.c.Exec(`INSERT INTO Profile (id, user) VALUES (?,?);`, id, username)
+			if err != nil {
+				return 0, err
+			}
+		*/
 		log.Printf("User created: %s\n", username)
 	} else {
 		log.Printf("User logged: %s\n", username)

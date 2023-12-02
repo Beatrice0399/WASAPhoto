@@ -1,23 +1,36 @@
 package database
 
-func (db *appdbimpl) BanUser(myId int, idProfile int) error {
-	row := db.c.QueryRow(`SELECT * FROM Ban WHERE banned=? AND whoBan=?`, idProfile, myId)
-	if row != nil {
-		return ErrAlreadyBanned
-	}
+import "log"
 
-	errUn := db.UnfollowUser(myId, idProfile)
-	if errUn != nil {
-		return errUn
-	}
-
-	errUn = db.UnfollowUser(myId, idProfile)
-	if errUn != nil {
-		return errUn
-	}
-
-	_, err := db.c.Exec(`INSERT INTO Ban (banned, whoBan) VALUES (?,?)`, idProfile, myId)
+func (db *appdbimpl) BanUser(myId int, username string) error {
+	idProfile, err := db.GetId(username)
 	if err != nil {
+		return err
+	}
+	/*
+		row := db.c.QueryRow(`SELECT * FROM Ban WHERE banned=? AND whoBan=?`, idProfile, myId)
+		if row != nil {
+			log.Print("Errore BanUser in queryRow")
+			return ErrAlreadyBanned
+		}
+	*/
+	_ = db.UnfollowUser(myId, username)
+	/*
+		if errUn != nil {
+			log.Print("Errore BanUser in unfollofUser1")
+			return errUn
+		}
+	*/
+	_ = db.UnfollowUser(myId, username)
+	/*
+		if errUn != nil {
+			log.Print("Errore BanUser in unfollofUser2")
+			return errUn
+		}
+	*/
+	_, err = db.c.Exec(`INSERT INTO Ban (banned, whoBan) VALUES (?,?)`, idProfile, myId)
+	if err != nil {
+		log.Println("Errore insert:", err)
 		return err
 	}
 

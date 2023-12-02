@@ -1,16 +1,21 @@
 package database
 
-func (db *appdbimpl) SetMyUsername(id int, name string) error {
-	res, err := db.c.Exec(`UPDATE Profile SET username=? WHERE id=?`, name, id)
+import "log"
+
+func (db *appdbimpl) SetMyUsername(id int, name string) (string, error) {
+	res, err := db.c.Exec(`UPDATE User SET username=? WHERE id=?`, name, id)
 	if err != nil {
-		return err
+		if err != nil {
+			log.Println("Errore durante l'aggiornamento:", err)
+			return name, err
+		}
+		return name, err
 	}
 	affected, err := res.RowsAffected()
 	if err != nil {
-		return err
+		return name, err
 	} else if affected == 0 {
-		// If we didn't delete any row, then the fountain didn't exist
-		return ErrProfileDoesNotExist
+		return name, ErrProfileDoesNotExist
 	}
-	return nil
+	return name, nil
 }
