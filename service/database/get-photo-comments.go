@@ -2,7 +2,8 @@ package database
 
 func (db *appdbimpl) GetPhotoComments(phId int) ([]Comment, error) {
 	var comments []Comment
-	rows, err := db.c.Query(`SELECT * FROM Comment WHERE photo=?`, phId)
+	rows, err := db.c.Query(`SELECT c.id, u.username, c.string, c.date FROM Comment c
+								JOIN User u ON c.user=u.id WHERE photo=?`, phId)
 	if err != nil {
 		return nil, err
 	}
@@ -13,6 +14,7 @@ func (db *appdbimpl) GetPhotoComments(phId int) ([]Comment, error) {
 		if err != nil {
 			return nil, err
 		}
+		//log.Printf("phid: %d, user: %s, txt: %s, date: %s\n", c.ID, c.User, c.Text, c.Date)
 		comments = append(comments, c)
 	}
 	return comments, err

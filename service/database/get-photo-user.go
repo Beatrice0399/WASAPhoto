@@ -1,27 +1,30 @@
 package database
 
-func (db *appdbimpl) GetPhotoUser(id int) ([]Photo, error) {
-	var photos []Photo
+import "database/sql"
+
+func (db *appdbimpl) GetPhotoUser(id int) (*sql.Rows, error) {
+	//var photos []Photo
 	rows, err := db.c.Query(`SELECT * FROM Photo WHERE user=? ORDER BY date DESC`, id)
 	if err != nil {
 		return nil, err
 	}
 
-	defer func() { _ = rows.Close() }()
+	//defer func() { _ = rows.Close() }()
+	/*
+		for rows.Next() {
 
-	for rows.Next() {
-
-		var p Photo
-		err = rows.Scan(&p.ID, &p.User, &p.Image, &p.Date, &p.Likes, &p.Comments)
-		if err != nil {
-			return nil, err
+			var p Photo
+			err = rows.Scan(&p.ID, &p.User, &p.Image, &p.Date, &p.Likes, &p.Comments)
+			if err != nil {
+				return nil, err
+			}
+			comments, err := db.GetPhotoComments(p.User)
+			if err != nil {
+				return nil, err
+			}
+			p.Comments = comments
+			photos = append(photos, p)
 		}
-		comments, err := db.GetPhotoComments(p.User)
-		if err != nil {
-			return nil, err
-		}
-		p.Comments = comments
-		photos = append(photos, p)
-	}
-	return photos, err
+	*/
+	return rows, err
 }

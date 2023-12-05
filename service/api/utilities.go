@@ -88,3 +88,42 @@ func (rt *_router) getBanned(w http.ResponseWriter, r *http.Request, ps httprout
 		w.Write([]byte(str))
 	}
 }
+
+func (rt *_router) getTableComment(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	rows, err := rt.db.GetTableComment()
+	if err != nil {
+		rt.baseLogger.Errorln(err)
+	}
+	var id int
+	var user int
+	var photo int
+	var txt string
+	var date string
+	w.Header().Set("Content-type", "application/json")
+	for exist := rows.Next(); exist == true; exist = rows.Next() {
+		err = rows.Scan(&id, &user, &photo, &txt, &date)
+		if err != nil {
+			rt.baseLogger.Errorln(err)
+		}
+		str := fmt.Sprintf("cid: %d, user: %d, photo: %d, txt: %s, date: %s\n", id, user, photo, date, txt)
+		w.Write([]byte(str))
+	}
+}
+
+func (rt *_router) getTableLikes(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	rows, err := rt.db.GetTableLikes()
+	if err != nil {
+		rt.baseLogger.Errorln(err)
+	}
+	var id int
+	var phid int
+	var uid int
+	for exist := rows.Next(); exist == true; exist = rows.Next() {
+		err = rows.Scan(&id, &phid, &uid)
+		if err != nil {
+			rt.baseLogger.Errorln(err)
+		}
+		str := fmt.Sprintf("lid: %d, photo: %d, user: %d\n", id, phid, uid)
+		w.Write([]byte(str))
+	}
+}

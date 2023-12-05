@@ -8,7 +8,7 @@ func (db *appdbimpl) UploadPhoto(id int, img []byte) (Photo, error) {
 	istante := time.Now()
 	date := istante.Format("2006-01-02 15:04:05")
 
-	res, err := db.c.Exec(`INSERT INTO Photo (user, image, date, likes) VALUES (?, ?, ?, NULL)`,
+	res, err := db.c.Exec(`INSERT INTO Photo (user, image, date) VALUES (?, ?, ?)`,
 		id, img, date)
 	if err != nil {
 		return photo, err

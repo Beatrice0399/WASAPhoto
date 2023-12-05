@@ -15,7 +15,7 @@ func (db *appdbimpl) GetAllProfiles() ([]Profile, error) {
 	var name string
 	for rows.Next() {
 		err = rows.Scan(&id, &name)
-		log.Printf("id: %d, name: %s\n", id, name)
+		//log.Printf("id: %d, name: %s\n", id, name)
 		u, _ := db.GetUserProfile(id)
 		profiles = append(profiles, u)
 		//log.Printf("id: %d, name: %s, follower: %d, following: %d, pho: %d\n", u.ID, u.Name, u.Follower, u.Following, &u.NumberPhotos)
@@ -81,4 +81,20 @@ func (db *appdbimpl) GetBanned(myId int) ([]User, error) {
 	}
 
 	return users, nil
+}
+
+func (db *appdbimpl) GetTableComment() (*sql.Rows, error) {
+	rows, err := db.c.Query("SELECT * FROM Comment")
+	if err != nil {
+		return rows, err
+	}
+	return rows, nil
+}
+
+func (db *appdbimpl) GetTableLikes() (*sql.Rows, error) {
+	rows, err := db.c.Query("SELECT * FROM Likes")
+	if err != nil {
+		return rows, err
+	}
+	return rows, nil
 }

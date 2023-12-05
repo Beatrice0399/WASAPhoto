@@ -21,7 +21,8 @@ func (db *appdbimpl) BanUser(myId int, username string) error {
 			return errUn
 		}
 	*/
-	_ = db.UnfollowUser(myId, username)
+	name, _ := db.GetNameById(myId)
+	_ = db.UnfollowUser(idProfile, name)
 	/*
 		if errUn != nil {
 			log.Print("Errore BanUser in unfollofUser2")

@@ -1,17 +1,26 @@
 package database
 
-import "log"
+import (
+	"database/sql"
+	"errors"
+	"log"
+)
 
 func (db *appdbimpl) GetUserProfile(id int) (Profile, error) {
-	/*
-		row := db.c.QueryRow(`SELECT * FROM Profile WHERE id=?`, id)
+	ban := db.c.QueryRow(`SELECT id FROM Ban WHERE banned=? OR whoBan=?`, id, id)
+	var ban_id int
+	exist := ban.Scan(&ban_id)
+	if !errors.Is(exist, sql.ErrNoRows) {
+		row := db.c.QueryRow(`SELECT * FROM User WHERE id=?`, id)
 		var profile Profile
-		err := row.Scan(&profile.ID, &profile.Name, &profile.Follower, &profile.Following, &profile.NumberPhotos, &profile.Photos)
-	*/
+		_ = row.Scan(&profile.ID, &profile.Name)
+		return profile, nil
+	}
+
 	row := db.c.QueryRow(`SELECT * FROM User WHERE id=?`, id)
 	var profile Profile
 	err := row.Scan(&profile.ID, &profile.Name)
-	log.Printf("GetUserProfile-GetUser: id: %d, name: %s\n", profile.ID, profile.Name)
+	//log.Printf("GetUserProfile-GetUser: id: %d, name: %s\n", profile.ID, profile.Name)
 	/*
 		if err != nil {
 			log.Print("errUser")
@@ -32,7 +41,7 @@ func (db *appdbimpl) GetUserProfile(id int) (Profile, error) {
 		return profile, err
 	}
 	profile.Following = len(following)
-	log.Printf("GetUserProfile. id: %d, name: %s, follower: %d, following: %d, pho: %d\n", profile.ID, profile.Name, profile.Follower, profile.Following, profile.NumberPhotos)
+	//log.Printf("GetUserProfile. id: %d, name: %s, follower: %d, following: %d, pho: %d\n", profile.ID, profile.Name, profile.Follower, profile.Following, profile.NumberPhotos)
 
 	return profile, err
 }

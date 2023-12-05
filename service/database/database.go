@@ -41,17 +41,19 @@ type AppDatabase interface {
 	GetUserProfile(id int) (Profile, error)
 	GetMyStream(myId int) ([]Photo, error)
 	LikePhoto(phId int, uid int) error
-	//UnlikePhoto(id int) error
-	//CommentPhoto(id int, text string) (Comment, error)
-	//UncommentPhoto(id int) error
-	//DeletePhoto(id int) error
+	UnlikePhoto(id int, uid int) error
+	CommentPhoto(uid int, phid int, text string) (int, error)
+	UncommentPhoto(cid int, phid int, uid int) error
+	DeletePhoto(phid int) error
 
 	IsBanned(myId int, idProfile int) (bool, error)
-	GetPhotoUser(id int) ([]Photo, error)
+	GetPhotoUser(id int) (*sql.Rows, error)
 	GetPhotoComments(phId int) ([]Comment, error)
 	GetFollower(id int) ([]User, error)
 	GetFollowing(followedBy int) ([]User, error)
 	GetId(username string) (int, error)
+	GetNameById(id int) (string, error)
+	GetLikesPhoto(phid int) (int, error)
 
 	Ping() error
 
@@ -61,13 +63,13 @@ type AppDatabase interface {
 	GetTableFollow() (*sql.Rows, error)
 	GetBanned(myId int) ([]User, error)
 	GetTableBan() (*sql.Rows, error)
+	GetTableComment() (*sql.Rows, error)
+	GetTableLikes() (*sql.Rows, error)
 }
 
 var ErrProfileDoesNotExist = errors.New("Profile doesn't exist")
-var ErrAlreadyFollowed = errors.New("Profile already followed")
-var ErrAlreadyBanned = errors.New("Profile already banned")
-var ErrAlreadyLiked = errors.New("Already liked")
 var ErrUsernameUsed = errors.New("Username already used")
+var ErrFollowUser = errors.New("This user banned you")
 var ErrWithForeignKey = errors.New("Error turning on foreign key")
 
 type appdbimpl struct {
@@ -80,38 +82,44 @@ func New(db *sql.DB) (AppDatabase, error) {
 	}
 
 	//DROP TABLE
-	/*
-		tableName := "User" // Sostituisci con il nome effettivo della tua tabella
-		_, erro := db.Exec("DROP TABLE IF EXISTS " + tableName)
-		if erro != nil {
-			fmt.Println(erro)
-			return nil, erro
-		}
-		tableName = "Profile" // Sostituisci con il nome effettivo della tua tabella
-		_, erro = db.Exec("DROP TABLE IF EXISTS " + tableName)
-		if erro != nil {
-			fmt.Println(erro)
-			return nil, erro
-		}
-		tableName = "Follow" // Sostituisci con il nome effettivo della tua tabella
-		_, erro = db.Exec("DROP TABLE IF EXISTS " + tableName)
-		if erro != nil {
-			fmt.Println(erro)
-			return nil, erro
-		}
-		tableName = "Ban" // Sostituisci con il nome effettivo della tua tabella
-		_, erro = db.Exec("DROP TABLE IF EXISTS " + tableName)
-		if erro != nil {
-			fmt.Println(erro)
-			return nil, erro
-		}
-		tableName = "Likes" // Sostituisci con il nome effettivo della tua tabella
-		_, erro = db.Exec("DROP TABLE IF EXISTS " + tableName)
-		if erro != nil {
-			fmt.Println(erro)
-			return nil, erro
-		}
-	*/
+
+	tableName := "Follow" // Sostituisci con il nome effettivo della tua tabella
+	_, erro := db.Exec("DROP TABLE IF EXISTS " + tableName)
+	if erro != nil {
+		fmt.Println(erro)
+		return nil, erro
+	}
+	tableName = "Ban" // Sostituisci con il nome effettivo della tua tabella
+	_, erro = db.Exec("DROP TABLE IF EXISTS " + tableName)
+	if erro != nil {
+		fmt.Println(erro)
+		return nil, erro
+	}
+	tableName = "Likes" // Sostituisci con il nome effettivo della tua tabella
+	_, erro = db.Exec("DROP TABLE IF EXISTS " + tableName)
+	if erro != nil {
+		fmt.Println(erro)
+		return nil, erro
+	}
+	tableName = "Comment" // Sostituisci con il nome effettivo della tua tabella
+	_, erro = db.Exec("DROP TABLE IF EXISTS " + tableName)
+	if erro != nil {
+		fmt.Println(erro)
+		return nil, erro
+	}
+	tableName = "Photo" // Sostituisci con il nome effettivo della tua tabella
+	_, erro = db.Exec("DROP TABLE IF EXISTS " + tableName)
+	if erro != nil {
+		fmt.Println(erro)
+		return nil, erro
+	}
+	tableName = "User" // Sostituisci con il nome effettivo della tua tabella
+	_, erro = db.Exec("DROP TABLE IF EXISTS " + tableName)
+	if erro != nil {
+		fmt.Println(erro)
+		return nil, erro
+	}
+
 	_, err := db.Exec("PRAGMA foreign_keys = ON;")
 	if err != nil {
 		fmt.Println(err)
@@ -144,8 +152,8 @@ func New(db *sql.DB) (AppDatabase, error) {
 	err = db.QueryRow(`SELECT name FROM sqlite_master WHERE type='table' AND name='Photo';`).Scan(&Photo)
 	if errors.Is(err, sql.ErrNoRows) {
 		sqlStmt := `CREATE TABLE IF NOT EXISTS Photo (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, user INTEGER NOT NULL, image BLOB NOT NULL,
-			date TEXT NOT NULL, like INTEGER,
-			FOREIGN KEY (user) REFERENCES User(id));`
+			date DATETIME NOT NULL,
+			FOREIGN KEY (user) REFERENCES User(id) ON DELETE CASCADE);`
 		_, err = db.Exec(sqlStmt)
 		if err != nil {
 			return nil, fmt.Errorf("error creating database structure Photo: %w", err)
@@ -156,7 +164,7 @@ func New(db *sql.DB) (AppDatabase, error) {
 	err = db.QueryRow(`SELECT name FROM sqlite_master WHERE type='table' AND name='Comment';`).Scan(&Comment)
 	if errors.Is(err, sql.ErrNoRows) {
 		sqlStmt := `CREATE TABLE IF NOT EXISTS Comment (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, user INTEGER NOT NULL, photo INTEGER NOT NULL, string TEXT NOT NULL, 
-			date TEXT NOT NULL, FOREIGN KEY (user) REFERENCES User(id));`
+			date DATETIME NOT NULL, FOREIGN KEY (user) REFERENCES User(id) ON DELETE CASCADE, FOREIGN KEY (photo) REFERENCES Photo(id) ON DELETE CASCADE);`
 		_, err = db.Exec(sqlStmt)
 		if err != nil {
 			return nil, fmt.Errorf("error creating database structure Comment: %w", err)
@@ -189,7 +197,7 @@ func New(db *sql.DB) (AppDatabase, error) {
 	err = db.QueryRow(`SELECT name FROM sqlite_master WHERE type='table' AND name='Likes';`).Scan(&Likes)
 	if errors.Is(err, sql.ErrNoRows) {
 		sqlStmt := `CREATE TABLE IF NOT EXISTS Likes (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, phId INTEGER NOT NULL, uid INTEGER NOT NULL,
-					UNIQUE(phId, uid), FOREIGN KEY (phId) REFERENCES Photo(id), FOREIGN KEY (uid) REFERENCES User(id));`
+					UNIQUE(phId, uid), FOREIGN KEY (phId) REFERENCES Photo(id) ON DELETE CASCADE, FOREIGN KEY (uid) REFERENCES User(id) ON DELETE CASCADE);`
 		_, err = db.Exec(sqlStmt)
 		if err != nil {
 			return nil, fmt.Errorf("error creating database structure Likes: %w", err)
