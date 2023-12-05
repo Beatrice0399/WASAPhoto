@@ -18,10 +18,6 @@ func (rt *_router) getPhotoComments(w http.ResponseWriter, r *http.Request, ps h
 	if err != nil {
 		log.Println(err)
 	}
-
-	for _, c := range comments {
-		//str := fmt.Sprintf("cid: %d, User: %s, text: %s, date: %s\n", c.ID, c.User, c.Text, c.Date)
-		//w.Write([]byte(str))
-		json.NewEncoder(w).Encode(c)
-	}
+	w.Header().Set("Content-type", "application/json")
+	json.NewEncoder(w).Encode(comments)
 }

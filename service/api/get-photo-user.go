@@ -1,11 +1,10 @@
 package api
 
 import (
-	"fmt"
+	"encoding/json"
 	"net/http"
 	"strconv"
 
-	"github.com/Beatrice0399/WASAPhoto/service/database"
 	"github.com/julienschmidt/httprouter"
 )
 
@@ -18,15 +17,18 @@ func (rt *_router) getPhotoUser(w http.ResponseWriter, r *http.Request, ps httpr
 	if err != nil {
 		rt.baseLogger.Errorln(err)
 	}
-	var p database.Photo
+	//var p database.Photo
 	w.Header().Set("Content-type", "application/json")
-	for exist := rows.Next(); exist == true; exist = rows.Next() {
-		err = rows.Scan(&p.ID, &p.User, &p.Image, &p.Date)
-		if err != nil {
-			rt.baseLogger.Errorln(err)
+	json.NewEncoder(w).Encode(rows)
+	/*
+		for exist := rows.Next(); exist == true; exist = rows.Next() {
+			err = rows.Scan(&p.ID, &p.User, &p.Image, &p.Date)
+			if err != nil {
+				rt.baseLogger.Errorln(err)
+			}
+			likes, _ := rt.db.GetLikesPhoto(p.ID)
+			str := fmt.Sprintf("pid: %d, User: %d, img: %s, date: %s, likes: %d\n", p.ID, p.User, p.Image, p.Date, likes)
+			w.Write([]byte(str))
 		}
-		likes, _ := rt.db.GetLikesPhoto(p.ID)
-		str := fmt.Sprintf("pid: %d, User: %d, img: %s, date: %s, likes: %d\n", p.ID, p.User, p.Image, p.Date, likes)
-		w.Write([]byte(str))
-	}
+	*/
 }

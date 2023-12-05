@@ -16,7 +16,7 @@ func (rt *_router) getProfiles(w http.ResponseWriter, r *http.Request, ps httpro
 	}
 	w.Header().Set("Content-type", "application/json")
 	for _, value := range rows {
-		str := fmt.Sprintf("id: %d, Name: %s, Follower: %d, Following: %d, Photo: %d\n", value.ID, value.Name, value.Follower, value.Following, value.NumberPhotos)
+		str := fmt.Sprintf("id: %d, Name: %s, Follower: %d, Following: %d, Photo: %d\n", value.ID, value.Name, value.Followers, value.Following, value.NumberPhotos)
 		w.Write([]byte(str))
 	}
 }
