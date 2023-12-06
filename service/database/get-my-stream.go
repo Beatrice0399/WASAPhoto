@@ -3,51 +3,31 @@ package database
 func (db *appdbimpl) GetMyStream(myid int) ([]Photo, error) {
 
 	var stream []Photo
-	rows, err := db.c.Query(`SELECT p.* 	
+	rows, err := db.c.Query(`SELECT p.id, u.username, p.image, p.date	
 							    FROM Photo p 
 								JOIN (SELECT user FROM Follow WHERE followedBy=?) f ON p.user = f.user
-								ORDER BY p.date DESC;`)
+								JOIN User u ON u.id = p.user
+								ORDER BY p.date DESC;`, myid)
+	if err != nil {
+		return nil, err
+	}
 	for rows.Next() {
 		var p Photo
-		err = rows.Scan(&p.ID, &p.User, &p.Image, &p.Date, &p.Likes, &p.Comments)
+		err = rows.Scan(&p.ID, &p.User, &p.Image, &p.Date)
 		if err != nil {
 			return stream, err
 		}
-		comments, err := db.GetPhotoComments(p.User)
-		if err != nil {
-			return stream, err
+		res, _ := db.GetLikesPhoto(p.ID)
+		err = res.Scan(&p.Likes)
+
+		com, _ := db.GetPhotoComments(p.ID)
+		for exist := com.Next(); exist == true; exist = com.Next() {
+			var c Comment
+			err = com.Scan(&c.ID, &c.User, &c.Text, &c.Date)
+			p.Comments = append(p.Comments, c)
 		}
-		p.Comments = comments
 		stream = append(stream, p)
 	}
 
 	return stream, err
-
-	/*
-		users, err := db.GetFollowing(myid)
-		if err != nil {
-			return stream, err
-		}
-
-		for _, value := range users {
-			photos, err := db.GetPhotoUser(value.ID)
-			if err != nil {
-				return stream, err
-			}
-			stream = append(stream, photos...)
-		}
-	*/
-
-	/*
-		rows, err := db.c.Query(`SELECT p.* FROM Photo p JOIN (SELECT * FROM GetFollowing(?)) f ON p.user = f.id;`, myid)
-		if err != nil {
-			return stream, nil
-		}
-
-		for rows.Next() {
-			var p Photo
-			err = rows.Scan(&p.ID, &p.User, &p.Image, &p.Likes)
-		}
-		return stream, err
-	*/
 }

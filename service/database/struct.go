@@ -4,7 +4,7 @@ import "time"
 
 type Photo struct {
 	ID       int       `json:"id"`
-	User     int       `json:"User"`
+	User     string    `json:"User"`
 	Image    []byte    `json:"image"`
 	Date     time.Time `json:"date"`
 	Likes    int       `json:"likes"`
@@ -26,8 +26,8 @@ type Comment struct {
 type Profile struct {
 	ID           int     `json:"id"`
 	Name         string  `json:"name"`
+	Followers    int     `json:"followers"`
 	Following    int     `json:"following"`
-	Follower     int     `json:"follower"`
 	NumberPhotos int     `json:"numberPhotos"`
 	Photos       []Photo `json:"photos"`
 }

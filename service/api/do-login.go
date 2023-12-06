@@ -11,13 +11,13 @@ func (rt *_router) doLogin(w http.ResponseWriter, r *http.Request, ps httprouter
 	var username string
 	err := json.NewDecoder(r.Body).Decode(&username)
 	if err != nil {
-		w.Header().Set("Content-type", "application/json")
-		w.Write([]byte("Invalid username login"))
-		w.WriteHeader(http.StatusBadRequest)
+		rt.responsError(http.StatusBadRequest, "Invalid username login", w)
 		return
 	}
 	id, err := rt.db.DoLogin(username)
-	w.Header().Set("Content-type", "application/json")
-	id_byte, err := json.Marshal(id)
-	w.Write(id_byte)
+	if err != nil {
+		rt.responsError(http.StatusBadRequest, err.Error(), w)
+		return
+	}
+	rt.responseJson(id, w)
 }

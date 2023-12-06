@@ -7,9 +7,16 @@ import (
 )
 
 func (rt *_router) getMyStream(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	/*
-		var myId_string string
-		myId_string = r.URL.Query().Get("myid")
-		myId, _ := strconv.Atoi(myId_string)
-	*/
+	myId, err := rt.getMyId(r)
+	if err != nil {
+		rt.responsError(http.StatusBadRequest, err.Error(), w)
+		return
+	}
+
+	stream, err := rt.db.GetMyStream(myId)
+	if err != nil {
+		rt.responsError(http.StatusBadRequest, err.Error(), w)
+		return
+	}
+	rt.responseJson(stream, w)
 }

@@ -38,7 +38,7 @@ type AppDatabase interface {
 	BanUser(myId int, username string) error
 	BannedUser(myId int) ([]User, error)
 	UnbanUser(myId int, user string) error
-	GetUserProfile(id int) (Profile, error)
+	GetUserProfile(id int, myId int) (Profile, error)
 	GetMyStream(myId int) ([]Photo, error)
 	LikePhoto(phId int, uid int) error
 	UnlikePhoto(id int, uid int) error
@@ -47,13 +47,13 @@ type AppDatabase interface {
 	DeletePhoto(phid int) error
 
 	IsBanned(myId int, idProfile int) (bool, error)
-	GetPhotoUser(id int) (*sql.Rows, error)
-	GetPhotoComments(phId int) ([]Comment, error)
+	GetPhotoUser(id int) ([]Photo, error)
+	GetPhotoComments(phId int) (*sql.Rows, error)
 	GetFollower(id int) ([]User, error)
 	GetFollowing(followedBy int) ([]User, error)
 	GetId(username string) (int, error)
 	GetNameById(id int) (string, error)
-	GetLikesPhoto(phid int) (int, error)
+	GetLikesPhoto(phid int) (*sql.Row, error)
 
 	Ping() error
 
@@ -71,6 +71,9 @@ var ErrProfileDoesNotExist = errors.New("Profile doesn't exist")
 var ErrUsernameUsed = errors.New("Username already used")
 var ErrFollowUser = errors.New("This user banned you")
 var ErrWithForeignKey = errors.New("Error turning on foreign key")
+var ErrUserBanned = errors.New("You banned this user")
+var ErrUserBannedYou = errors.New("This user banned you")
+var ErrPhoto = errors.New("This photo doesn't exsist")
 
 type appdbimpl struct {
 	c *sql.DB
@@ -82,44 +85,44 @@ func New(db *sql.DB) (AppDatabase, error) {
 	}
 
 	//DROP TABLE
-
-	tableName := "Follow" // Sostituisci con il nome effettivo della tua tabella
-	_, erro := db.Exec("DROP TABLE IF EXISTS " + tableName)
-	if erro != nil {
-		fmt.Println(erro)
-		return nil, erro
-	}
-	tableName = "Ban" // Sostituisci con il nome effettivo della tua tabella
-	_, erro = db.Exec("DROP TABLE IF EXISTS " + tableName)
-	if erro != nil {
-		fmt.Println(erro)
-		return nil, erro
-	}
-	tableName = "Likes" // Sostituisci con il nome effettivo della tua tabella
-	_, erro = db.Exec("DROP TABLE IF EXISTS " + tableName)
-	if erro != nil {
-		fmt.Println(erro)
-		return nil, erro
-	}
-	tableName = "Comment" // Sostituisci con il nome effettivo della tua tabella
-	_, erro = db.Exec("DROP TABLE IF EXISTS " + tableName)
-	if erro != nil {
-		fmt.Println(erro)
-		return nil, erro
-	}
-	tableName = "Photo" // Sostituisci con il nome effettivo della tua tabella
-	_, erro = db.Exec("DROP TABLE IF EXISTS " + tableName)
-	if erro != nil {
-		fmt.Println(erro)
-		return nil, erro
-	}
-	tableName = "User" // Sostituisci con il nome effettivo della tua tabella
-	_, erro = db.Exec("DROP TABLE IF EXISTS " + tableName)
-	if erro != nil {
-		fmt.Println(erro)
-		return nil, erro
-	}
-
+	/*
+		tableName := "Follow" // Sostituisci con il nome effettivo della tua tabella
+		_, erro := db.Exec("DROP TABLE IF EXISTS " + tableName)
+		if erro != nil {
+			fmt.Println(erro)
+			return nil, erro
+		}
+		tableName = "Ban" // Sostituisci con il nome effettivo della tua tabella
+		_, erro = db.Exec("DROP TABLE IF EXISTS " + tableName)
+		if erro != nil {
+			fmt.Println(erro)
+			return nil, erro
+		}
+		tableName = "Likes" // Sostituisci con il nome effettivo della tua tabella
+		_, erro = db.Exec("DROP TABLE IF EXISTS " + tableName)
+		if erro != nil {
+			fmt.Println(erro)
+			return nil, erro
+		}
+		tableName = "Comment" // Sostituisci con il nome effettivo della tua tabella
+		_, erro = db.Exec("DROP TABLE IF EXISTS " + tableName)
+		if erro != nil {
+			fmt.Println(erro)
+			return nil, erro
+		}
+		tableName = "Photo" // Sostituisci con il nome effettivo della tua tabella
+		_, erro = db.Exec("DROP TABLE IF EXISTS " + tableName)
+		if erro != nil {
+			fmt.Println(erro)
+			return nil, erro
+		}
+		tableName = "User" // Sostituisci con il nome effettivo della tua tabella
+		_, erro = db.Exec("DROP TABLE IF EXISTS " + tableName)
+		if erro != nil {
+			fmt.Println(erro)
+			return nil, erro
+		}
+	*/
 	_, err := db.Exec("PRAGMA foreign_keys = ON;")
 	if err != nil {
 		fmt.Println(err)

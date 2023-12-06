@@ -21,6 +21,7 @@ func (rt *_router) Handler() http.Handler {
 	rt.router.POST("/photos/:phid/like/", rt.likePhoto)
 	rt.router.DELETE("/photos/:phid/like/", rt.unlikePhoto)
 	rt.router.DELETE("/me/photo/:phid", rt.deletePhoto)
+	rt.router.GET("/home", rt.getMyStream)
 
 	//utilities
 	rt.router.GET("/allProfiles", rt.getProfiles)
