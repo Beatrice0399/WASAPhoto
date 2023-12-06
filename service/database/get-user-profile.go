@@ -6,19 +6,22 @@ import (
 	"log"
 )
 
-func (db *appdbimpl) GetUserProfile(id int) (Profile, error) {
-	ban := db.c.QueryRow(`SELECT id FROM Ban WHERE banned=? OR whoBan=?`, id, id)
+func (db *appdbimpl) GetUserProfile(id int, myId int) (Profile, error) {
+	ban := db.c.QueryRow(`SELECT id FROM Ban WHERE banned=? AND whoBan=?`, id, myId)
 	var ban_id int
 	exist := ban.Scan(&ban_id)
+	var profile Profile
 	if !errors.Is(exist, sql.ErrNoRows) {
-		row := db.c.QueryRow(`SELECT * FROM User WHERE id=?`, id)
-		var profile Profile
-		_ = row.Scan(&profile.ID, &profile.Name)
-		return profile, nil
+		return profile, ErrUserBanned
+	}
+	ban = db.c.QueryRow(`SELECT id FROM Ban WHERE banned=? AND whoBan=?`, myId, id)
+	exist = ban.Scan(&ban_id)
+	if !errors.Is(exist, sql.ErrNoRows) {
+		return profile, ErrUserBannedYou
 	}
 
 	row := db.c.QueryRow(`SELECT * FROM User WHERE id=?`, id)
-	var profile Profile
+
 	err := row.Scan(&profile.ID, &profile.Name)
 	if err != nil {
 		log.Print("errUser")
@@ -41,7 +44,6 @@ func (db *appdbimpl) GetUserProfile(id int) (Profile, error) {
 
 	profile.NumberPhotos, _ = db.GetNumberPhotoUser(id)
 	profile.Photos, _ = db.GetPhotoUser(id)
-	//log.Printf("GetUserProfile. id: %d, name: %s, follower: %d, following: %d, pho: %d\n", profile.ID, profile.Name, profile.Follower, profile.Following, profile.NumberPhotos)
 
 	return profile, err
 }

@@ -1,7 +1,5 @@
 package database
 
-import "log"
-
 func (db *appdbimpl) GetMyStream(myid int) ([]Photo, error) {
 
 	var stream []Photo
@@ -11,14 +9,12 @@ func (db *appdbimpl) GetMyStream(myid int) ([]Photo, error) {
 								JOIN User u ON u.id = p.user
 								ORDER BY p.date DESC;`, myid)
 	if err != nil {
-		log.Println("ERRORE QUERY: ", err)
 		return nil, err
 	}
 	for rows.Next() {
 		var p Photo
 		err = rows.Scan(&p.ID, &p.User, &p.Image, &p.Date)
 		if err != nil {
-			log.Println("ERR first scan: ", err)
 			return stream, err
 		}
 		res, _ := db.GetLikesPhoto(p.ID)

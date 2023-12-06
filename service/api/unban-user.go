@@ -2,7 +2,6 @@ package api
 
 import (
 	"net/http"
-	"strconv"
 
 	"github.com/julienschmidt/httprouter"
 )
@@ -11,7 +10,16 @@ func (rt *_router) unbanUser(w http.ResponseWriter, r *http.Request, ps httprout
 	var username string
 	username = ps.ByName("pid")
 
-	var myId_string = r.URL.Query().Get("myid")
-	myId, _ := strconv.Atoi(myId_string)
-	_ = rt.db.UnbanUser(myId, username)
+	myId, err := rt.getMyId(r)
+	if err != nil {
+		rt.responsError(http.StatusBadRequest, err.Error(), w)
+		return
+	}
+	err = rt.db.UnbanUser(myId, username)
+	if err != nil {
+		rt.responsError(http.StatusBadRequest, err.Error(), w)
+		return
+	}
+	str := "User unbanned"
+	rt.responseJson(str, w)
 }

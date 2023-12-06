@@ -38,7 +38,7 @@ type AppDatabase interface {
 	BanUser(myId int, username string) error
 	BannedUser(myId int) ([]User, error)
 	UnbanUser(myId int, user string) error
-	GetUserProfile(id int) (Profile, error)
+	GetUserProfile(id int, myId int) (Profile, error)
 	GetMyStream(myId int) ([]Photo, error)
 	LikePhoto(phId int, uid int) error
 	UnlikePhoto(id int, uid int) error
@@ -71,6 +71,9 @@ var ErrProfileDoesNotExist = errors.New("Profile doesn't exist")
 var ErrUsernameUsed = errors.New("Username already used")
 var ErrFollowUser = errors.New("This user banned you")
 var ErrWithForeignKey = errors.New("Error turning on foreign key")
+var ErrUserBanned = errors.New("You banned this user")
+var ErrUserBannedYou = errors.New("This user banned you")
+var ErrPhoto = errors.New("This photo doesn't exsist")
 
 type appdbimpl struct {
 	c *sql.DB

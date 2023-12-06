@@ -2,23 +2,34 @@ package api
 
 import (
 	"net/http"
-	"strconv"
 
 	"github.com/julienschmidt/httprouter"
 )
 
 func (rt *_router) uncommentPhoto(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	var cid_string string
-	cid_string = ps.ByName("cid")
-	cid, _ := strconv.Atoi(cid_string)
+	cid, err := rt.getPhid(ps)
+	if err != nil {
+		rt.responsError(http.StatusBadRequest, err.Error(), w)
+		return
+	}
 
-	var phid_string string
-	phid_string = ps.ByName("phid")
-	phid, _ := strconv.Atoi(phid_string)
+	phid, err := rt.getPhid(ps)
+	if err != nil {
+		rt.responsError(http.StatusBadRequest, err.Error(), w)
+		return
+	}
 
-	var myId_string string
-	myId_string = r.URL.Query().Get("myid")
-	myId, _ := strconv.Atoi(myId_string)
+	myId, err := rt.getMyId(r)
+	if err != nil {
+		rt.responsError(http.StatusBadRequest, err.Error(), w)
+		return
+	}
 
-	_ = rt.db.UncommentPhoto(cid, phid, myId)
+	err = rt.db.UncommentPhoto(cid, phid, myId)
+	if err != nil {
+		rt.responsError(http.StatusBadRequest, err.Error(), w)
+		return
+	}
+	str := "Comment deleted"
+	rt.responseJson(str, w)
 }
