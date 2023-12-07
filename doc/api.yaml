@@ -6,6 +6,25 @@ info:
   description: Keep in touch with your friends by sharing photos of special moments, thanks to WASAPhoto! You can upload your photos directly from your PC, and they will be visible to everyone following you.
     
   version: 1.0.0
+
+tags:
+  - name: "login"
+    description: endpoint that handle the login
+  - name: "user" 
+    description: endpoint that handle users
+  - name: "photo" 
+    description: endpoint that handle photo 
+  - name: "followers" 
+    description: endpoint that handle followers
+  - name: "ban" 
+    description: endpoint that handle ban
+  - name: "stream" 
+    description: endpoint that handle stream
+  - name: "likes" 
+    description: endpoint that handle likes
+  - name: "comment" 
+    description: endpoint that handle comments
+
 paths:
   /session:
     post:
@@ -42,14 +61,14 @@ paths:
                     type: integer
                     example: 1
   
-  /me: 
+  /users/{uid}: 
     get:
-      tags: ["MyProfile"]
+      tags: ["user"]
       summary: user profile
-      description: get session user's profile
-      operationId: getMyProfile
+      description: get user profile by user id
+      operationId: getUserProfile
       parameters:
-        - $ref: '#/components/parameters/myid'
+        - $ref: '#/components/parameters/uid'
       responses:
         '200':
           description: successful operation
@@ -57,32 +76,32 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Profile'
-      
-  /me/setMyUsername:
+        '400': {$ref: '#/components/responses/BadRequest'}
     post:
-      tags: ["MyProfile"]
+      tags: ["user"]
       summary: set username
-      description: change the user session's name
+      description: change the username
       operationId: setMyUsername
       parameters:
-        - $ref: '#/components/parameters/myid'
+        - $ref: '#/components/parameters/uid'
       requestBody:
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/User'
       responses:
-        '201': {$ref: '#/components/responses/SuccessfulOperation'}
+        '200': {$ref: '#/components/responses/SuccessfulOperation'}
         '400': {$ref: '#/components/responses/BadRequest'}
                 
           
-  /me/photo:
+  /users/{uid}/photos:
     put:
-      tags: ["MyProfile"]
-      summary: upload Photo on user profile
+      tags: ["photo"]
+      summary: upload Photo
+      description: upload photo in user profile. Who follows you can see your photo
       operationId: uploadPhoto
       parameters:
-        - $ref: '#/components/parameters/myid'
+        - $ref: '#/components/parameters/uid'
       requestBody:
         content:
           application/json:
@@ -97,38 +116,40 @@ paths:
                 $ref: '#/components/schemas/Photo'
         '400': {$ref: '#/components/responses/BadRequest'}
   
-  /profile/{pid}/followUser:
+  /users/{uid}/followers/{fid}:
     post:
-      tags: ["User", "follow"]
+      tags: ["followers"]
       summary: follow user
       description: follow user allow you see their photos
       operationId: followUser
       parameters:
-        - $ref: '#/components/parameters/myid'
-        - $ref: '#/components/parameters/pid'
+        - $ref: '#/components/parameters/uid'
+        - $ref: '#/components/parameters/fid'
       responses:
         '201': {$ref: '#/components/responses/SuccessfulOperation'}
         '400': {$ref: '#/components/responses/BadRequest'}
-  
-  /profile/{pid}/unfollowUser:
-    post:
-      tags: ["User", "unfollow"]
+
+    delete:
+      tags: ["followers"]
       summary: unfollow a user
       description: no longer see user's photo updates
       operationId: unfollowUser
       parameters:
-        - $ref: '#/components/parameters/pid'
+        - $ref: '#/components/parameters/uid'
+        - $ref: '#/components/parameters/fid'
       responses:
         '201': {$ref: '#/components/responses/SuccessfulOperation'}
         '400': {$ref: '#/components/responses/BadRequest'}
     
-  /me/banned:
-    get:
-      tags: ["MyProfile", "ban"]
-      summary: get banned users
-      description: get a list of banned users by the user's session
+  /users/{uid}/bannedUsers/{bid}:
+    post:
+      tags: ["ban"]
+      summary: ban a user
+      description: banned user's profile will not visible
+      operationId: banUser
       parameters:
-        - $ref: '#/components/parameters/myid'
+        - $ref: '#/components/parameters/uid'
+        - $ref: '#/components/parameters/bid'
       responses:
         '200':  
           description: successful operation
@@ -137,57 +158,26 @@ paths:
               schema:
                 $ref: '#/components/schemas/BannedUsers'
         '400': {$ref: '#/components/responses/BadRequest'}
-
-  /me/banned/{pid}:
-    post: 
-      tags: ["MyProfile", "ban"]
-      summary: ban a user
-      description: banned user's profile will not visible
-      operationId: banUser
-      parameters:
-        - $ref: '#/components/parameters/myid'
-        - $ref: '#/components/parameters/pid'
-      responses:
-        '201': {$ref: '#/components/responses/SuccessfulOperation'}
-        '400': {$ref: '#/components/responses/BadRequest'}
-
     delete:
-      tags: ["MyProfile", "ban"]
-      summary: unban user
-      description: user's profile will be visible again
-      parameters:
-        - $ref: '#/components/parameters/myid'
-        - $ref: '#/components/parameters/pid'
-      responses:
-        '204':
-          description: successful operation   
-        '404': {$ref: '#/components/responses/NotFound'}
+          tags: ["ban"]
+          summary: unban user
+          description: user's profile will be visible again
+          parameters:
+            - $ref: '#/components/parameters/uid'
+            - $ref: '#/components/parameters/bid'
+          responses:
+            '204':
+              description: successful operation   
+            '404': {$ref: '#/components/responses/NotFound'}   
     
-  /profile/{pid}:
+  /users/{uid}/home:
     get:
-      tags: ["User", "Profile"]
-      summary: get a user profile
-      description: get a user profile with the given id
-      operationId: getUserProfile
-      parameters: 
-        - $ref: '#/components/parameters/pid'
-      responses:
-        '200':
-          description: get profile action successful
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Profile'
-        '400': {$ref: '#/components/responses/BadRequest'}
-                
-  /home:
-    get:
-      tags: ["Stream"]
+      tags: ["stream"]
       summary: get stream
       description: the stream is composed by following user photos
       operationId: getMyStream
       parameters:
-        - $ref: '#/components/parameters/myid'
+        - $ref: '#/components/parameters/uid'
       responses:
         '200':
           description: get profile action successful
@@ -197,33 +187,40 @@ paths:
                 $ref: '#/components/schemas/Stream'
         '400': { $ref: '#/components/responses/BadRequest'}
                 
-  /photo/{phid}/like/:
+  /users/{uid}/photos/{phid}/like/:
     post:
-      tags: ["Photo", "like"]
+      tags: ["likes"]
       summary: like photo
+      description: an user can put only one like per photo
       operationId: likePhoto
       parameters:
+        - $ref: '#/components/parameters/uid'
         - $ref: '#/components/parameters/phid'
       responses: 
         '201': { $ref: '#/components/responses/SuccessfulOperation'}
+        '400': {$ref: '#/components/responses/BadRequest'}
+
     delete:
-      tags: ["Photo", "unlike"]
+      tags: ["likes"]
       summary: unlike photo
-      description: remove like from the given photo id
+      description: remove like from the given photo id by user uid
       operationId: unlikePhoto
       parameters:
+        - $ref: '#/components/parameters/uid'
         - $ref: '#/components/parameters/phid'
       responses:
         '204':
           description: sucessful operation
         '404': { $ref: '#/components/responses/NotFound'}
     
-  /photo/{phid}/comment/:
+  /users/{uid}/photos/{phid}/comment/:
     post:
-      tags: ["Photo", "Comment"]
+      tags: ["comment"]
       summary: comment a photo
+      description: Insert a comment by user below the given id photo
       operationId: commentPhoto
       parameters: 
+        - $ref: '#/components/parameters/uid'
         - $ref: '#/components/parameters/phid'
       requestBody:
         required: true
@@ -231,6 +228,8 @@ paths:
           application/json:
             schema:
               type: string
+              minLength: 1
+              maxLength: 500 
               example: "Nice photo!"
       responses: 
         '201':
@@ -241,13 +240,14 @@ paths:
                 $ref: '#/components/schemas/Comment'
         '400': {$ref: '#/components/responses/BadRequest'}
   
-  /photo/{phid}/comment/{cid}:        
+  /users/{uid}/photo/{phid}/comment/{cid}:        
     delete:
-      tags: ["Photo", "Comment"]
+      tags: ["comment"]
       operationId: uncommentPhoto
       summary: Remove a comment
       description: Remove a comment from the photo
       parameters: 
+        - $ref: '#/components/parameters/uid'
         - $ref: '#/components/parameters/phid'
         - name: cid
           in: path
@@ -259,13 +259,13 @@ paths:
           description: Comment deleted successfully
         "404": { $ref: '#/components/responses/NotFound'}
           
-  /me/photo/{phid}:
+  /users/{uid}/photo/{phid}:
     delete:
-      tags: ["MyProfile", "Photo"]
+      tags: ["photo"]
       summary: delete photo
       description: remove a photo from user profile
       parameters:
-        - $ref: '#/components/parameters/myid'
+        - $ref: '#/components/parameters/uid'
         - $ref: '#/components/parameters/phid'
       responses:
         "204": 
@@ -303,22 +303,30 @@ components:
             pattern: '^.*?$' 
 
   parameters:
-    myid:
-      description: user session id
-      name: myid
-      in: query
-      required: true
-      schema: 
-        $ref: '#/components/schemas/myid'
-    
-    pid:
-      description: profile id
-      name: pid
+    uid:
+      description: user id
+      name: uid
       in: path
       required: true
       schema:
-        $ref: '#/components/schemas/pid'
+        $ref: '#/components/schemas/uid'
     
+    fid:
+      description: follower user id
+      name: fid
+      in: path
+      required: true
+      schema: 
+        $ref: '#/components/schemas/fid'
+
+    bid:
+      description: banned user id
+      name: bid
+      in: path
+      required: true
+      schema: 
+        $ref: '#/components/schemas/bid'
+
     phid:
       description: photo id
       name: phid
@@ -334,7 +342,7 @@ components:
       type: object
       properties:
         pid:
-          $ref: '#/components/schemas/pid'
+          $ref: '#/components/schemas/uid'
         name: 
           $ref: '#/components/schemas/User'
         following:
@@ -352,20 +360,26 @@ components:
               type: integer
               example: 50
             photo:
-              $ref: '#/components/schemas/Stream'
-              
-    myid: 
-      title: myid
-      description: session id
-      type: integer
-      example: 1
+              $ref: '#/components/schemas/Stream'        
     
-    pid: 
-      title: pid
+    uid: 
+      title: uid
       description: profile id
       type: integer
       example: 1
       
+    fid: 
+      title: fid
+      description: session id
+      type: integer
+      example: 1
+
+    bid: 
+      title: bid
+      description: session id
+      type: integer
+      example: 1
+
     phid: 
       title: phid
       description: photo id
