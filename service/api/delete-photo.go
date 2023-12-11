@@ -13,7 +13,13 @@ func (rt *_router) deletePhoto(w http.ResponseWriter, r *http.Request, ps httpro
 		return
 	}
 
-	err = rt.db.DeletePhoto(phid)
+	myid, err := rt.get_myid_path(ps)
+	if err != nil {
+		rt.responsError(http.StatusBadRequest, err.Error(), w)
+		return
+	}
+
+	err = rt.db.DeletePhoto(phid, myid)
 	if err != nil {
 		rt.responsError(http.StatusBadRequest, err.Error(), w)
 		return

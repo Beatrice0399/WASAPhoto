@@ -44,7 +44,8 @@ type AppDatabase interface {
 	UnlikePhoto(id int, uid int) error
 	CommentPhoto(uid int, phid int, text string) (int, error)
 	UncommentPhoto(cid int, phid int, uid int) error
-	DeletePhoto(phid int) error
+	DeletePhoto(phid int, myid int) error
+	GetMyProfile(myid int) (Profile, error)
 
 	IsBanned(myId int, idProfile int) (bool, error)
 	GetPhotoUser(id int) ([]Photo, error)

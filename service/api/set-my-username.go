@@ -7,14 +7,14 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
-func (rt *_router) setMyUsername(w http.ResponseWriter, r *http.Request, pd httprouter.Params) {
+func (rt *_router) setMyUsername(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	var username string
 	err := json.NewDecoder(r.Body).Decode(&username)
 	if err != nil {
 		rt.responsError(http.StatusBadRequest, err.Error(), w)
 		return
 	}
-	myId, err := rt.getMyId(r)
+	myId, err := rt.get_myid_path(ps)
 	if err != nil {
 		rt.responsError(http.StatusBadRequest, err.Error(), w)
 		return

@@ -1,7 +1,7 @@
 package database
 
-func (db *appdbimpl) DeletePhoto(pid int) error {
-	res, err := db.c.Exec(`DELETE FROM Photo WHERE id=?`, pid)
+func (db *appdbimpl) DeletePhoto(pid int, myid int) error {
+	res, err := db.c.Exec(`DELETE FROM Photo WHERE id=? AND user=?`, pid, myid)
 	if err != nil {
 		return err
 	}

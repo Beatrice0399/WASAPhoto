@@ -7,10 +7,9 @@ import (
 )
 
 func (rt *_router) unbanUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	var username string
-	username = ps.ByName("pid")
+	username := rt.getUsername(ps)
 
-	myId, err := rt.getMyId(r)
+	myId, err := rt.get_myid_path(ps)
 	if err != nil {
 		rt.responsError(http.StatusBadRequest, err.Error(), w)
 		return

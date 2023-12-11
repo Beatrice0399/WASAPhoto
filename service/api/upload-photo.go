@@ -14,7 +14,7 @@ func (rt *_router) uploadPhoto(w http.ResponseWriter, r *http.Request, ps httpro
 		rt.responsError(http.StatusBadRequest, err.Error(), w)
 		return
 	}
-	myId, err := rt.getMyId(r)
+	myId, err := rt.get_myid_path(ps)
 	if err != nil {
 		rt.responsError(http.StatusBadRequest, err.Error(), w)
 		return

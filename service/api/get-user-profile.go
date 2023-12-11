@@ -6,16 +6,16 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
-func (rt *_router) getProfile(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	var username string
-	username = ps.ByName("pid")
+func (rt *_router) getUserProfile(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	username := rt.getUsername(ps)
+
 	uid, err := rt.db.GetId(username)
 	if err != nil {
 		rt.responsError(http.StatusBadRequest, err.Error(), w)
 		return
 	}
 
-	myId, err := rt.getMyId(r)
+	myId, err := rt.get_myid_path(ps)
 	if err != nil {
 		rt.responsError(http.StatusBadRequest, err.Error(), w)
 		return
