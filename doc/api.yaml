@@ -337,6 +337,8 @@ components:
             properties:
               message:
                 type: string
+                minLength: 1
+                maxLength: 100
                 description: operation correctly executed 
     badRequest:
       description: Response associated to the 400 http status
