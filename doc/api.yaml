@@ -201,6 +201,7 @@ paths:
     delete:
           tags: ["ban"]
           summary: unban user
+          operationId: unbanUser
           description: user's profile will be visible again
           responses:
             '200': { $ref: '#/components/responses/successMessage'}
@@ -315,6 +316,7 @@ paths:
     delete:
       tags: ["photo"]
       summary: delete photo
+      operationId: deletePhoto
       description: remove a photo from user profile
       parameters:
         - $ref: '#/components/parameters/myid'
