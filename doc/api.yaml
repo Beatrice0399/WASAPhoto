@@ -275,6 +275,7 @@ paths:
           application/json:
             schema:
               type: string
+              pattern: '^.*?$' 
               minLength: 1
               maxLength: 500 
               example: "Nice photo!"
@@ -339,6 +340,7 @@ components:
             properties:
               message:
                 type: string
+                pattern: '^.*?$' 
                 minLength: 1
                 maxLength: 100
                 description: operation correctly executed 
