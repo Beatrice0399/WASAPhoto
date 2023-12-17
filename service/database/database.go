@@ -30,7 +30,6 @@ func OpenDBConnection() (*sql.DB, error) {
 
 type AppDatabase interface {
 	DoLogin(username string) (int, error)
-	MyProfile() (Profile, error)
 	SetMyUsername(id int, name string) (string, error)
 	UploadPhoto(id int, img []byte) (Photo, error)
 	FollowUser(myId int, username string) error

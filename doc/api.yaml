@@ -80,6 +80,8 @@ paths:
         '403': { $ref: '#/components/responses/forbidden'}
         '404': { $ref: "#/components/responses/notFound"}
         '500': { $ref: "#/components/responses/internalServerError"}
+      security:
+        - bearerAuth: [] 
     
     post:
       tags: ["user"]
@@ -103,6 +105,8 @@ paths:
         '403': { $ref: '#/components/responses/forbidden'}
         '404': { $ref: "#/components/responses/notFound"}
         '500': { $ref: "#/components/responses/internalServerError"}
+      security:
+        - bearerAuth: [] 
 
   /users/{myid}/profile/{pid}: 
     get:
@@ -125,6 +129,8 @@ paths:
         '403': { $ref: '#/components/responses/forbidden'}
         '404': { $ref: "#/components/responses/notFound"}
         '500': { $ref: "#/components/responses/internalServerError"}
+      security:
+        - bearerAuth: [] 
           
   /users/{myid}/photos:
     put:
@@ -151,6 +157,8 @@ paths:
         '403': { $ref: '#/components/responses/forbidden'}
         '404': { $ref: "#/components/responses/notFound"}
         '500': { $ref: "#/components/responses/internalServerError"}
+      security:
+        - bearerAuth: [] 
         
   /users/{myid}/followers/{fid}:
     parameters:
@@ -168,6 +176,8 @@ paths:
         '403': { $ref: '#/components/responses/forbidden'}
         '404': { $ref: "#/components/responses/notFound"}
         '500': { $ref: "#/components/responses/internalServerError"}
+      security:
+        - bearerAuth: [] 
 
     delete:
       tags: ["followers"]
@@ -181,7 +191,9 @@ paths:
         '403': { $ref: '#/components/responses/forbidden'}
         '404': { $ref: "#/components/responses/notFound"}
         '500': { $ref: "#/components/responses/internalServerError"}
-    
+      security:
+        - bearerAuth: [] 
+
   /users/{myid}/bannedUsers/{bid}:
     parameters:
       - $ref: '#/components/parameters/myid'
@@ -198,6 +210,9 @@ paths:
         '403': { $ref: '#/components/responses/forbidden'}
         '404': { $ref: "#/components/responses/notFound"}
         '500': { $ref: "#/components/responses/internalServerError"}
+      security:
+        - bearerAuth: [] 
+
     delete:
           tags: ["ban"]
           summary: unban user
@@ -209,6 +224,8 @@ paths:
             '403': { $ref: '#/components/responses/forbidden'}
             '404': { $ref: "#/components/responses/notFound"}
             '500': { $ref: "#/components/responses/internalServerError"}
+          security:
+            - bearerAuth: [] 
     
   /users/{myid}/home:
     get:
@@ -230,6 +247,8 @@ paths:
         '403': { $ref: '#/components/responses/forbidden'}
         '404': { $ref: "#/components/responses/notFound"}
         '500': { $ref: "#/components/responses/internalServerError"}
+      security:
+        - bearerAuth: [] 
         
   /users/{myid}/photos/{phid}/like/:
     parameters:
@@ -247,6 +266,8 @@ paths:
         '403': { $ref: '#/components/responses/forbidden'}
         '404': { $ref: "#/components/responses/notFound"}
         '500': { $ref: "#/components/responses/internalServerError"}
+      security:
+        - bearerAuth: [] 
 
     delete:
       tags: ["likes"]
@@ -259,6 +280,8 @@ paths:
         '403': { $ref: '#/components/responses/forbidden'}
         '404': { $ref: "#/components/responses/notFound"}
         '500': { $ref: "#/components/responses/internalServerError"}
+      security:
+        - bearerAuth: [] 
     
   /users/{myid}/photos/{phid}/comment/:
     post:
@@ -291,6 +314,8 @@ paths:
         '403': { $ref: '#/components/responses/forbidden'}
         '404': { $ref: "#/components/responses/notFound"}
         '500': { $ref: "#/components/responses/internalServerError"}
+      security:
+        - bearerAuth: [] 
   
   /users/{myid}/photo/{phid}/comment/{cid}:        
     delete:
@@ -301,17 +326,15 @@ paths:
       parameters: 
         - $ref: '#/components/parameters/myid'
         - $ref: '#/components/parameters/phid'
-        - name: cid
-          in: path
-          required: true
-          schema:
-            $ref: '#/components/schemas/cid'
+        - $ref: '#/components/schemas/cid'
       responses:
         '200': { $ref: '#/components/responses/successMessage'}
         '401': { $ref: '#/components/responses/unauthorized'}
         '403': { $ref: '#/components/responses/forbidden'}
         '404': { $ref: "#/components/responses/notFound"}
         '500': { $ref: "#/components/responses/internalServerError"}
+      security:
+        - bearerAuth: [] 
           
   /users/{myid}/photo/{phid}:
     delete:
@@ -328,6 +351,8 @@ paths:
         '403': { $ref: '#/components/responses/forbidden'}
         '404': { $ref: "#/components/responses/notFound"}
         '500': { $ref: "#/components/responses/internalServerError"}
+      security:
+        - bearerAuth: [] 
 
 components:
   responses:
@@ -366,7 +391,7 @@ components:
       in: path
       required: true
       schema:
-        $ref: '#/components/schemas/myid'
+        $ref: '#/components/schemas/User/properties/uid'
 
     pid:
       description: profile id 
@@ -374,7 +399,7 @@ components:
       in: path
       required: true
       schema:
-        $ref: '#/components/schemas/pid'
+        $ref: '#/components/schemas/User/properties/uid'
     
     fid:
       description: follower user id
@@ -382,7 +407,7 @@ components:
       in: path
       required: true
       schema: 
-        $ref: '#/components/schemas/fid'
+        $ref: '#/components/schemas/User/properties/uid'
 
     bid:
       description: banned user id
@@ -390,7 +415,15 @@ components:
       in: path
       required: true
       schema: 
-        $ref: '#/components/schemas/bid'
+        $ref: '#/components/schemas/User/properties/uid'
+
+    cid:
+      description: profile id 
+      name: pid
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/Comment/properties/cid'
 
     phid:
       description: photo id
@@ -406,10 +439,8 @@ components:
       description: the object represents a profile 
       type: object
       properties:
-        pid:
-          $ref: '#/components/schemas/pid'
         name: 
-          $ref: '#/components/schemas/User'
+          $ref: '#/components/schemas/User/properties/username'
         following:
           description: number of following
           type: integer
@@ -426,29 +457,6 @@ components:
               example: 50
             photo:
               $ref: '#/components/schemas/Stream'        
-    myid:
-      title: myid
-      description: user session's id
-      type: integer
-      example: 1
-
-    pid: 
-      title: uid
-      description: profile id
-      type: integer
-      example: 1
-      
-    fid: 
-      title: fid
-      description: session id
-      type: integer
-      example: 1
-
-    bid: 
-      title: bid
-      description: session id
-      type: integer
-      example: 1
 
     phid: 
       title: phid
@@ -470,7 +478,7 @@ components:
         id: 
           $ref: '#/components/schemas/phid'
         user: 
-          $ref: '#/components/schemas/User'
+          $ref: '#/components/schemas/User/properties/uid'
         image:
           $ref: '#/components/schemas/Image'
         likes: 
@@ -478,8 +486,8 @@ components:
           type: integer
         comments:
           type: array
-          minLength: 0
-          maxLength: 1000
+          minItems: 0
+          maxItems: 1000
           items:
             $ref: '#/components/schemas/Comment'
     
@@ -495,8 +503,8 @@ components:
       title: Stream
       description: photos of the following users
       type: array
-      minLength: 0
-      maxLength: 500
+      minItems: 0
+      maxItems: 500
       items:
         $ref: '#/components/schemas/Photo'
     
@@ -505,6 +513,10 @@ components:
       description: the object represents an user
       type: object
       properties: 
+        uid:
+          description: represents an user id
+          type: integer
+          example: 13
         username:
           description: represents the name of the user
           type: string
@@ -518,9 +530,11 @@ components:
       type: object
       properties:
         cid:
-          $ref: '#/components/schemas/cid'
+          description: comment id
+          type: integer
+          example: 74
         user:
-          $ref: '#/components/schemas/User'
+          $ref: '#/components/schemas/User/properties/uid'
         text:
           type: string
           pattern: '^.*?$' 
@@ -529,5 +543,10 @@ components:
           example: "Great photo!"
         date: 
           type: string
+          format: date-time
           example: 2023-11-08T12:00:00
-    
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
