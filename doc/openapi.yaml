@@ -42,11 +42,7 @@ paths:
               type: object 
               properties:
                 name:
-                  type: string 
-                  example: Maria 
-                  pattern: '^.*?$' 
-                  minLength: 3 
-                  maxLength: 16
+                  $ref: '#/components/schemas/User/properties/username'
         required: true 
       responses:
         '201':
@@ -54,11 +50,8 @@ paths:
           content:
             application/json: 
               schema:
-                type: object 
-                properties:
-                  identifier:
-                    type: integer
-                    example: 1
+                $ref: '#/components/schemas/User/properties/uid'
+
   /users/{myid}:
     parameters:
       - $ref: '#/components/parameters/myid'
@@ -79,8 +72,6 @@ paths:
         '403': { $ref: '#/components/responses/forbidden'}
         '404': { $ref: "#/components/responses/notFound"}
         '500': { $ref: "#/components/responses/internalServerError"}
-      security:
-        - bearerAuth: [] 
     
     post:
       tags: ["user"]
@@ -98,14 +89,12 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: '#/components/schemas/User/properties/username'
         '400': {$ref: '#/components/responses/badRequest'}
         '401': { $ref: '#/components/responses/unauthorized'}
         '403': { $ref: '#/components/responses/forbidden'}
         '404': { $ref: "#/components/responses/notFound"}
         '500': { $ref: "#/components/responses/internalServerError"}
-      security:
-        - bearerAuth: [] 
 
   /users/{myid}/profile/{pid}: 
     get:
@@ -128,8 +117,6 @@ paths:
         '403': { $ref: '#/components/responses/forbidden'}
         '404': { $ref: "#/components/responses/notFound"}
         '500': { $ref: "#/components/responses/internalServerError"}
-      security:
-        - bearerAuth: [] 
           
   /users/{myid}/photos:
     put:
@@ -156,8 +143,6 @@ paths:
         '403': { $ref: '#/components/responses/forbidden'}
         '404': { $ref: "#/components/responses/notFound"}
         '500': { $ref: "#/components/responses/internalServerError"}
-      security:
-        - bearerAuth: [] 
         
   /users/{myid}/followers/{fid}:
     parameters:
@@ -175,8 +160,6 @@ paths:
         '403': { $ref: '#/components/responses/forbidden'}
         '404': { $ref: "#/components/responses/notFound"}
         '500': { $ref: "#/components/responses/internalServerError"}
-      security:
-        - bearerAuth: [] 
 
     delete:
       tags: ["followers"]
@@ -190,9 +173,7 @@ paths:
         '403': { $ref: '#/components/responses/forbidden'}
         '404': { $ref: "#/components/responses/notFound"}
         '500': { $ref: "#/components/responses/internalServerError"}
-      security:
-        - bearerAuth: [] 
-
+    
   /users/{myid}/bannedUsers/{bid}:
     parameters:
       - $ref: '#/components/parameters/myid'
@@ -209,9 +190,6 @@ paths:
         '403': { $ref: '#/components/responses/forbidden'}
         '404': { $ref: "#/components/responses/notFound"}
         '500': { $ref: "#/components/responses/internalServerError"}
-      security:
-        - bearerAuth: [] 
-
     delete:
           tags: ["ban"]
           summary: unban user
@@ -223,8 +201,6 @@ paths:
             '403': { $ref: '#/components/responses/forbidden'}
             '404': { $ref: "#/components/responses/notFound"}
             '500': { $ref: "#/components/responses/internalServerError"}
-          security:
-            - bearerAuth: [] 
     
   /users/{myid}/home:
     get:
@@ -246,8 +222,6 @@ paths:
         '403': { $ref: '#/components/responses/forbidden'}
         '404': { $ref: "#/components/responses/notFound"}
         '500': { $ref: "#/components/responses/internalServerError"}
-      security:
-        - bearerAuth: [] 
         
   /users/{myid}/photos/{phid}/like/:
     parameters:
@@ -265,8 +239,6 @@ paths:
         '403': { $ref: '#/components/responses/forbidden'}
         '404': { $ref: "#/components/responses/notFound"}
         '500': { $ref: "#/components/responses/internalServerError"}
-      security:
-        - bearerAuth: [] 
 
     delete:
       tags: ["likes"]
@@ -279,8 +251,6 @@ paths:
         '403': { $ref: '#/components/responses/forbidden'}
         '404': { $ref: "#/components/responses/notFound"}
         '500': { $ref: "#/components/responses/internalServerError"}
-      security:
-        - bearerAuth: [] 
     
   /users/{myid}/photos/{phid}/comment/:
     post:
@@ -307,14 +277,12 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Comment'
+                $ref: '#/components/schemas/Comment/properties/cid'
         '400': {$ref: '#/components/responses/badRequest'}
         '401': { $ref: '#/components/responses/unauthorized'}
         '403': { $ref: '#/components/responses/forbidden'}
         '404': { $ref: "#/components/responses/notFound"}
         '500': { $ref: "#/components/responses/internalServerError"}
-      security:
-        - bearerAuth: [] 
   
   /users/{myid}/photo/{phid}/comment/{cid}:        
     delete:
@@ -325,15 +293,25 @@ paths:
       parameters: 
         - $ref: '#/components/parameters/myid'
         - $ref: '#/components/parameters/phid'
+<<<<<<< Updated upstream:doc/openapi.yaml
+<<<<<<< HEAD:doc/openapi.yaml
         - $ref: '#/components/parameters/cid'
+=======
+        - name: cid
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/cid'
+>>>>>>> parent of 984b270 (update):doc/api.yaml
+=======
+        - $ref: '#/components/parameters/cid'
+>>>>>>> Stashed changes:doc/api.yaml
       responses:
         '200': { $ref: '#/components/responses/successMessage'}
         '401': { $ref: '#/components/responses/unauthorized'}
         '403': { $ref: '#/components/responses/forbidden'}
         '404': { $ref: "#/components/responses/notFound"}
         '500': { $ref: "#/components/responses/internalServerError"}
-      security:
-        - bearerAuth: [] 
           
   /users/{myid}/photo/{phid}:
     delete:
@@ -350,8 +328,6 @@ paths:
         '403': { $ref: '#/components/responses/forbidden'}
         '404': { $ref: "#/components/responses/notFound"}
         '500': { $ref: "#/components/responses/internalServerError"}
-      security:
-        - bearerAuth: [] 
 
 components:
   responses:
@@ -390,7 +366,7 @@ components:
       in: path
       required: true
       schema:
-        $ref: '#/components/schemas/User/properties/uid'
+        $ref: '#/components/schemas/myid'
 
     pid:
       description: profile id 
@@ -398,7 +374,7 @@ components:
       in: path
       required: true
       schema:
-        $ref: '#/components/schemas/User/properties/uid'
+        $ref: '#/components/schemas/pid'
     
     fid:
       description: follower user id
@@ -406,7 +382,7 @@ components:
       in: path
       required: true
       schema: 
-        $ref: '#/components/schemas/User/properties/uid'
+        $ref: '#/components/schemas/fid'
 
     bid:
       description: banned user id
@@ -414,15 +390,23 @@ components:
       in: path
       required: true
       schema: 
+<<<<<<< HEAD:doc/openapi.yaml
         $ref: '#/components/schemas/User/properties/uid'
 
     cid:
+<<<<<<< Updated upstream:doc/openapi.yaml
       description: profile id 
+=======
+      description: comment id 
+>>>>>>> Stashed changes:doc/api.yaml
       name: cid
       in: path
       required: true
       schema:
         $ref: '#/components/schemas/Comment/properties/cid'
+=======
+        $ref: '#/components/schemas/bid'
+>>>>>>> parent of 984b270 (update):doc/api.yaml
 
     phid:
       description: photo id
@@ -430,7 +414,7 @@ components:
       in: path
       required: true
       schema:
-        $ref: '#/components/schemas/phid'
+        $ref: '#/components/schemas/Photo/properties/id'
 
   schemas:
     Profile: 
@@ -438,8 +422,10 @@ components:
       description: the object represents a profile 
       type: object
       properties:
+        pid:
+          $ref: '#/components/schemas/pid'
         name: 
-          $ref: '#/components/schemas/User/properties/username'
+          $ref: '#/components/schemas/User'
         following:
           description: number of following
           type: integer
@@ -456,6 +442,30 @@ components:
               example: 50
             photo:
               $ref: '#/components/schemas/Stream'        
+<<<<<<< Updated upstream:doc/openapi.yaml
+    myid:
+      title: myid
+      description: user session's id
+      type: integer
+      example: 1
+
+    pid: 
+      title: uid
+      description: profile id
+      type: integer
+      example: 1
+      
+    fid: 
+      title: fid
+      description: session id
+      type: integer
+      example: 1
+
+    bid: 
+      title: bid
+      description: session id
+      type: integer
+      example: 1
 
     phid: 
       title: phid
@@ -468,6 +478,8 @@ components:
       description: comment id
       type: integer
       example: 1
+=======
+>>>>>>> Stashed changes:doc/api.yaml
     
     Photo:
       title: Photo
@@ -475,18 +487,21 @@ components:
       type: object
       properties: 
         id: 
-          $ref: '#/components/schemas/phid'
+          description: photo id
+          type: integer
+          example: 1
         user: 
-          $ref: '#/components/schemas/User/properties/uid'
+          $ref: '#/components/schemas/User'
         image:
           $ref: '#/components/schemas/Image'
         likes: 
           description: "number of users like the photo"
           type: integer
+          example: 214
         comments:
           type: array
-          minItems: 0
-          maxItems: 1000
+          minLength: 0
+          maxLength: 1000
           items:
             $ref: '#/components/schemas/Comment'
     
@@ -502,8 +517,8 @@ components:
       title: Stream
       description: photos of the following users
       type: array
-      minItems: 0
-      maxItems: 500
+      minLength: 0
+      maxLength: 500
       items:
         $ref: '#/components/schemas/Photo'
     
@@ -512,10 +527,6 @@ components:
       description: the object represents an user
       type: object
       properties: 
-        uid:
-          description: represents an user id
-          type: integer
-          example: 13
         username:
           description: represents the name of the user
           type: string
@@ -529,23 +540,18 @@ components:
       type: object
       properties:
         cid:
-          description: comment id
-          type: integer
-          example: 74
+          $ref: '#/components/schemas/cid'
         user:
-          $ref: '#/components/schemas/User/properties/uid'
+          $ref: '#/components/schemas/User'
         text:
+          description: comment string written by the useer
           type: string
           pattern: '^.*?$' 
           minLength: 1
           maxLength: 400
-          example: "Great photo!"
+          example: "Nice photo!"
         date: 
+          description: time in which the operation is carried out
           type: string
-          format: date-time
           example: 2023-11-08T12:00:00
-
-  securitySchemes:
-    bearerAuth:
-      type: http
-      scheme: bearer
+    
