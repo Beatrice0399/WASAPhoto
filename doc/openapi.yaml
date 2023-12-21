@@ -1,4 +1,3 @@
----
 openapi: 3.0.0
 
 info:
@@ -326,7 +325,7 @@ paths:
       parameters: 
         - $ref: '#/components/parameters/myid'
         - $ref: '#/components/parameters/phid'
-        - $ref: '#/components/schemas/cid'
+        - $ref: '#/components/parameters/cid'
       responses:
         '200': { $ref: '#/components/responses/successMessage'}
         '401': { $ref: '#/components/responses/unauthorized'}
@@ -419,7 +418,7 @@ components:
 
     cid:
       description: profile id 
-      name: pid
+      name: cid
       in: path
       required: true
       schema:
