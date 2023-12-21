@@ -1,6 +1,6 @@
 module github.com/Beatrice0399/WASAPhoto
 
-go 1.21.3
+go 1.17
 
 require (
 	github.com/ardanlabs/conf v1.5.0
