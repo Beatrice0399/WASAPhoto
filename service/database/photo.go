@@ -43,7 +43,7 @@ func (db *appdbimpl) DeletePhoto(pid int, myid int) error {
 func (db *appdbimpl) GetPhotoComments(phId int) (*sql.Rows, error) {
 	//var comments []Comment
 	rows, err := db.c.Query(`SELECT c.id, u.username, c.string, c.date FROM Comment c
-								JOIN User u ON c.user=u.id WHERE photo=?`, phId)
+								JOIN User u ON c.user=u.id WHERE photo=? AND visible=1`, phId)
 	if err != nil {
 		return nil, err
 	}

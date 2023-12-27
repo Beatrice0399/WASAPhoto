@@ -6,7 +6,30 @@ func (db *appdbimpl) BanUser(myId int, username string) error {
 		return err
 	}
 
-	_ = db.UnfollowUser(myId, username)
+	err = db.UnfollowUser(myId, username)
+	if err != nil {
+		return err
+	}
+
+	err = db.removeAllComments(myId, idProfile)
+	if err != nil {
+		return err
+	}
+
+	err = db.removeAllComments(idProfile, myId)
+	if err != nil {
+		return err
+	}
+
+	err = db.removeAllLikes(myId, idProfile)
+	if err != nil {
+		return err
+	}
+
+	err = db.removeAllLikes(idProfile, myId)
+	if err != nil {
+		return err
+	}
 
 	name, err := db.GetNameById(myId)
 	if err != nil {

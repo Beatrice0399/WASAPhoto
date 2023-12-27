@@ -99,13 +99,14 @@ func (rt *_router) getTableComment(w http.ResponseWriter, r *http.Request, ps ht
 	var photo int
 	var txt string
 	var date string
+	var boolean int
 	w.Header().Set("Content-type", "application/json")
 	for exist := rows.Next(); exist == true; exist = rows.Next() {
-		err = rows.Scan(&id, &user, &photo, &txt, &date)
+		err = rows.Scan(&id, &user, &photo, &txt, &date, &boolean)
 		if err != nil {
 			rt.baseLogger.Errorln(err)
 		}
-		str := fmt.Sprintf("cid: %d, user: %d, photo: %d, txt: %s, date: %s\n", id, user, photo, date, txt)
+		str := fmt.Sprintf("cid: %d, user: %d, photo: %d, txt: %s, date: %s, bool: %d \n", id, user, photo, date, txt, boolean)
 		w.Write([]byte(str))
 	}
 }
