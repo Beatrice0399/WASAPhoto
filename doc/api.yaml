@@ -243,7 +243,7 @@ paths:
       security:
         - bearerAuth: [] 
         
-  /users/{myid}/photos/{phid}/like/:
+  /users/{myid}/photos/{phid}/likes/:
     parameters:
       - $ref: '#/components/parameters/myid'
       - $ref: '#/components/parameters/phid'
@@ -262,11 +262,16 @@ paths:
       security:
         - bearerAuth: [] 
 
+  /users/{myid}/photos/{phid}/likes/{lid}:
     delete:
       tags: ["likes"]
       summary: unlike photo
       description: remove like from the given photo id by user uid
       operationId: unlikePhoto
+      parameters:
+      - $ref: '#/components/parameters/myid'
+      - $ref: '#/components/parameters/phid'
+
       responses:
         '200': { $ref: '#/components/responses/successMessage'}
         '401': { $ref: '#/components/responses/unauthorized'}
@@ -425,6 +430,14 @@ components:
       required: true
       schema:
         $ref: '#/components/schemas/Photo/properties/id'
+
+    lid:
+      description: like id
+      name: lid
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/' 
 
   schemas:
     Profile: 
