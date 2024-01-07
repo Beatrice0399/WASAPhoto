@@ -48,12 +48,3 @@ func (rt *_router) getCid(ps httprouter.Params) (int, error) {
 	}
 	return cid, nil
 }
-
-func (rt *_router) get_like_id(ps httprouter.Params) (int, error) {
-	lid_string := ps.ByName("lid")
-	lid, err := strconv.Atoi(lid_string)
-	if err != nil {
-		return 0, err
-	}
-	return lid, nil
-}
