@@ -397,7 +397,7 @@ components:
       in: path
       required: true
       schema:
-        $ref: '#/components/schemas/User/properties/username'
+        $ref: '#/components/schemas/User/properties/uid'
     
     fid:
       description: follower user id
@@ -405,7 +405,7 @@ components:
       in: path
       required: true
       schema: 
-        $ref: '#/components/schemas/User/properties/username'
+        $ref: '#/components/schemas/User/properties/uid'
 
     bid:
       description: banned user id
@@ -413,7 +413,7 @@ components:
       in: path
       required: true
       schema: 
-        $ref: '#/components/schemas/User/properties/username'
+        $ref: '#/components/schemas/User/properties/uid'
 
     cid:
       description: comment id 

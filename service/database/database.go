@@ -85,6 +85,7 @@ func New(db *sql.DB) (AppDatabase, error) {
 	}
 
 	//DROP TABLE
+<<<<<<< HEAD
 
 	tableName := "Follow"
 	_, erro := db.Exec("DROP TABLE IF EXISTS " + tableName)
@@ -123,6 +124,46 @@ func New(db *sql.DB) (AppDatabase, error) {
 		return nil, erro
 	}
 
+=======
+	/*
+		tableName := "Follow" // Sostituisci con il nome effettivo della tua tabella
+		_, erro := db.Exec("DROP TABLE IF EXISTS " + tableName)
+		if erro != nil {
+			fmt.Println(erro)
+			return nil, erro
+		}
+		tableName = "Ban" // Sostituisci con il nome effettivo della tua tabella
+		_, erro = db.Exec("DROP TABLE IF EXISTS " + tableName)
+		if erro != nil {
+			fmt.Println(erro)
+			return nil, erro
+		}
+		tableName = "Likes" // Sostituisci con il nome effettivo della tua tabella
+		_, erro = db.Exec("DROP TABLE IF EXISTS " + tableName)
+		if erro != nil {
+			fmt.Println(erro)
+			return nil, erro
+		}
+		tableName = "Comment" // Sostituisci con il nome effettivo della tua tabella
+		_, erro = db.Exec("DROP TABLE IF EXISTS " + tableName)
+		if erro != nil {
+			fmt.Println(erro)
+			return nil, erro
+		}
+		tableName = "Photo" // Sostituisci con il nome effettivo della tua tabella
+		_, erro = db.Exec("DROP TABLE IF EXISTS " + tableName)
+		if erro != nil {
+			fmt.Println(erro)
+			return nil, erro
+		}
+		tableName = "User" // Sostituisci con il nome effettivo della tua tabella
+		_, erro = db.Exec("DROP TABLE IF EXISTS " + tableName)
+		if erro != nil {
+			fmt.Println(erro)
+			return nil, erro
+		}
+	*/
+>>>>>>> parent of 60cd034 (update)
 	_, err := db.Exec("PRAGMA foreign_keys = ON;")
 	if err != nil {
 		fmt.Println(err)
@@ -138,6 +179,18 @@ func New(db *sql.DB) (AppDatabase, error) {
 			return nil, fmt.Errorf("error creating database structure User: %w", err)
 		}
 	}
+	/*
+		var Profile string
+		err = db.QueryRow(`SELECT name FROM sqlite_master WHERE type='table' AND name='Profile';`).Scan(&Profile)
+		if errors.Is(err, sql.ErrNoRows) {
+			sqlStmt := `CREATE TABLE IF NOT EXISTS Profile (id INTEGER NOT NULL PRIMARY KEY, user TEXT NOT NULL, follower INTEGER, following INTEGER
+				nPhoto INTEGER, FOREIGN KEY (id) REFERENCES User(id), FOREIGN KEY (user) REFERENCES User(username));`
+			_, err = db.Exec(sqlStmt)
+			if err != nil {
+				return nil, fmt.Errorf("error creating database structure Profile: %w", err)
+			}
+		}
+	*/
 
 	var Photo string
 	err = db.QueryRow(`SELECT name FROM sqlite_master WHERE type='table' AND name='Photo';`).Scan(&Photo)
