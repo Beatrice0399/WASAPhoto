@@ -42,7 +42,13 @@ func (rt *_router) unlikePhoto(w http.ResponseWriter, r *http.Request, ps httpro
 		return
 	}
 
-	err = rt.db.UnlikePhoto(phid, myId)
+	like_id, err := rt.get_like_id(ps)
+	if err != nil {
+		rt.responsError(http.StatusBadRequest, err.Error(), w)
+		return
+	}
+
+	err = rt.db.UnlikePhoto(phid, myId, like_id)
 	if err != nil {
 		rt.responsError(http.StatusBadRequest, err.Error(), w)
 		return
