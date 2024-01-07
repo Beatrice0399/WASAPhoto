@@ -7,7 +7,7 @@ import (
 func (db *appdbimpl) CommentPhoto(uid int, phid int, text string) (int, error) {
 	istante := time.Now()
 	date := istante.Format("2006-01-02 15:04:05")
-	_, err := db.c.Exec(`INSERT INTO Comment (user, photo, string, date, visible) VALUES (?,?,?,?)`, uid, phid, text, date)
+	_, err := db.c.Exec(`INSERT INTO Comment (user, photo, string, date) VALUES (?,?,?,?)`, uid, phid, text, date)
 	if err != nil {
 		return -1, err
 	}

@@ -85,44 +85,44 @@ func New(db *sql.DB) (AppDatabase, error) {
 	}
 
 	//DROP TABLE
-	/*
-		tableName := "Follow"
-		_, erro := db.Exec("DROP TABLE IF EXISTS " + tableName)
-		if erro != nil {
-			fmt.Println(erro)
-			return nil, erro
-		}
-		tableName = "Ban"
-		_, erro = db.Exec("DROP TABLE IF EXISTS " + tableName)
-		if erro != nil {
-			fmt.Println(erro)
-			return nil, erro
-		}
-		tableName = "Likes"
-		_, erro = db.Exec("DROP TABLE IF EXISTS " + tableName)
-		if erro != nil {
-			fmt.Println(erro)
-			return nil, erro
-		}
-		tableName = "Comment"
-		_, erro = db.Exec("DROP TABLE IF EXISTS " + tableName)
-		if erro != nil {
-			fmt.Println(erro)
-			return nil, erro
-		}
-		tableName = "Photo"
-		_, erro = db.Exec("DROP TABLE IF EXISTS " + tableName)
-		if erro != nil {
-			fmt.Println(erro)
-			return nil, erro
-		}
-		tableName = "User"
-		_, erro = db.Exec("DROP TABLE IF EXISTS " + tableName)
-		if erro != nil {
-			fmt.Println(erro)
-			return nil, erro
-		}
-	*/
+
+	tableName := "Follow"
+	_, erro := db.Exec("DROP TABLE IF EXISTS " + tableName)
+	if erro != nil {
+		fmt.Println(erro)
+		return nil, erro
+	}
+	tableName = "Ban"
+	_, erro = db.Exec("DROP TABLE IF EXISTS " + tableName)
+	if erro != nil {
+		fmt.Println(erro)
+		return nil, erro
+	}
+	tableName = "Likes"
+	_, erro = db.Exec("DROP TABLE IF EXISTS " + tableName)
+	if erro != nil {
+		fmt.Println(erro)
+		return nil, erro
+	}
+	tableName = "Comment"
+	_, erro = db.Exec("DROP TABLE IF EXISTS " + tableName)
+	if erro != nil {
+		fmt.Println(erro)
+		return nil, erro
+	}
+	tableName = "Photo"
+	_, erro = db.Exec("DROP TABLE IF EXISTS " + tableName)
+	if erro != nil {
+		fmt.Println(erro)
+		return nil, erro
+	}
+	tableName = "User"
+	_, erro = db.Exec("DROP TABLE IF EXISTS " + tableName)
+	if erro != nil {
+		fmt.Println(erro)
+		return nil, erro
+	}
+
 	_, err := db.Exec("PRAGMA foreign_keys = ON;")
 	if err != nil {
 		fmt.Println(err)
