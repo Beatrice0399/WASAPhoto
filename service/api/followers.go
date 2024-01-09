@@ -8,7 +8,7 @@ import (
 )
 
 func (rt *_router) followUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
-	username := rt.getUsername(ps)
+	username := rt.get_fid(ps)
 
 	myId, err := rt.get_myid_path(ps)
 	if err != nil {
@@ -26,7 +26,7 @@ func (rt *_router) followUser(w http.ResponseWriter, r *http.Request, ps httprou
 }
 
 func (rt *_router) unfollowUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
-	username := rt.getUsername(ps)
+	username := rt.get_fid(ps)
 
 	myId, err := rt.get_myid_path(ps)
 	if err != nil {

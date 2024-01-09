@@ -36,10 +36,7 @@ func (db *appdbimpl) GetMyProfile(myid int) (Profile, error) {
 func (db *appdbimpl) SetMyUsername(id int, name string) (string, error) {
 	res, err := db.c.Exec(`UPDATE User SET username=? WHERE id=?`, name, id)
 	if err != nil {
-		if err != nil {
-			log.Println("Errore durante l'aggiornamento:", err)
-			return name, err
-		}
+		log.Println("Errore durante l'aggiornamento:", err)
 		return name, err
 	}
 	affected, err := res.RowsAffected()

@@ -271,6 +271,7 @@ paths:
       parameters:
       - $ref: '#/components/parameters/myid'
       - $ref: '#/components/parameters/phid'
+      - $ref: '#/components/parameters/lid'
 
       responses:
         '200': { $ref: '#/components/responses/successMessage'}
@@ -432,12 +433,12 @@ components:
         $ref: '#/components/schemas/Photo/properties/id'
 
     lid:
-      description: like id
+      description: it's the identifier of the user that liked the photo
       name: lid
       in: path
       required: true
       schema:
-        $ref: '#/components/schemas/' 
+        $ref: '#/components/schemas/User/properties/uid' 
 
   schemas:
     Profile: 
@@ -543,6 +544,7 @@ components:
           description: time in which the operation is carried out
           type: string
           format: date-time
+          readOnly: true
           example: 2023-11-08T12:00:00
 
   securitySchemes:

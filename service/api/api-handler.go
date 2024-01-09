@@ -15,16 +15,16 @@ func (rt *_router) Handler() http.Handler {
 	rt.router.DELETE("/users/:myid/photo/:phid", rt.wrap(rt.deletePhoto))
 	rt.router.GET("/users/:myid/photos/:phid/", rt.wrap(rt.getPhotoComments))
 
-	rt.router.POST("/users/:myid/followers/:pid", rt.wrap(rt.followUser))
-	rt.router.DELETE("/users/:myid/followers/:pid", rt.wrap(rt.unfollowUser))
+	rt.router.POST("/users/:myid/followers/:fid", rt.wrap(rt.followUser))
+	rt.router.DELETE("/users/:myid/followers/:fid", rt.wrap(rt.unfollowUser))
 
-	rt.router.POST("/users/:myid/banned/:pid", rt.wrap(rt.banUser))
-	rt.router.DELETE("/users/:myid/banned/:pid", rt.wrap(rt.unbanUser))
+	rt.router.POST("/users/:myid/banned/:bid", rt.wrap(rt.banUser))
+	rt.router.DELETE("/users/:myid/banned/:bid", rt.wrap(rt.unbanUser))
 
 	rt.router.GET("/users/:myid/stream", rt.wrap(rt.getMyStream))
 
 	rt.router.POST("/users/:myid/photos/:phid/likes/", rt.wrap(rt.likePhoto))
-	rt.router.DELETE("/users/:myid/photos/:phid/likes/{lid}", rt.wrap(rt.unlikePhoto))
+	rt.router.DELETE("/users/:myid/photos/:phid/likes/:lid", rt.wrap(rt.unlikePhoto))
 
 	rt.router.POST("/users/:myid/photos/:phid/comment/", rt.wrap(rt.commentPhoto))
 	rt.router.DELETE("/users/:myid/photos/:phid/comment/:cid", rt.wrap(rt.uncommentPhoto))

@@ -8,7 +8,7 @@ import (
 )
 
 func (rt *_router) banUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
-	username := rt.getUsername(ps)
+	username := rt.get_bid(ps)
 
 	myId, err := rt.get_myid_path(ps)
 	if err != nil {
@@ -25,7 +25,7 @@ func (rt *_router) banUser(w http.ResponseWriter, r *http.Request, ps httprouter
 }
 
 func (rt *_router) unbanUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
-	username := rt.getUsername(ps)
+	username := rt.get_bid(ps)
 
 	myId, err := rt.get_myid_path(ps)
 	if err != nil {

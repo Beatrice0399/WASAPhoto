@@ -13,6 +13,18 @@ func (rt *_router) getUsername(ps httprouter.Params) string {
 	return username
 }
 
+func (rt *_router) get_fid(ps httprouter.Params) string {
+	var username string
+	username = ps.ByName("fid")
+	return username
+}
+
+func (rt *_router) get_bid(ps httprouter.Params) string {
+	var username string
+	username = ps.ByName("bid")
+	return username
+}
+
 func (rt *_router) get_myid_path(ps httprouter.Params) (int, error) {
 	var username string
 	username = ps.ByName("myid")

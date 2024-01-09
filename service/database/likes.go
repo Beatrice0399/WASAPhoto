@@ -13,7 +13,10 @@ func (db *appdbimpl) LikePhoto(phId int, uid int) error {
 }
 
 func (db *appdbimpl) UnlikePhoto(phid int, myid int, lid int) error {
-	res, err := db.c.Exec(`DELETE FROM Likes WHERE phId=? AND uid=? AND id=?`, phid, myid, lid)
+	if myid != lid {
+		return ErrLike
+	}
+	res, err := db.c.Exec(`DELETE FROM Likes WHERE phId=? AND uid=?`, phid, myid)
 	if err != nil {
 		return err
 	}
