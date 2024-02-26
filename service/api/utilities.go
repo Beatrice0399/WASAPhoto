@@ -5,9 +5,15 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/julienschmidt/httprouter"
 )
+
+func validStringUsername(identifier string) bool {
+	var trimmedId = strings.TrimSpace(identifier)
+	return len(identifier) >= 3 && len(identifier) <= 16 && trimmedId != "" && !strings.ContainsAny(trimmedId, "?_")
+}
 
 func (rt *_router) getProfiles(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	rows, err := rt.db.GetAllProfiles()
@@ -83,8 +89,8 @@ func (rt *_router) getBanned(w http.ResponseWriter, r *http.Request, ps httprout
 	myId, _ := strconv.Atoi(myId_string)
 	users, _ := rt.db.GetBanned(myId)
 	for _, user := range users {
-		log.Printf("id: %d, name: %s\n", user.ID, user.Name)
-		str := fmt.Sprintf("id: %d, name: %s\n", user.ID, user.Name)
+		log.Printf("id: %d, name: %s\n", user.Uid, user.Username)
+		str := fmt.Sprintf("id: %d, name: %s\n", user.Uid, user.Username)
 		w.Write([]byte(str))
 	}
 }

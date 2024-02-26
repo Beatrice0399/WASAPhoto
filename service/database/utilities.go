@@ -74,8 +74,8 @@ func (db *appdbimpl) GetBanned(myId int) ([]User, error) {
 	}
 	for rows.Next() {
 		var u User
-		_ = rows.Scan(&u.ID, &u.Name)
-		log.Printf("id: %d, name: %s\n", u.ID, u.Name)
+		_ = rows.Scan(&u.Uid, &u.Username)
+		log.Printf("id: %d, name: %s\n", u.Uid, u.Username)
 		users = append(users, u)
 
 	}

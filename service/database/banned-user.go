@@ -10,7 +10,7 @@ func (db *appdbimpl) BannedUser(myId int) ([]User, error) {
 
 	for rows.Next() {
 		var user User
-		err = rows.Scan(&user.ID, &user.Name)
+		err = rows.Scan(&user.Uid, &user.Username)
 		if err != nil {
 			return nil, err
 		}

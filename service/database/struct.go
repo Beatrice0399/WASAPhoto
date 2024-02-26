@@ -12,8 +12,8 @@ type Photo struct {
 }
 
 type User struct {
-	ID   int    `json:"id"`
-	Name string `json:"name"`
+	Uid      int    `json:"uid"`
+	Username string `json:"username"`
 }
 
 type Comment struct {

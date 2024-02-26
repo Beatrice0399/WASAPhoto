@@ -9,16 +9,22 @@ import (
 )
 
 func (rt *_router) doLogin(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
-	var username string
-	err := json.NewDecoder(r.Body).Decode(&username)
+	w.Header().Set("Content-Type", "application/json")
+
+	var user User
+	err := json.NewDecoder(r.Body).Decode(&user.Username)
 	if err != nil {
-		rt.responsError(http.StatusBadRequest, "Invalid username login", w)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	} else if !validStringUsername(user.Username) {
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	id, err := rt.db.DoLogin(username)
+
+	user.Uid, err = rt.db.DoLogin(user.Username)
 	if err != nil {
 		rt.responsError(http.StatusBadRequest, err.Error(), w)
 		return
 	}
-	rt.responseJson(id, w)
+	rt.responseJson(user.Uid, w)
 }

@@ -40,7 +40,11 @@ paths:
         content:
           application/json: 
             schema:
-              $ref: '#/components/schemas/User/properties/username'
+              description: user's username
+              type: object 
+              properties:
+                name:
+                  $ref: '#/components/schemas/User/properties/username'
         required: true 
       responses:
         '201':
@@ -284,11 +288,12 @@ paths:
         - $ref: '#/components/parameters/myid'
         - $ref: '#/components/parameters/phid'
       requestBody:
+        description: contains id of who commented and the date
         required: true
         content:
           application/json:
             schema:
-              - $ref: '#/components/schemas/Comment/properties/text'
+              $ref: '#/components/schemas/Comment'
       responses: 
         '201':
           description: photo commented

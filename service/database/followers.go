@@ -3,19 +3,19 @@ package database
 import "log"
 
 func (db *appdbimpl) FollowUser(myId int, user string) error {
-	uid, err := db.GetId(user)
+	Uid, err := db.GetId(user)
 	if err != nil {
 		return err
 	}
 	//Non posso seguire chi mi ha bannato
-	exist, _ := db.IsBanned(uid, myId)
+	exist, _ := db.IsBanned(Uid, myId)
 	if exist == true {
 		return ErrFollowUser
 	}
 
 	_ = db.UnbanUser(myId, user)
 	//insert row
-	_, err = db.c.Exec(`INSERT INTO Follow (user, followedBy) VALUES (?,?)`, uid, myId)
+	_, err = db.c.Exec(`INSERT INTO Follow (user, followedBy) VALUES (?,?)`, Uid, myId)
 	if err != nil {
 		return err
 	}
@@ -58,11 +58,11 @@ func (db *appdbimpl) GetFollower(id int) ([]User, error) {
 		}
 		row := db.c.QueryRow(`SELECT * FROM User WHERE id=?`, pid)
 		var u User
-		err = row.Scan(&u.ID, &u.Name)
+		err = row.Scan(&u.Uid, &u.Username)
 		if err != nil {
 			return nil, err
 		}
-		log.Printf("Function GetFollower. id: %d, name: %s\n", u.ID, u.Name)
+		log.Printf("Function GetFollower. id: %d, name: %s\n", u.Uid, u.Username)
 		users = append(users, u)
 	}
 	return users, err
@@ -78,7 +78,7 @@ func (db *appdbimpl) GetFollowing(followedBy int) ([]User, error) {
 	var users []User
 	for rows.Next() {
 		var u User
-		err = rows.Scan(&u.ID, &u.Name)
+		err = rows.Scan(&u.Uid, &u.Username)
 		if err != nil {
 			return nil, err
 		}
