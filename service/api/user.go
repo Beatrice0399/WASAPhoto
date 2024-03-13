@@ -63,6 +63,7 @@ func (rt *_router) setMyUsername(w http.ResponseWriter, r *http.Request, ps http
 }
 
 func (rt *_router) getUserProfile(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
+	w.Header().Set("Content-Type", "application/json")
 	username := rt.getUsername(ps)
 
 	uid, err := rt.db.GetId(username)
