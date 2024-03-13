@@ -543,6 +543,8 @@ components:
         date: 
           description: time in which the operation is carried out
           type: string
+          minLength: 1
+          maxLength: 19
           format: date-time
           readOnly: true
           example: 2023-11-08T12:00:00

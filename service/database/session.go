@@ -24,5 +24,4 @@ func (db *appdbimpl) DoLogin(username string) (int, error) {
 	}
 
 	return id, nil
-
 }

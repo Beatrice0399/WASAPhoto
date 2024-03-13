@@ -3,11 +3,15 @@ package api
 import (
 	"errors"
 	"net/http"
+	"path/filepath"
 
 	"github.com/Beatrice0399/WASAPhoto/service/database"
 	"github.com/julienschmidt/httprouter"
 	"github.com/sirupsen/logrus"
 )
+
+// Photo media folder
+var photoFolder = filepath.Join("/tmp", "media")
 
 type Config struct {
 	Logger   logrus.FieldLogger
