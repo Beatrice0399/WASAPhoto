@@ -137,7 +137,7 @@ paths:
             example:
               photo_data: "011010011"
         required: true
-        
+
       responses:
         '201':
           description: photo uploaded by the user
@@ -157,7 +157,7 @@ paths:
     parameters:
       - $ref: '#/components/parameters/myid'
       - $ref: '#/components/parameters/fid'
-    post:
+    put:
       tags: ["followers"]
       summary: follow user
       description: follow user allow you see their photos
@@ -191,7 +191,7 @@ paths:
     parameters:
       - $ref: '#/components/parameters/myid'
       - $ref: '#/components/parameters/bid'
-    post:
+    put:
       tags: ["ban"]
       summary: ban a user
       description: banned user's profile will not visible. The user you ban will not be able to see your profile. You'll unfollow this user.
@@ -247,7 +247,7 @@ paths:
     parameters:
       - $ref: '#/components/parameters/myid'
       - $ref: '#/components/parameters/phid'
-    post:
+    put:
       tags: ["likes"]
       summary: like photo
       description: an user can put only one like per photo
