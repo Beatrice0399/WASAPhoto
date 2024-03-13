@@ -27,6 +27,34 @@ func (rt *_router) getProfiles(w http.ResponseWriter, r *http.Request, ps httpro
 	}
 }
 
+func extractBearer(authorization string) string {
+	var tokens = strings.Split(authorization, " ")
+	if len(tokens) == 2 {
+		return strings.Trim(tokens[1], " ")
+	}
+	return ""
+}
+
+func isNotLogged(auth string) bool {
+
+	return auth == ""
+}
+
+func validateRequestingUser(identifier string, bearerToken string) int {
+
+	// If the requesting user has an invalid token then respond with a fobidden status
+	if isNotLogged(bearerToken) {
+		return http.StatusForbidden
+	}
+
+	//  If the requesting user's id is different than the one in the path then respond with a unathorized status.
+
+	if identifier != bearerToken {
+		return http.StatusUnauthorized
+	}
+	return 0
+}
+
 func (rt *_router) getUsers(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	rows, err := rt.db.GetAllUsers()
 	if err != nil {
