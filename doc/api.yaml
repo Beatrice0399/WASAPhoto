@@ -122,7 +122,7 @@ paths:
         - bearerAuth: [] 
           
   /users/{myid}/photos:
-    put:
+    post:
       tags: ["photo"]
       summary: upload Photo
       description: upload photo in user profile. Who follows you can see your photo
@@ -131,9 +131,13 @@ paths:
         - $ref: '#/components/parameters/myid'
       requestBody:
         content:
-          application/json:
+          image/*:
             schema:
               $ref: '#/components/schemas/Image'
+            example:
+              photo_data: "011010011"
+        required: true
+        
       responses:
         '201':
           description: photo uploaded by the user
@@ -489,13 +493,20 @@ components:
             $ref: '#/components/schemas/Comment'
     
     Image: 
+
       title: image
       description: string format for an image
-      type: string
-      minLength: 0
-      maxLength: 100
-      format: binary
-      example: "011010011"
+      type: object
+      properties:
+        photo_data:
+          description: raw data photo
+          type: string
+          minLength: 0
+          maxLength: 100
+          format: binary
+          example: "011010011"
+      example: 
+        photo_data: "011010011"
           
     Stream:
       title: Stream
