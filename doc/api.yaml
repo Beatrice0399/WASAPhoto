@@ -243,38 +243,31 @@ paths:
       security:
         - bearerAuth: [] 
         
-  /users/{myid}/photos/{phid}/likes/:
+  /users/{myid}/photos/{phid}/likes/{lid}:
     parameters:
       - $ref: '#/components/parameters/myid'
       - $ref: '#/components/parameters/phid'
+      - $ref: '#/components/parameters/lid'
     put:
       tags: ["likes"]
       summary: like photo
       description: an user can put only one like per photo
       operationId: likePhoto
       responses: 
-        '200': { $ref: '#/components/responses/successMessage'}
+        '204': { $ref: '#/components/responses/no_content'}
         '400': { $ref: '#/components/responses/badRequest'}
         '401': { $ref: '#/components/responses/unauthorized'}
         '403': { $ref: '#/components/responses/forbidden'}
         '404': { $ref: "#/components/responses/notFound"}
         '500': { $ref: "#/components/responses/internalServerError"}
-      security:
-        - bearerAuth: [] 
-
-  /users/{myid}/photos/{phid}/likes/{lid}:
+      
     delete:
       tags: ["likes"]
       summary: unlike photo
       description: remove like from the given photo id by user uid
       operationId: unlikePhoto
-      parameters:
-      - $ref: '#/components/parameters/myid'
-      - $ref: '#/components/parameters/phid'
-      - $ref: '#/components/parameters/lid'
-
       responses:
-        '200': { $ref: '#/components/responses/successMessage'}
+        '204': { $ref: '#/components/responses/no_content'}
         '401': { $ref: '#/components/responses/unauthorized'}
         '403': { $ref: '#/components/responses/forbidden'}
         '404': { $ref: "#/components/responses/notFound"}
@@ -282,7 +275,7 @@ paths:
       security:
         - bearerAuth: [] 
     
-  /users/{myid}/photos/{phid}/comment/:
+  /users/{myid}/photos/{phid}/comments:
     post:
       tags: ["comment"]
       summary: comment a photo
@@ -313,7 +306,7 @@ paths:
       security:
         - bearerAuth: [] 
   
-  /users/{myid}/photo/{phid}/comment/{cid}:        
+  /users/{myid}/photo/{phid}/comments/{cid}:        
     delete:
       tags: ["comment"]
       operationId: uncommentPhoto
@@ -324,7 +317,7 @@ paths:
         - $ref: '#/components/parameters/phid'
         - $ref: '#/components/parameters/cid'
       responses:
-        '200': { $ref: '#/components/responses/successMessage'}
+        '204': { $ref: '#/components/responses/no_content'}
         '401': { $ref: '#/components/responses/unauthorized'}
         '403': { $ref: '#/components/responses/forbidden'}
         '404': { $ref: "#/components/responses/notFound"}
@@ -333,14 +326,31 @@ paths:
         - bearerAuth: [] 
           
   /users/{myid}/photo/{phid}:
+    parameters:
+          - $ref: '#/components/parameters/myid'
+          - $ref: '#/components/parameters/phid'
+    get:
+      tags: ["photo"]
+      summary: get photo
+      operationId: getPhoto
+      description: an user can see the photo if they are the owner of they're not banned by the owner
+      responses:
+        '200': 
+          description: successful operation 
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Image'
+        '401': { $ref: '#/components/responses/unauthorized'}
+        '403': { $ref: '#/components/responses/forbidden'}
+        '404': { $ref: "#/components/responses/notFound"}
+        '500': { $ref: "#/components/responses/internalServerError"}
     delete:
       tags: ["photo"]
       summary: delete photo
       operationId: deletePhoto
       description: remove a photo from user profile
-      parameters:
-        - $ref: '#/components/parameters/myid'
-        - $ref: '#/components/parameters/phid'
+      
       responses:
         '200': { $ref: '#/components/responses/successMessage'}
         '401': { $ref: '#/components/responses/unauthorized'}
