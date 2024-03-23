@@ -260,6 +260,8 @@ paths:
         '403': { $ref: '#/components/responses/forbidden'}
         '404': { $ref: "#/components/responses/notFound"}
         '500': { $ref: "#/components/responses/internalServerError"}
+      security:
+        - bearerAuth: [] 
       
     delete:
       tags: ["likes"]
