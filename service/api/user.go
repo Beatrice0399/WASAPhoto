@@ -39,27 +39,22 @@ func (rt *_router) setMyUsername(w http.ResponseWriter, r *http.Request, ps http
 	var username string
 	err := json.NewDecoder(r.Body).Decode(&username)
 	if err != nil {
-		log.Printf("json")
 		ctx.Logger.WithError(err).Error("error decoding json")
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	log.Printf("prima my id")
 	myId, err := rt.get_myid_path(ps)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("error get myid")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	log.Printf("prima valid")
 	valid := validateRequestingUser(strconv.Itoa(myId), extractBearer(r.Header.Get("Authorization")))
 	if valid != 0 {
 		w.WriteHeader(valid)
 		return
 	}
-	log.Printf("prima set")
 	_, err = rt.db.SetMyUsername(myId, username)
-	log.Printf("dopo set")
 	if err != nil {
 		ctx.Logger.WithError(err).Error("error executing query")
 		w.WriteHeader(http.StatusInternalServerError)

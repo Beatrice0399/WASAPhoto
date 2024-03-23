@@ -54,6 +54,29 @@ paths:
               schema:
                 $ref: '#/components/schemas/User/properties/uid'
 
+  /users:
+    get:
+      tags: ["user"]
+      summary: gets user's profile with a given id
+      description: an user can't find another user if he banned by the latter.
+      operationId: getUserProfile
+      parameters:
+        - $ref: '#/components/parameters/profileName'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profile'
+        '400': { $ref: '#/components/responses/badRequest'}
+        '401': { $ref: '#/components/responses/unauthorized'}
+        '403': { $ref: '#/components/responses/forbidden'}
+        '404': { $ref: "#/components/responses/notFound"}
+        '500': { $ref: "#/components/responses/internalServerError"}
+      security:
+        - bearerAuth: [] 
+
   /users/{myid}:
     parameters:
       - $ref: '#/components/parameters/myid'
@@ -89,30 +112,6 @@ paths:
               $ref: '#/components/schemas/User'
       responses:
         '204': { $ref: '#/components/responses/no_content'}
-        '400': { $ref: '#/components/responses/badRequest'}
-        '401': { $ref: '#/components/responses/unauthorized'}
-        '403': { $ref: '#/components/responses/forbidden'}
-        '404': { $ref: "#/components/responses/notFound"}
-        '500': { $ref: "#/components/responses/internalServerError"}
-      security:
-        - bearerAuth: [] 
-
-  /users/{myid}/profile/{pid}: 
-    get:
-      tags: ["user"]
-      summary: user profile
-      description: get user profile only if this user didn't ban you or you didn't ban him/her
-      operationId: getUserProfile
-      parameters:
-        - $ref: '#/components/parameters/myid'
-        - $ref: '#/components/parameters/pid'
-      responses:
-        '200':
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Profile'
         '400': { $ref: '#/components/responses/badRequest'}
         '401': { $ref: '#/components/responses/unauthorized'}
         '403': { $ref: '#/components/responses/forbidden'}
@@ -404,10 +403,10 @@ components:
       schema:
         $ref: '#/components/schemas/User/properties/uid'
 
-    pid:
-      description: profile id 
-      name: pid
-      in: path
+    profileName:
+      description: name of user searched
+      name: profileName 
+      in: query
       required: true
       schema:
         $ref: '#/components/schemas/User/properties/username'
