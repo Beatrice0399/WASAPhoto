@@ -26,7 +26,7 @@ func (rt *_router) get_bid(ps httprouter.Params) string {
 
 func (rt *_router) get_myid_path(ps httprouter.Params) (int, error) {
 	var username string
-	username = ps.ByName("myid")
+	username = ps.ByName("uid")
 	myid, err := strconv.Atoi(username)
 	if err != nil {
 		return -1, err

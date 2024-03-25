@@ -77,14 +77,14 @@ paths:
       security:
         - bearerAuth: [] 
 
-  /users/{myid}:
+  /users/{uid}:
     parameters:
-      - $ref: '#/components/parameters/myid'
+      - $ref: '#/components/parameters/uid'
     get:
       tags: ["user"]
       summary: user profile
       description: get user session's profile
-      operationId: getMyProfile
+      operationId: getProfile
       responses:
         '200':
           description: successful operation
@@ -120,14 +120,14 @@ paths:
       security:
         - bearerAuth: [] 
           
-  /users/{myid}/photos:
+  /users/{uid}/photos:
     post:
       tags: ["photo"]
       summary: upload Photo
       description: upload photo in user profile. Who follows you can see your photo
       operationId: uploadPhoto
       parameters:
-        - $ref: '#/components/parameters/myid'
+        - $ref: '#/components/parameters/uid'
       requestBody:
         content:
           image/*:
@@ -152,9 +152,9 @@ paths:
       security:
         - bearerAuth: [] 
         
-  /users/{myid}/followers/{fid}:
+  /users/{uid}/followers/{fid}:
     parameters:
-      - $ref: '#/components/parameters/myid'
+      - $ref: '#/components/parameters/uid'
       - $ref: '#/components/parameters/fid'
     put:
       tags: ["followers"]
@@ -186,9 +186,9 @@ paths:
       security:
         - bearerAuth: [] 
 
-  /users/{myid}/bannedUsers/{bid}:
+  /users/{uid}/bannedUsers/{bid}:
     parameters:
-      - $ref: '#/components/parameters/myid'
+      - $ref: '#/components/parameters/uid'
       - $ref: '#/components/parameters/bid'
     put:
       tags: ["ban"]
@@ -219,14 +219,14 @@ paths:
           security:
             - bearerAuth: [] 
     
-  /users/{myid}/home:
+  /users/{uid}/home:
     get:
       tags: ["stream"]
       summary: get stream
       description: the stream is composed by following user photos
       operationId: getMyStream
       parameters:
-        - $ref: '#/components/parameters/myid'
+        - $ref: '#/components/parameters/uid'
       responses:
         '200':
           description: get profile action successful
@@ -242,9 +242,9 @@ paths:
       security:
         - bearerAuth: [] 
         
-  /users/{myid}/photos/{phid}/likes/{lid}:
+  /users/{uid}/photos/{phid}/likes/{lid}:
     parameters:
-      - $ref: '#/components/parameters/myid'
+      - $ref: '#/components/parameters/uid'
       - $ref: '#/components/parameters/phid'
       - $ref: '#/components/parameters/lid'
     put:
@@ -276,14 +276,14 @@ paths:
       security:
         - bearerAuth: [] 
     
-  /users/{myid}/photos/{phid}/comments:
+  /users/{uid}/photos/{phid}/comments:
     post:
       tags: ["comment"]
       summary: comment a photo
       description: Insert a comment by user below the given id photo
       operationId: commentPhoto
       parameters: 
-        - $ref: '#/components/parameters/myid'
+        - $ref: '#/components/parameters/uid'
         - $ref: '#/components/parameters/phid'
       requestBody:
         description: contains id of who commented and the date
@@ -307,14 +307,14 @@ paths:
       security:
         - bearerAuth: [] 
   
-  /users/{myid}/photo/{phid}/comments/{cid}:        
+  /users/{uid}/photo/{phid}/comments/{cid}:        
     delete:
       tags: ["comment"]
       operationId: uncommentPhoto
       summary: Remove a comment
       description: Remove a comment from the photo
       parameters: 
-        - $ref: '#/components/parameters/myid'
+        - $ref: '#/components/parameters/uid'
         - $ref: '#/components/parameters/phid'
         - $ref: '#/components/parameters/cid'
       responses:
@@ -326,9 +326,9 @@ paths:
       security:
         - bearerAuth: [] 
           
-  /users/{myid}/photo/{phid}:
+  /users/{uid}/photo/{phid}:
     parameters:
-          - $ref: '#/components/parameters/myid'
+          - $ref: '#/components/parameters/uid'
           - $ref: '#/components/parameters/phid'
     get:
       tags: ["photo"]
@@ -395,9 +395,9 @@ components:
       description: Response associated to the 500 http status (Server has encountered an unknown error)
 
   parameters:
-    myid:
-      description: user session's id
-      name: myid
+    uid:
+      description: user's id
+      name: uid
       in: path
       required: true
       schema:
