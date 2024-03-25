@@ -2,7 +2,6 @@ package api
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 	"strconv"
 
@@ -37,20 +36,17 @@ func (rt *_router) setMyUsername(w http.ResponseWriter, r *http.Request, ps http
 
 func (rt *_router) getUserProfile(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	w.Header().Set("Content-Type", "application/json")
-	log.Println("prima identifier")
 	identifier := extractBearer(r.Header.Get("Authorization"))
 	if identifier == "" {
 		w.WriteHeader(http.StatusForbidden)
 		return
 	}
-	log.Printf("prima get query")
 	username := r.URL.Query().Get("username")
 	myId, err := strconv.Atoi(identifier)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("error get my id")
 		w.WriteHeader(http.StatusInternalServerError)
 	}
-	log.Printf("prima search users")
 	users, err := rt.db.SearchUser(myId, username)
 
 	if err != nil {

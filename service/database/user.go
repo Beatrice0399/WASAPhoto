@@ -48,7 +48,7 @@ func (db *appdbimpl) SearchUser(myId int, username string) ([]User, error) {
 		if err != nil {
 			return nil, err
 		}
-		log.Printf("Function SearchUser. id: %d, name: %s\n", u.Uid, u.Username)
+		//log.Printf("Function SearchUser. id: %d, name: %s\n", u.Uid, u.Username)
 		users = append(users, u)
 	}
 	return users, err
