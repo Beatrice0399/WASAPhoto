@@ -2,33 +2,24 @@ package database
 
 import "log"
 
-func (db *appdbimpl) FollowUser(myId int, user string) error {
-	Uid, err := db.GetId(user)
-	if err != nil {
-		return err
-	}
+func (db *appdbimpl) FollowUser(myId int, fid int) error {
 	//Non posso seguire chi mi ha bannato
-	exist, _ := db.IsBanned(Uid, myId)
+	exist, _ := db.IsBanned(fid, myId)
 	if exist == true {
 		return ErrFollowUser
 	}
 
-	_ = db.UnbanUser(myId, user)
+	_ = db.UnbanUser(myId, fid)
 	//insert row
-	_, err = db.c.Exec(`INSERT INTO Follow (user, followedBy) VALUES (?,?)`, Uid, myId)
+	_, err := db.c.Exec(`INSERT INTO Follow (user, followedBy) VALUES (?,?)`, fid, myId)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (db *appdbimpl) UnfollowUser(myId int, user string) error {
-	idProfile, err := db.GetId(user)
-	if err != nil {
-		return err
-	}
-
-	res, err := db.c.Exec(`DELETE FROM Follow WHERE user=? AND followedBy=?`, idProfile, myId)
+func (db *appdbimpl) UnfollowUser(myId int, fid int) error {
+	res, err := db.c.Exec(`DELETE FROM Follow WHERE user=? AND followedBy=?`, fid, myId)
 	if err != nil {
 		return err
 	}

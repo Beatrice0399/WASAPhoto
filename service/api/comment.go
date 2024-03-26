@@ -37,7 +37,7 @@ func (rt *_router) commentPhoto(w http.ResponseWriter, r *http.Request, ps httpr
 }
 
 func (rt *_router) uncommentPhoto(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
-	cid, err := rt.getPhid(ps)
+	cid, err := rt.getCid(ps)
 	if err != nil {
 		rt.responsError(http.StatusBadRequest, err.Error(), w)
 		return

@@ -30,13 +30,14 @@ func OpenDBConnection() (*sql.DB, error) {
 
 type AppDatabase interface {
 	DoLogin(username string) (int, error)
+	SearchUser(myId int, username string) ([]User, error)
 	SetMyUsername(id int, name string) (string, error)
 	UploadPhoto(id int, img []byte) (Photo, error)
-	FollowUser(myId int, username string) error
-	UnfollowUser(myId int, username string) error
-	BanUser(myId int, username string) error
+	FollowUser(myId int, fid int) error
+	UnfollowUser(myId int, fid int) error
+	BanUser(myId int, bid int) error
 	BannedUser(myId int) ([]User, error)
-	UnbanUser(myId int, user string) error
+	UnbanUser(myId int, bid int) error
 	GetUserProfile(id int, myId int) (Profile, error)
 	GetMyStream(myId int) ([]Photo, error)
 	LikePhoto(phId int, uid int) error

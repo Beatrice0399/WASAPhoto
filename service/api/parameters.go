@@ -1,7 +1,6 @@
 package api
 
 import (
-	"net/http"
 	"strconv"
 
 	"github.com/julienschmidt/httprouter"
@@ -27,7 +26,7 @@ func (rt *_router) get_bid(ps httprouter.Params) string {
 
 func (rt *_router) get_myid_path(ps httprouter.Params) (int, error) {
 	var username string
-	username = ps.ByName("myid")
+	username = ps.ByName("uid")
 	myid, err := strconv.Atoi(username)
 	if err != nil {
 		return -1, err
@@ -35,14 +34,15 @@ func (rt *_router) get_myid_path(ps httprouter.Params) (int, error) {
 	return myid, nil
 }
 
-func (rt *_router) get_uid_query(r *http.Request) (int, error) {
-	myid, err := strconv.Atoi(r.URL.Query().Get("uid"))
-	if err != nil {
-		return 0, err
+/*
+	func (rt *_router) get_uid_query(r *http.Request) (int, error) {
+		myid, err := strconv.Atoi(r.URL.Query().Get("uid"))
+		if err != nil {
+			return 0, err
+		}
+		return myid, nil
 	}
-	return myid, nil
-}
-
+*/
 func (rt *_router) getPhid(ps httprouter.Params) (int, error) {
 	string_pid := ps.ByName("phid")
 	pid, err := strconv.Atoi(string_pid)

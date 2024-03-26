@@ -54,14 +54,37 @@ paths:
               schema:
                 $ref: '#/components/schemas/User/properties/uid'
 
-  /users/{myid}:
+  /users:
+    get:
+      tags: ["user"]
+      summary: gets user's profile with a given id
+      description: an user can't find another user if he banned by the latter.
+      operationId: getUserProfile
+      parameters:
+        - $ref: '#/components/parameters/profileName'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profile'
+        '400': { $ref: '#/components/responses/badRequest'}
+        '401': { $ref: '#/components/responses/unauthorized'}
+        '403': { $ref: '#/components/responses/forbidden'}
+        '404': { $ref: "#/components/responses/notFound"}
+        '500': { $ref: "#/components/responses/internalServerError"}
+      security:
+        - bearerAuth: [] 
+
+  /users/{uid}:
     parameters:
-      - $ref: '#/components/parameters/myid'
+      - $ref: '#/components/parameters/uid'
     get:
       tags: ["user"]
       summary: user profile
       description: get user session's profile
-      operationId: getMyProfile
+      operationId: getProfile
       responses:
         '200':
           description: successful operation
@@ -96,39 +119,15 @@ paths:
         '500': { $ref: "#/components/responses/internalServerError"}
       security:
         - bearerAuth: [] 
-
-  /users/{myid}/profile/{pid}: 
-    get:
-      tags: ["user"]
-      summary: user profile
-      description: get user profile only if this user didn't ban you or you didn't ban him/her
-      operationId: getUserProfile
-      parameters:
-        - $ref: '#/components/parameters/myid'
-        - $ref: '#/components/parameters/pid'
-      responses:
-        '200':
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Profile'
-        '400': { $ref: '#/components/responses/badRequest'}
-        '401': { $ref: '#/components/responses/unauthorized'}
-        '403': { $ref: '#/components/responses/forbidden'}
-        '404': { $ref: "#/components/responses/notFound"}
-        '500': { $ref: "#/components/responses/internalServerError"}
-      security:
-        - bearerAuth: [] 
           
-  /users/{myid}/photos:
+  /users/{uid}/photos:
     post:
       tags: ["photo"]
       summary: upload Photo
       description: upload photo in user profile. Who follows you can see your photo
       operationId: uploadPhoto
       parameters:
-        - $ref: '#/components/parameters/myid'
+        - $ref: '#/components/parameters/uid'
       requestBody:
         content:
           image/*:
@@ -153,9 +152,9 @@ paths:
       security:
         - bearerAuth: [] 
         
-  /users/{myid}/followers/{fid}:
+  /users/{uid}/followers/{fid}:
     parameters:
-      - $ref: '#/components/parameters/myid'
+      - $ref: '#/components/parameters/uid'
       - $ref: '#/components/parameters/fid'
     put:
       tags: ["followers"]
@@ -187,9 +186,9 @@ paths:
       security:
         - bearerAuth: [] 
 
-  /users/{myid}/bannedUsers/{bid}:
+  /users/{uid}/bannedUsers/{bid}:
     parameters:
-      - $ref: '#/components/parameters/myid'
+      - $ref: '#/components/parameters/uid'
       - $ref: '#/components/parameters/bid'
     put:
       tags: ["ban"]
@@ -220,14 +219,14 @@ paths:
           security:
             - bearerAuth: [] 
     
-  /users/{myid}/home:
+  /users/{uid}/home:
     get:
       tags: ["stream"]
       summary: get stream
       description: the stream is composed by following user photos
       operationId: getMyStream
       parameters:
-        - $ref: '#/components/parameters/myid'
+        - $ref: '#/components/parameters/uid'
       responses:
         '200':
           description: get profile action successful
@@ -243,9 +242,9 @@ paths:
       security:
         - bearerAuth: [] 
         
-  /users/{myid}/photos/{phid}/likes/{lid}:
+  /users/{uid}/photos/{phid}/likes/{lid}:
     parameters:
-      - $ref: '#/components/parameters/myid'
+      - $ref: '#/components/parameters/uid'
       - $ref: '#/components/parameters/phid'
       - $ref: '#/components/parameters/lid'
     put:
@@ -260,6 +259,8 @@ paths:
         '403': { $ref: '#/components/responses/forbidden'}
         '404': { $ref: "#/components/responses/notFound"}
         '500': { $ref: "#/components/responses/internalServerError"}
+      security:
+        - bearerAuth: [] 
       
     delete:
       tags: ["likes"]
@@ -275,14 +276,14 @@ paths:
       security:
         - bearerAuth: [] 
     
-  /users/{myid}/photos/{phid}/comments:
+  /users/{uid}/photos/{phid}/comments:
     post:
       tags: ["comment"]
       summary: comment a photo
       description: Insert a comment by user below the given id photo
       operationId: commentPhoto
       parameters: 
-        - $ref: '#/components/parameters/myid'
+        - $ref: '#/components/parameters/uid'
         - $ref: '#/components/parameters/phid'
       requestBody:
         description: contains id of who commented and the date
@@ -306,14 +307,14 @@ paths:
       security:
         - bearerAuth: [] 
   
-  /users/{myid}/photo/{phid}/comments/{cid}:        
+  /users/{uid}/photo/{phid}/comments/{cid}:        
     delete:
       tags: ["comment"]
       operationId: uncommentPhoto
       summary: Remove a comment
       description: Remove a comment from the photo
       parameters: 
-        - $ref: '#/components/parameters/myid'
+        - $ref: '#/components/parameters/uid'
         - $ref: '#/components/parameters/phid'
         - $ref: '#/components/parameters/cid'
       responses:
@@ -325,9 +326,9 @@ paths:
       security:
         - bearerAuth: [] 
           
-  /users/{myid}/photo/{phid}:
+  /users/{uid}/photo/{phid}:
     parameters:
-          - $ref: '#/components/parameters/myid'
+          - $ref: '#/components/parameters/uid'
           - $ref: '#/components/parameters/phid'
     get:
       tags: ["photo"]
@@ -394,18 +395,18 @@ components:
       description: Response associated to the 500 http status (Server has encountered an unknown error)
 
   parameters:
-    myid:
-      description: user session's id
-      name: myid
+    uid:
+      description: user's id
+      name: uid
       in: path
       required: true
       schema:
         $ref: '#/components/schemas/User/properties/uid'
 
-    pid:
-      description: profile id 
-      name: pid
-      in: path
+    profileName:
+      description: name of user searched
+      name: profileName 
+      in: query
       required: true
       schema:
         $ref: '#/components/schemas/User/properties/username'
@@ -416,7 +417,7 @@ components:
       in: path
       required: true
       schema: 
-        $ref: '#/components/schemas/User/properties/username'
+        $ref: '#/components/schemas/User/properties/uid'
 
     bid:
       description: banned user id
@@ -424,7 +425,7 @@ components:
       in: path
       required: true
       schema: 
-        $ref: '#/components/schemas/User/properties/username'
+        $ref: '#/components/schemas/User/properties/uid'
 
     cid:
       description: comment id 

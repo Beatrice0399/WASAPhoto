@@ -2,43 +2,76 @@ package api
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/Beatrice0399/WASAPhoto/service/api/reqcontext"
 	"github.com/julienschmidt/httprouter"
 )
 
 func (rt *_router) followUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
-	username := rt.get_fid(ps)
-
+	string_fid := rt.get_fid(ps)
 	myId, err := rt.get_myid_path(ps)
 	if err != nil {
-		rt.responsError(http.StatusBadRequest, err.Error(), w)
+		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	err = rt.db.FollowUser(myId, username)
+	requestingUserId := extractBearer(r.Header.Get("Authorization"))
+
+	// users can't follow themselves
+	if requestingUserId == string_fid {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	if ps.ByName("uid") != requestingUserId {
+		w.WriteHeader(http.StatusBadRequest)
+
+		return
+	}
+	fid, err := strconv.Atoi(string_fid)
 	if err != nil {
-		rt.responsError(http.StatusBadRequest, err.Error(), w)
+		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	str := "User correctly followed"
-	rt.responseJson(str, w)
+	err = rt.db.FollowUser(myId, fid)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
 
 }
 
 func (rt *_router) unfollowUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
-	username := rt.get_fid(ps)
+	string_fid := rt.get_fid(ps)
 
 	myId, err := rt.get_myid_path(ps)
 	if err != nil {
-		rt.responsError(http.StatusBadRequest, err.Error(), w)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	requestingUserId := extractBearer(r.Header.Get("Authorization"))
+
+	// users can't follow themselves
+	if requestingUserId == string_fid {
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
-	err = rt.db.UnfollowUser(myId, username)
-	if err != nil {
-		rt.responsError(http.StatusBadRequest, err.Error(), w)
+	if ps.ByName("uid") != requestingUserId {
+		w.WriteHeader(http.StatusBadRequest)
+
 		return
 	}
-	str := "User unfollowed"
-	rt.responseJson(str, w)
+	fid, err := strconv.Atoi(string_fid)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	err = rt.db.UnfollowUser(myId, fid)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
 }
