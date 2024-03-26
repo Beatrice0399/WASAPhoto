@@ -1,48 +1,42 @@
 package database
 
-func (db *appdbimpl) BanUser(myId int, username string) error {
-	idProfile, err := db.GetId(username)
-	if err != nil {
-		return err
-	}
+func (db *appdbimpl) BanUser(myId int, bid int) error {
 
-	err = db.UnfollowUser(myId, username)
-	if err != nil {
-		return err
-	}
-
-	err = db.removeAllComments(myId, idProfile)
+	err := db.UnfollowUser(myId, bid)
 	/*
 		if err != nil {
 			return err
 		}
 	*/
-	err = db.removeAllComments(idProfile, myId)
+	err = db.removeAllComments(myId, bid)
 	/*
 		if err != nil {
 			return err
 		}
 	*/
-	err = db.removeAllLikes(myId, idProfile)
+	err = db.removeAllComments(bid, myId)
+	/*
+		if err != nil {
+			return err
+		}
+	*/
+	err = db.removeAllLikes(myId, bid)
 	/*
 		if err != nil {
 			return err
 		}
 	*/
 
-	err = db.removeAllLikes(idProfile, myId)
+	err = db.removeAllLikes(bid, myId)
 	/*
 		if err != nil {
 			return err
 		}
 	*/
-	name, err := db.GetNameById(myId)
-	if err != nil {
-		return err
-	}
-	_ = db.UnfollowUser(idProfile, name)
 
-	_, err = db.c.Exec(`INSERT INTO Ban (banned, whoBan) VALUES (?,?)`, idProfile, myId)
+	_ = db.UnfollowUser(bid, myId)
+
+	_, err = db.c.Exec(`INSERT INTO Ban (banned, whoBan) VALUES (?,?)`, bid, myId)
 	if err != nil {
 		return err
 	}
@@ -50,9 +44,8 @@ func (db *appdbimpl) BanUser(myId int, username string) error {
 	return nil
 }
 
-func (db *appdbimpl) UnbanUser(myId int, user string) error {
-	idProfile, _ := db.GetId(user)
-	res, err := db.c.Exec(`DELETE FROM Ban WHERE banned=? AND whoBan=?`, idProfile, myId)
+func (db *appdbimpl) UnbanUser(myId int, bid int) error {
+	res, err := db.c.Exec(`DELETE FROM Ban WHERE banned=? AND whoBan=?`, bid, myId)
 	if err != nil {
 		return err
 	}
