@@ -52,7 +52,7 @@ func (rt *_router) unfollowUser(w http.ResponseWriter, r *http.Request, ps httpr
 	}
 	requestingUserId := extractBearer(r.Header.Get("Authorization"))
 
-	// users can't follow themselves
+	// users can't unfollow themselves
 	if requestingUserId == string_fid {
 		w.WriteHeader(http.StatusBadRequest)
 		return
