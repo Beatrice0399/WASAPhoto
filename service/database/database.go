@@ -12,7 +12,7 @@ type DB struct {
 	Filename string `conf:""`
 }
 
-//Open IS USED TO CREATE A DB HANDLE
+// Open IS USED TO CREATE A DB HANDLE
 func OpenDBConnection() (*sql.DB, error) {
 	logger.Println("inizializing database support")
 	db, err := sql.Open("sqlite3", "dataSourceName")
@@ -31,8 +31,10 @@ func OpenDBConnection() (*sql.DB, error) {
 type AppDatabase interface {
 	DoLogin(username string) (int, error)
 	SearchUser(myId int, username string) ([]User, error)
-	SetMyUsername(id int, name string) (string, error)
-	UploadPhoto(id int, img []byte) (Photo, error)
+	SetMyUsername(id int, name string) error
+	NewPhoto(id int) (int, error)
+	UpdatePathPhoto(phid int, path string) error
+	GetPhoto(phId int) (Photo, error)
 	FollowUser(myId int, fid int) error
 	UnfollowUser(myId int, fid int) error
 	BanUser(myId int, bid int) error
@@ -47,18 +49,18 @@ type AppDatabase interface {
 	DeletePhoto(phid int, myid int) error
 	GetMyProfile(myid int) (Profile, error)
 
-	IsBanned(myId int, idProfile int) (bool, error)
+	IsBanned(myId int, idProfile int) bool
 	GetPhotoUser(id int) ([]Photo, error)
 	GetPhotoComments(phId int) (*sql.Rows, error)
 	GetFollower(id int) ([]User, error)
 	GetFollowing(followedBy int) ([]User, error)
 	GetId(username string) (int, error)
 	GetNameById(id int) (string, error)
-	GetLikesPhoto(phid int) (*sql.Row, error)
+	GetLikesPhoto(phid int) (*sql.Rows, error)
 
 	Ping() error
 
-	//utilities function
+	// utilities function
 	GetAllProfiles() ([]Profile, error)
 	GetAllUsers() (*sql.Rows, error)
 	GetTableFollow() (*sql.Rows, error)
@@ -86,7 +88,7 @@ func New(db *sql.DB) (AppDatabase, error) {
 		return nil, errors.New("Database is required whem building a AppDatabase")
 	}
 
-	//DROP TABLE
+	// DROP TABLE
 	/*
 		tableName := "Follow" // Sostituisci con il nome effettivo della tua tabella
 		_, erro := db.Exec("DROP TABLE IF EXISTS " + tableName)
@@ -127,14 +129,13 @@ func New(db *sql.DB) (AppDatabase, error) {
 	*/
 	_, err := db.Exec("PRAGMA foreign_keys = ON;")
 	if err != nil {
-		fmt.Println(err)
 		return nil, ErrWithForeignKey
 	}
 
 	var User string
 	err = db.QueryRow(`SELECT name FROM sqlite_master WHERE type='table' AND name='User';`).Scan(&User)
 	if errors.Is(err, sql.ErrNoRows) {
-		sqlStmt := `CREATE TABLE IF NOT EXISTS User (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, username TEXT UNIQUE NOT NULL);`
+		sqlStmt := `CREATE TABLE IF NOT EXISTS User (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, username VARCHAR(16) UNIQUE NOT NULL);`
 		_, err = db.Exec(sqlStmt)
 		if err != nil {
 			return nil, fmt.Errorf("error creating database structure User: %w", err)
@@ -144,7 +145,7 @@ func New(db *sql.DB) (AppDatabase, error) {
 	var Photo string
 	err = db.QueryRow(`SELECT name FROM sqlite_master WHERE type='table' AND name='Photo';`).Scan(&Photo)
 	if errors.Is(err, sql.ErrNoRows) {
-		sqlStmt := `CREATE TABLE IF NOT EXISTS Photo (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, user INTEGER NOT NULL, image BLOB NOT NULL,
+		sqlStmt := `CREATE TABLE IF NOT EXISTS Photo (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, user INTEGER NOT NULL, image_path TEXT,
 			date DATETIME NOT NULL,
 			FOREIGN KEY (user) REFERENCES User(id) ON DELETE CASCADE);`
 		_, err = db.Exec(sqlStmt)
@@ -200,14 +201,14 @@ func New(db *sql.DB) (AppDatabase, error) {
 	// Verifica se le chiavi esterne sono abilitate
 	rows, errF := db.Query("PRAGMA foreign_keys;")
 	if errF != nil {
-		fmt.Println(errF)
+		// fmt.Println(errF)
 		return nil, errF
 	}
 	var foreignKeysEnabled int
 	for rows.Next() {
 		err := rows.Scan(&foreignKeysEnabled)
 		if err != nil {
-			fmt.Println(err)
+			// fmt.Println(err)
 			return nil, err
 		}
 	}

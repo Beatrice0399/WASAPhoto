@@ -18,7 +18,7 @@ func (rt *_router) getMyStream(w http.ResponseWriter, r *http.Request, ps httpro
 		return
 	}
 
-	myid, err := rt.get_myid_path(ps)
+	myid, err := rt.get_uid_path(ps)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return

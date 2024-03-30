@@ -3,63 +3,101 @@ package api
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 
 	"github.com/Beatrice0399/WASAPhoto/service/api/reqcontext"
 	"github.com/julienschmidt/httprouter"
 )
 
 func (rt *_router) commentPhoto(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
-	phid, err := rt.getPhid(ps)
-	if err != nil {
-		rt.responsError(http.StatusBadRequest, err.Error(), w)
+	w.Header().Set("Content-Type", "application/json")
+
+	token := extractBearer(r.Header.Get("Authorization"))
+	if isNotLogged(token) {
+		w.WriteHeader(http.StatusForbidden)
 		return
 	}
 
-	myId, err := rt.get_myid_path(ps)
+	myID, err := strconv.Atoi(token)
 	if err != nil {
-		rt.responsError(http.StatusBadRequest, err.Error(), w)
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+	uid, err := rt.get_uid_path(ps)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	if rt.db.IsBanned(myID, uid) {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	phid, err := rt.getPhid(ps)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
 	var msg string
 	err = json.NewDecoder(r.Body).Decode(&msg)
 	if err != nil {
-		rt.responsError(http.StatusBadRequest, err.Error(), w)
+		w.WriteHeader(http.StatusBadRequest)
+		ctx.Logger.WithError(err).Error("error decoding request body json")
+		return
+	}
+	if len(msg) > 400 {
+		w.WriteHeader(http.StatusBadRequest)
+		ctx.Logger.WithError(err).Error("error comment longer than 400 characters")
 		return
 	}
 
-	cid, err := rt.db.CommentPhoto(myId, phid, msg)
+	cid, err := rt.db.CommentPhoto(myID, phid, msg)
 	if err != nil {
-		rt.responsError(http.StatusBadRequest, err.Error(), w)
+		w.WriteHeader(http.StatusInternalServerError)
+		ctx.Logger.WithError(err).Error("error insert comment within databse")
 		return
 	}
-	rt.responseJson(cid, w)
+	w.WriteHeader(http.StatusCreated)
+
+	err = json.NewEncoder(w).Encode(CommentID{Cid: cid})
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		ctx.Logger.WithError(err).Error("error convert id photo")
+		return
+	}
+
 }
 
 func (rt *_router) uncommentPhoto(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
+	token := extractBearer(r.Header.Get("Authorization"))
+	// Check if the user isn't logged
+	if isNotLogged(token) {
+		w.WriteHeader(http.StatusForbidden)
+		return
+	}
+
 	cid, err := rt.getCid(ps)
 	if err != nil {
-		rt.responsError(http.StatusBadRequest, err.Error(), w)
+		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
 	phid, err := rt.getPhid(ps)
 	if err != nil {
-		rt.responsError(http.StatusBadRequest, err.Error(), w)
+		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	myId, err := rt.get_myid_path(ps)
+	myID, err := strconv.Atoi(token)
 	if err != nil {
-		rt.responsError(http.StatusBadRequest, err.Error(), w)
-		return
+		w.WriteHeader(http.StatusInternalServerError)
 	}
 
-	err = rt.db.UncommentPhoto(cid, phid, myId)
+	err = rt.db.UncommentPhoto(cid, phid, myID)
 	if err != nil {
-		rt.responsError(http.StatusBadRequest, err.Error(), w)
+		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	str := "Comment deleted"
-	rt.responseJson(str, w)
+	w.WriteHeader(http.StatusNoContent)
 }

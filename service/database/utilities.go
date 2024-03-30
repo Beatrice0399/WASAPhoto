@@ -15,10 +15,10 @@ func (db *appdbimpl) GetAllProfiles() ([]Profile, error) {
 	var name string
 	for rows.Next() {
 		err = rows.Scan(&id, &name)
-		//log.Printf("id: %d, name: %s\n", id, name)
+		// log.Printf("id: %d, name: %s\n", id, name)
 		u, _ := db.GetUserProfile(id, 0)
 		profiles = append(profiles, u)
-		//log.Printf("id: %d, name: %s, follower: %d, following: %d, pho: %d\n", u.ID, u.Name, u.Follower, u.Following, &u.NumberPhotos)
+		// log.Printf("id: %d, name: %s, follower: %d, following: %d, pho: %d\n", u.ID, u.Name, u.Follower, u.Following, &u.NumberPhotos)
 		/*
 			err = rows.Scan(&u.ID, &u.Name, &u.Follower, &u.Following, &u.NumberPhotos)
 			if err != nil {

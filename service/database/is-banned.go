@@ -1,12 +1,12 @@
 package database
 
-func (db *appdbimpl) IsBanned(myId int, idProfile int) (bool, error) {
+func (db *appdbimpl) IsBanned(myId int, idProfile int) bool {
 	row := db.c.QueryRow(`SELECT * FROM Banned WHERE banned=? AND whoBan=?`, idProfile, myId)
 	text := ""
 	err := row.Scan(&text)
 	if err != nil {
-		return false, nil
+		return false
 	} else {
-		return true, nil
+		return true
 	}
 }

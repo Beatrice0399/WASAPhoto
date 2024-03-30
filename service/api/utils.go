@@ -2,9 +2,14 @@ package api
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
+	"image/jpeg"
+	"image/png"
+	"io"
 	"log"
 	"net/http"
+	"path/filepath"
 	"strconv"
 	"strings"
 
@@ -23,8 +28,8 @@ func (rt *_router) getProfiles(w http.ResponseWriter, r *http.Request, ps httpro
 	}
 	w.Header().Set("Content-type", "application/json")
 	for _, value := range rows {
-		//str := fmt.Sprintf("id: %d, Name: %s, Follower: %d, Following: %d, Photo: %d\n", value.ID, value.Name, value.Followers, value.Following, value.NumberPhotos)
-		//w.Write([]byte(str))
+		// str := fmt.Sprintf("id: %d, Name: %s, Follower: %d, Following: %d, Photo: %d\n", value.ID, value.Name, value.Followers, value.Following, value.NumberPhotos)
+		// w.Write([]byte(str))
 		_ = json.NewEncoder(w).Encode(value)
 
 	}
@@ -39,23 +44,42 @@ func extractBearer(authorization string) string {
 }
 
 func isNotLogged(auth string) bool {
-
 	return auth == ""
 }
 
 func validateRequestingUser(identifier string, bearerToken string) int {
-
 	// If the requesting user has an invalid token then respond with a fobidden status
 	if isNotLogged(bearerToken) {
 		return http.StatusForbidden
 	}
 
 	//  If the requesting user's id is different than the one in the path then respond with a unathorized status.
-
 	if identifier != bearerToken {
 		return http.StatusUnauthorized
 	}
 	return 0
+}
+
+func checkFormatPhoto(body io.ReadCloser, newReader io.ReadCloser) error {
+
+	_, errJpg := jpeg.Decode(body)
+	if errJpg != nil {
+
+		body = newReader
+		_, errPng := png.Decode(body)
+		if errPng != nil {
+			return errors.New(FORMAT_ERROR_IMG)
+		}
+		return nil
+	}
+	return nil
+}
+
+// Function that returns the photo folder path for a given user
+func getPhotoFolder(user_id string) (UserPhotoFoldrPath string, err error) {
+	// Path of the photo dir "./media/user_id/photos/"
+	photoPath := filepath.Join(photoFolder, user_id, "photos")
+	return photoPath, nil
 }
 
 func (rt *_router) getUsers(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {

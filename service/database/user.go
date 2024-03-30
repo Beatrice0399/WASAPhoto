@@ -48,25 +48,25 @@ func (db *appdbimpl) SearchUser(myId int, username string) ([]User, error) {
 		if err != nil {
 			return nil, err
 		}
-		//log.Printf("Function SearchUser. id: %d, name: %s\n", u.Uid, u.Username)
+		// log.Printf("Function SearchUser. id: %d, name: %s\n", u.Uid, u.Username)
 		users = append(users, u)
 	}
 	return users, err
 }
 
-func (db *appdbimpl) SetMyUsername(id int, name string) (string, error) {
+func (db *appdbimpl) SetMyUsername(id int, name string) error {
 	res, err := db.c.Exec(`UPDATE User SET username=? WHERE id=?`, name, id)
 	if err != nil {
 		log.Println("Errore durante l'aggiornamento:", err)
-		return name, err
+		return err
 	}
 	affected, err := res.RowsAffected()
 	if err != nil {
-		return name, err
+		return err
 	} else if affected == 0 {
-		return name, ErrProfileDoesNotExist
+		return ErrProfileDoesNotExist
 	}
-	return name, nil
+	return nil
 }
 
 func (db *appdbimpl) GetUserProfile(id int, myId int) (Profile, error) {

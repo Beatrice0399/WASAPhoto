@@ -17,7 +17,7 @@ func (rt *_router) getPhotoUser(w http.ResponseWriter, r *http.Request, ps httpr
 	if err != nil {
 		rt.baseLogger.Errorln(err)
 	}
-	//var p database.Photo
+	// var p database.Photo
 	w.Header().Set("Content-type", "application/json")
 	json.NewEncoder(w).Encode(rows)
 	/*

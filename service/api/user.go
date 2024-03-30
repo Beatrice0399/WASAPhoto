@@ -25,7 +25,7 @@ func (rt *_router) setMyUsername(w http.ResponseWriter, r *http.Request, ps http
 		return
 	}
 	myId, err := strconv.Atoi(uid)
-	_, err = rt.db.SetMyUsername(myId, new_username)
+	err = rt.db.SetMyUsername(myId, new_username)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("error executing query")
 		w.WriteHeader(http.StatusInternalServerError)
@@ -34,8 +34,8 @@ func (rt *_router) setMyUsername(w http.ResponseWriter, r *http.Request, ps http
 
 	w.WriteHeader(http.StatusNoContent)
 
-	//newURL := "/users/" + new_username
-	//http.Redirect(w, r, newURL, http.StatusFound)
+	// newURL := "/users/" + new_username
+	// http.Redirect(w, r, newURL, http.StatusFound)
 }
 
 func (rt *_router) getUserProfile(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {

@@ -3,14 +3,14 @@ package database
 import "log"
 
 func (db *appdbimpl) FollowUser(myId int, fid int) error {
-	//Non posso seguire chi mi ha bannato
-	exist, _ := db.IsBanned(fid, myId)
+	// Non posso seguire chi mi ha bannato
+	exist := db.IsBanned(fid, myId)
 	if exist == true {
 		return ErrFollowUser
 	}
 
 	_ = db.UnbanUser(myId, fid)
-	//insert row
+	// insert row
 	_, err := db.c.Exec(`INSERT INTO Follow (user, followedBy) VALUES (?,?)`, fid, myId)
 	if err != nil {
 		return err
