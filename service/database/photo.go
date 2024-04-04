@@ -58,6 +58,9 @@ func (db *appdbimpl) GetPhoto(phId int) (Photo, error) {
 		return photo, err
 	}
 	res, err := db.GetLikesPhoto(photo.ID)
+	if err != nil {
+		return photo, err
+	}
 	for res.Next() {
 		var u User
 		err = res.Scan(&u.Uid, &u.Username)

@@ -5,7 +5,7 @@ func (db *appdbimpl) GetNumberPhotoUser(myid int) (int, error) {
 	var likes int
 	err := res.Scan(&likes)
 	if err != nil {
-		return -1, err
+		return likes, err
 	}
 	return likes, nil
 }

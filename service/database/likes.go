@@ -32,7 +32,7 @@ func (db *appdbimpl) UnlikePhoto(phid int, myid int, lid int) error {
 func (db *appdbimpl) GetLikesPhoto(phid int) (*sql.Rows, error) {
 	rows, err := db.c.Query(`SELECT u.id, u.username FROM Likes l JOIN user u ON u.id = l.uid WHERE phId=?`, phid)
 	if err != nil {
-		return nil, err
+		return rows, err
 	}
 	return rows, nil
 }

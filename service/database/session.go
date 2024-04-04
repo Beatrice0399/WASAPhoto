@@ -14,10 +14,13 @@ func (db *appdbimpl) DoLogin(username string) (int, error) {
 	if errors.Is(exist, sql.ErrNoRows) {
 		_, err := db.c.Exec(`INSERT INTO User (username) VALUES (?);`, username)
 		if err != nil {
-			return 0, err
+			return id, err
 		}
 		row = db.c.QueryRow(`SELECT id FROM User WHERE username=?;`, username)
-		row.Scan(&id)
+		err = row.Scan(&id)
+		if err != nil {
+			return id, nil
+		}
 		log.Printf("User created: %s\n", username)
 	} else {
 		log.Printf("User logged: %s\n", username)

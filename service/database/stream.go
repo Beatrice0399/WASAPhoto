@@ -9,7 +9,7 @@ func (db *appdbimpl) GetMyStream(myid int) ([]Photo, error) {
 								JOIN User u ON u.id = p.user
 								ORDER BY p.date DESC;`, myid)
 	if err != nil {
-		return nil, err
+		return stream, err
 	}
 	for rows.Next() {
 		var p Photo
@@ -22,15 +22,21 @@ func (db *appdbimpl) GetMyStream(myid int) ([]Photo, error) {
 			var u User
 			err = res.Scan(&u.Uid, &u.Username)
 			if err != nil {
-				return nil, err
+				return stream, err
 			}
 			p.Likes = append(p.Likes, u)
 		}
 
-		com, _ := db.GetPhotoComments(p.ID)
+		com, err := db.GetPhotoComments(p.ID)
+		if err != nil {
+			return stream, err
+		}
 		for exist := com.Next(); exist == true; exist = com.Next() {
 			var c Comment
 			err = com.Scan(&c.ID, &c.User, &c.Text, &c.Date)
+			if err != nil {
+				return stream, err
+			}
 			p.Comments = append(p.Comments, c)
 		}
 		stream = append(stream, p)

@@ -1,7 +1,5 @@
 package database
 
-import "log"
-
 func (db *appdbimpl) FollowUser(myId int, fid int) error {
 	// Non posso seguire chi mi ha bannato
 	exist := db.IsBanned(fid, myId)
@@ -45,15 +43,15 @@ func (db *appdbimpl) GetFollower(id int) ([]User, error) {
 		var pid int
 		err = rows.Scan(&pid)
 		if err != nil {
-			return nil, err
+			return users, err
 		}
 		row := db.c.QueryRow(`SELECT * FROM User WHERE id=?`, pid)
 		var u User
 		err = row.Scan(&u.Uid, &u.Username)
 		if err != nil {
-			return nil, err
+			return users, err
 		}
-		log.Printf("Function GetFollower. id: %d, name: %s\n", u.Uid, u.Username)
+		// log.Printf("Function GetFollower. id: %d, name: %s\n", u.Uid, u.Username)
 		users = append(users, u)
 	}
 	return users, err
@@ -71,7 +69,7 @@ func (db *appdbimpl) GetFollowing(followedBy int) ([]User, error) {
 		var u User
 		err = rows.Scan(&u.Uid, &u.Username)
 		if err != nil {
-			return nil, err
+			return users, err
 		}
 		users = append(users, u)
 	}

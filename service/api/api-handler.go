@@ -29,17 +29,6 @@ func (rt *_router) Handler() http.Handler {
 	rt.router.POST("/users/:uid/photos/:phid/comments", rt.wrap(rt.commentPhoto))
 	rt.router.DELETE("/users/:uid/photos/:phid/comments/:cid", rt.wrap(rt.uncommentPhoto))
 
-	//utilities
-
-	rt.router.GET("/photo/me", rt.getPhotoUser)
-	rt.router.GET("/allProfiles", rt.getProfiles)
-	rt.router.GET("/allUsers", rt.getUsers)
-	rt.router.GET("/Follow", rt.getFollows)
-	rt.router.GET("/me/banned", rt.getBanned)
-	rt.router.GET("/ban", rt.getTableBan)
-	rt.router.GET("/comments", rt.getTableComment)
-	rt.router.GET("/likes", rt.getTableLikes)
-
 	rt.router.GET("/liveness", rt.liveness)
 	return rt.router
 }

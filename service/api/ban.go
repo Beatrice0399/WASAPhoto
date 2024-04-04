@@ -9,7 +9,7 @@ import (
 )
 
 func (rt *_router) banUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
-	string_bid := rt.get_bid(ps)
+	string_bid := ps.ByName("bid")
 	myId, err := rt.get_uid_path(ps)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -44,7 +44,7 @@ func (rt *_router) banUser(w http.ResponseWriter, r *http.Request, ps httprouter
 }
 
 func (rt *_router) unbanUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
-	string_bid := rt.get_bid(ps)
+	string_bid := ps.ByName("bid")
 	myId, err := rt.get_uid_path(ps)
 
 	if err != nil {

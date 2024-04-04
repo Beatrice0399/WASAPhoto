@@ -18,6 +18,7 @@ func (rt *_router) likePhoto(w http.ResponseWriter, r *http.Request, ps httprout
 	myID, err := strconv.Atoi(token)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 
 	uid, err := rt.get_uid_path(ps)
@@ -64,6 +65,7 @@ func (rt *_router) unlikePhoto(w http.ResponseWriter, r *http.Request, ps httpro
 	myID, err := strconv.Atoi(token)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 
 	uid, err := rt.get_uid_path(ps)

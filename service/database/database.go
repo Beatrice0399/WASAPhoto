@@ -47,7 +47,6 @@ type AppDatabase interface {
 	CommentPhoto(uid int, phid int, text string) (int, error)
 	UncommentPhoto(cid int, phid int, uid int) error
 	DeletePhoto(phid int, myid int) error
-	GetMyProfile(myid int) (Profile, error)
 
 	IsBanned(myId int, idProfile int) bool
 	GetPhotoUser(id int) ([]Photo, error)
