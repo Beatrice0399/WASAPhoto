@@ -7,8 +7,7 @@ import (
 )
 
 func (rt *_router) get_uid_path(ps httprouter.Params) (int, error) {
-	var username string
-	username = ps.ByName("uid")
+	username := ps.ByName("uid")
 	myid, err := strconv.Atoi(username)
 	if err != nil {
 		return -1, err

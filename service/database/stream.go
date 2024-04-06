@@ -19,7 +19,7 @@ func (db *appdbimpl) GetMyStream(myid int) ([]Photo, error) {
 			return stream, err
 		}
 		res, err := db.GetLikesPhoto(p.ID)
-		defer res.Close()
+
 		for res.Next() {
 			var u User
 			err = res.Scan(&u.Uid, &u.Username)
@@ -31,12 +31,13 @@ func (db *appdbimpl) GetMyStream(myid int) ([]Photo, error) {
 		if res.Err() != nil {
 			return nil, err
 		}
+		defer res.Close()
 		com, err := db.GetPhotoComments(p.ID)
 		if err != nil {
 			return stream, err
 		}
 		defer com.Close()
-		for exist := com.Next(); exist == true; exist = com.Next() {
+		for exist := com.Next(); exist; exist = com.Next() {
 			var c Comment
 			err = com.Scan(&c.ID, &c.User, &c.Text, &c.Date)
 			if err != nil {

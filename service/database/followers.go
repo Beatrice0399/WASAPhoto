@@ -2,8 +2,7 @@ package database
 
 func (db *appdbimpl) FollowUser(myId int, fid int) error {
 	// Non posso seguire chi mi ha bannato
-	exist := db.IsBanned(fid, myId)
-	if exist == true {
+	if db.IsBanned(fid, myId) {
 		return ErrFollowUser
 	}
 

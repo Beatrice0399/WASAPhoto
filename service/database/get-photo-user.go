@@ -37,7 +37,7 @@ func (db *appdbimpl) GetPhotoUser(id int) ([]Photo, error) {
 			return photos, err
 		}
 		defer com.Close()
-		for exist := com.Next(); exist == true; exist = com.Next() {
+		for exist := com.Next(); exist; exist = com.Next() {
 			var c Comment
 			err = com.Scan(&c.ID, &c.User, &c.Text, &c.Date)
 			if err != nil {

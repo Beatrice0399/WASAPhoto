@@ -27,6 +27,14 @@ func OpenDBConnection() (*sql.DB, error) {
 	return db, nil
 }
 */
+var ErrProfileDoesNotExist = errors.New("Profile doesn't exist")
+var ErrUsernameUsed = errors.New("Username already used")
+var ErrFollowUser = errors.New("This user banned you")
+var ErrWithForeignKey = errors.New("Error turning on foreign key")
+var ErrUserBanned = errors.New("You banned this user")
+var ErrUserBannedYou = errors.New("This user banned you")
+var ErrPhoto = errors.New("This photo doesn't exsist")
+var ErrLike = errors.New("Inconsistent like id")
 
 type AppDatabase interface {
 	DoLogin(username string) (int, error)
@@ -59,15 +67,6 @@ type AppDatabase interface {
 
 	Ping() error
 }
-
-var ErrProfileDoesNotExist = errors.New("Profile doesn't exist")
-var ErrUsernameUsed = errors.New("Username already used")
-var ErrFollowUser = errors.New("This user banned you")
-var ErrWithForeignKey = errors.New("Error turning on foreign key")
-var ErrUserBanned = errors.New("You banned this user")
-var ErrUserBannedYou = errors.New("This user banned you")
-var ErrPhoto = errors.New("This photo doesn't exsist")
-var ErrLike = errors.New("Inconsistent like id")
 
 type appdbimpl struct {
 	c *sql.DB

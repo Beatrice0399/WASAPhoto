@@ -25,6 +25,11 @@ func (rt *_router) setMyUsername(w http.ResponseWriter, r *http.Request, ps http
 		return
 	}
 	myId, err := strconv.Atoi(uid)
+	if err != nil {
+		ctx.Logger.WithError(err).Error("error converting uid to int")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 	err = rt.db.SetMyUsername(myId, new_username)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("error executing query")
