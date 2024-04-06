@@ -39,6 +39,7 @@ func (db *appdbimpl) GetFollower(id int) ([]User, error) {
 	}
 
 	var users []User
+	defer rows.Close()
 	for rows.Next() {
 		var pid int
 		err = rows.Scan(&pid)
@@ -54,6 +55,9 @@ func (db *appdbimpl) GetFollower(id int) ([]User, error) {
 		// log.Printf("Function GetFollower. id: %d, name: %s\n", u.Uid, u.Username)
 		users = append(users, u)
 	}
+	if rows.Err() != nil {
+		return nil, err
+	}
 	return users, err
 }
 
@@ -65,6 +69,7 @@ func (db *appdbimpl) GetFollowing(followedBy int) ([]User, error) {
 	}
 
 	var users []User
+	defer rows.Close()
 	for rows.Next() {
 		var u User
 		err = rows.Scan(&u.Uid, &u.Username)
@@ -72,6 +77,9 @@ func (db *appdbimpl) GetFollowing(followedBy int) ([]User, error) {
 			return users, err
 		}
 		users = append(users, u)
+	}
+	if rows.Err() != nil {
+		return nil, err
 	}
 	return users, err
 }

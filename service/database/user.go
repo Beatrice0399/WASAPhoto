@@ -13,7 +13,7 @@ func (db *appdbimpl) SearchUser(myId int, username string) ([]User, error) {
 	if err != nil {
 		return nil, err
 	}
-
+	defer rows.Close()
 	var users []User
 	for rows.Next() {
 		var u User
@@ -23,6 +23,9 @@ func (db *appdbimpl) SearchUser(myId int, username string) ([]User, error) {
 		}
 		// log.Printf("Function SearchUser. id: %d, name: %s\n", u.Uid, u.Username)
 		users = append(users, u)
+	}
+	if rows.Err() != nil {
+		return nil, err
 	}
 	return users, err
 }

@@ -1,16 +1,12 @@
 package database
 
-import (
-	"database/sql"
-	"log"
-)
-
 func (db *appdbimpl) GetAllProfiles() ([]Profile, error) {
 	var profiles []Profile
 	rows, err := db.c.Query(`SELECT * FROM User`)
 	if err != nil {
 		return profiles, nil
 	}
+	defer rows.Close()
 	var id int
 	var name string
 	for rows.Next() {
@@ -36,65 +32,9 @@ func (db *appdbimpl) GetAllProfiles() ([]Profile, error) {
 			profiles = append(profiles, u)
 		*/
 	}
+	if rows.Err() != nil {
+		return nil, err
+	}
 
 	return profiles, err
-}
-
-func (db *appdbimpl) GetAllUsers() (*sql.Rows, error) {
-	rows, err := db.c.Query("SELECT * FROM User")
-	if err != nil {
-		return rows, err
-	}
-	return rows, nil
-}
-
-func (db *appdbimpl) GetTableFollow() (*sql.Rows, error) {
-	rows, err := db.c.Query("SELECT * FROM Follow")
-	if err != nil {
-		return rows, err
-	}
-	return rows, nil
-}
-
-func (db *appdbimpl) GetTableBan() (*sql.Rows, error) {
-	rows, err := db.c.Query("SELECT * FROM Ban")
-	if err != nil {
-		return rows, err
-	}
-	return rows, nil
-}
-
-func (db *appdbimpl) GetBanned(myId int) ([]User, error) {
-	var users []User
-	rows, err := db.c.Query(`SELECT u.*
-							FROM User u JOIN Ban b ON b.whoBan=u.id WHERE b.whoBan=?`, myId)
-	if err != nil {
-		log.Print("ERRORE GetBanned")
-		return users, err
-	}
-	for rows.Next() {
-		var u User
-		_ = rows.Scan(&u.Uid, &u.Username)
-		log.Printf("id: %d, name: %s\n", u.Uid, u.Username)
-		users = append(users, u)
-
-	}
-
-	return users, nil
-}
-
-func (db *appdbimpl) GetTableComment() (*sql.Rows, error) {
-	rows, err := db.c.Query("SELECT * FROM Comment")
-	if err != nil {
-		return rows, err
-	}
-	return rows, nil
-}
-
-func (db *appdbimpl) GetTableLikes() (*sql.Rows, error) {
-	rows, err := db.c.Query("SELECT * FROM Likes")
-	if err != nil {
-		return rows, err
-	}
-	return rows, nil
 }

@@ -6,7 +6,7 @@ func (db *appdbimpl) BannedUser(myId int) ([]User, error) {
 	if err != nil {
 		return banned, err
 	}
-	defer func() { _ = rows.Close() }()
+	defer rows.Close()
 
 	for rows.Next() {
 		var user User
@@ -18,6 +18,9 @@ func (db *appdbimpl) BannedUser(myId int) ([]User, error) {
 	}
 	if err = rows.Err(); err != nil {
 		return banned, err
+	}
+	if rows.Err() != nil {
+		return nil, err
 	}
 
 	return banned, nil

@@ -58,15 +58,6 @@ type AppDatabase interface {
 	GetLikesPhoto(phid int) (*sql.Rows, error)
 
 	Ping() error
-
-	// utilities function
-	GetAllProfiles() ([]Profile, error)
-	GetAllUsers() (*sql.Rows, error)
-	GetTableFollow() (*sql.Rows, error)
-	GetBanned(myId int) ([]User, error)
-	GetTableBan() (*sql.Rows, error)
-	GetTableComment() (*sql.Rows, error)
-	GetTableLikes() (*sql.Rows, error)
 }
 
 var ErrProfileDoesNotExist = errors.New("Profile doesn't exist")
