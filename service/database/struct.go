@@ -5,7 +5,7 @@ import "time"
 type Photo struct {
 	ID       int       `json:"id"`
 	User     string    `json:"User"`
-	Image    []byte    `json:"image"`
+	Path     string    `json:"image"`
 	Date     time.Time `json:"date"`
 	Likes    []User    `json:"likes"`
 	Comments []Comment `json:"comments"`

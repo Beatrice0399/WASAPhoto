@@ -9,7 +9,11 @@ require (
 	github.com/sirupsen/logrus v1.9.3
 )
 
-require github.com/felixge/httpsnoop v1.0.3 // indirect
+require (
+	github.com/felixge/httpsnoop v1.0.3 // indirect
+	golang.org/x/lint v0.0.0-20210508222113-6edffad5e616 // indirect
+	golang.org/x/tools v0.0.0-20200130002326-2f3ba24bd6e7 // indirect
+)
 
 require (
 	github.com/gorilla/handlers v1.5.2

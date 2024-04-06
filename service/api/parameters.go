@@ -6,25 +6,7 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
-func (rt *_router) getUsername(ps httprouter.Params) string {
-	var username string
-	username = ps.ByName("pid")
-	return username
-}
-
-func (rt *_router) get_fid(ps httprouter.Params) string {
-	var username string
-	username = ps.ByName("fid")
-	return username
-}
-
-func (rt *_router) get_bid(ps httprouter.Params) string {
-	var username string
-	username = ps.ByName("bid")
-	return username
-}
-
-func (rt *_router) get_myid_path(ps httprouter.Params) (int, error) {
+func (rt *_router) get_uid_path(ps httprouter.Params) (int, error) {
 	var username string
 	username = ps.ByName("uid")
 	myid, err := strconv.Atoi(username)
@@ -43,6 +25,7 @@ func (rt *_router) get_myid_path(ps httprouter.Params) (int, error) {
 		return myid, nil
 	}
 */
+
 func (rt *_router) getPhid(ps httprouter.Params) (int, error) {
 	string_pid := ps.ByName("phid")
 	pid, err := strconv.Atoi(string_pid)

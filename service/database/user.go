@@ -6,33 +6,6 @@ import (
 	"log"
 )
 
-func (db *appdbimpl) GetMyProfile(myid int) (Profile, error) {
-	var profile Profile
-	row := db.c.QueryRow(`SELECT * FROM User WHERE id=?`, myid)
-
-	err := row.Scan(&profile.ID, &profile.Name)
-	if err != nil {
-		return profile, ErrProfileDoesNotExist
-	}
-
-	follower, err := db.GetFollower(myid)
-	if err != nil {
-		return profile, err
-	}
-	profile.Followers = follower
-
-	following, err := db.GetFollowing(myid)
-	if err != nil {
-		return profile, err
-	}
-	profile.Following = following
-
-	profile.NumberPhotos, _ = db.GetNumberPhotoUser(myid)
-	profile.Photos, _ = db.GetPhotoUser(myid)
-
-	return profile, err
-}
-
 func (db *appdbimpl) SearchUser(myId int, username string) ([]User, error) {
 	rows, err := db.c.Query(`SELECT *
 							FROM User
@@ -40,33 +13,36 @@ func (db *appdbimpl) SearchUser(myId int, username string) ([]User, error) {
 	if err != nil {
 		return nil, err
 	}
-
+	defer rows.Close()
 	var users []User
 	for rows.Next() {
 		var u User
 		err = rows.Scan(&u.Uid, &u.Username)
 		if err != nil {
-			return nil, err
+			return users, err
 		}
-		//log.Printf("Function SearchUser. id: %d, name: %s\n", u.Uid, u.Username)
+		// log.Printf("Function SearchUser. id: %d, name: %s\n", u.Uid, u.Username)
 		users = append(users, u)
+	}
+	if rows.Err() != nil {
+		return nil, err
 	}
 	return users, err
 }
 
-func (db *appdbimpl) SetMyUsername(id int, name string) (string, error) {
+func (db *appdbimpl) SetMyUsername(id int, name string) error {
 	res, err := db.c.Exec(`UPDATE User SET username=? WHERE id=?`, name, id)
 	if err != nil {
 		log.Println("Errore durante l'aggiornamento:", err)
-		return name, err
+		return err
 	}
 	affected, err := res.RowsAffected()
 	if err != nil {
-		return name, err
+		return err
 	} else if affected == 0 {
-		return name, ErrProfileDoesNotExist
+		return ErrProfileDoesNotExist
 	}
-	return name, nil
+	return nil
 }
 
 func (db *appdbimpl) GetUserProfile(id int, myId int) (Profile, error) {
@@ -87,20 +63,20 @@ func (db *appdbimpl) GetUserProfile(id int, myId int) (Profile, error) {
 
 	err := row.Scan(&profile.ID, &profile.Name)
 	if err != nil {
-		log.Print("errUser")
+		// log.Print("errUser")
 		return profile, ErrProfileDoesNotExist
 	}
 
 	follower, err := db.GetFollower(id)
 	if err != nil {
-		log.Print("errFolower")
+		// log.Print("errFolower")
 		return profile, err
 	}
 	profile.Followers = follower
 
 	following, err := db.GetFollowing(id)
 	if err != nil {
-		log.Print("errFollowing")
+		// log.Print("errFollowing")
 		return profile, err
 	}
 	profile.Following = following

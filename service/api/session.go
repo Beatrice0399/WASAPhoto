@@ -26,7 +26,8 @@ func (rt *_router) doLogin(w http.ResponseWriter, r *http.Request, ps httprouter
 
 	user.Uid, err = rt.db.DoLogin(user.Username)
 	if err != nil {
-		rt.responsError(http.StatusBadRequest, err.Error(), w)
+		w.WriteHeader(http.StatusInternalServerError)
+		ctx.Logger.WithError(err).Error("Error login")
 		return
 	}
 

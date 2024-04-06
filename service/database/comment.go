@@ -13,7 +13,10 @@ func (db *appdbimpl) CommentPhoto(uid int, phid int, text string) (int, error) {
 	}
 	var cid int
 	row := db.c.QueryRow(`SELECT id FROM Comment WHERE user=? AND photo=? ORDER BY date DESC`, uid, phid, text)
-	row.Scan(&cid)
+	err = row.Scan(&cid)
+	if err != nil {
+		return cid, err
+	}
 	return cid, nil
 }
 

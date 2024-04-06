@@ -1,42 +1,14 @@
 package database
 
 func (db *appdbimpl) BanUser(myId int, bid int) error {
-
-	err := db.UnfollowUser(myId, bid)
-	/*
-		if err != nil {
-			return err
-		}
-	*/
-	err = db.removeAllComments(myId, bid)
-	/*
-		if err != nil {
-			return err
-		}
-	*/
-	err = db.removeAllComments(bid, myId)
-	/*
-		if err != nil {
-			return err
-		}
-	*/
-	err = db.removeAllLikes(myId, bid)
-	/*
-		if err != nil {
-			return err
-		}
-	*/
-
-	err = db.removeAllLikes(bid, myId)
-	/*
-		if err != nil {
-			return err
-		}
-	*/
-
+	_ = db.UnfollowUser(myId, bid)
+	_ = db.removeAllComments(myId, bid)
+	_ = db.removeAllComments(bid, myId)
+	_ = db.removeAllLikes(myId, bid)
+	_ = db.removeAllLikes(bid, myId)
 	_ = db.UnfollowUser(bid, myId)
 
-	_, err = db.c.Exec(`INSERT INTO Ban (banned, whoBan) VALUES (?,?)`, bid, myId)
+	_, err := db.c.Exec(`INSERT INTO Ban (banned, whoBan) VALUES (?,?)`, bid, myId)
 	if err != nil {
 		return err
 	}

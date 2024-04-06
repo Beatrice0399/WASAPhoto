@@ -9,8 +9,8 @@ import (
 )
 
 func (rt *_router) followUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
-	string_fid := rt.get_fid(ps)
-	myId, err := rt.get_myid_path(ps)
+	string_fid := ps.ByName("fid")
+	myId, err := rt.get_uid_path(ps)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
@@ -43,16 +43,16 @@ func (rt *_router) followUser(w http.ResponseWriter, r *http.Request, ps httprou
 }
 
 func (rt *_router) unfollowUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
-	string_fid := rt.get_fid(ps)
+	string_fid := ps.ByName("fid")
 
-	myId, err := rt.get_myid_path(ps)
+	myId, err := rt.get_uid_path(ps)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 	requestingUserId := extractBearer(r.Header.Get("Authorization"))
 
-	// users can't follow themselves
+	// users can't unfollow themselves
 	if requestingUserId == string_fid {
 		w.WriteHeader(http.StatusBadRequest)
 		return

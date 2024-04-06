@@ -10,7 +10,7 @@ func (db *appdbimpl) GetId(username string) (int, error) {
 	var id int
 	exist := row.Scan(&id)
 	if errors.Is(exist, sql.ErrNoRows) {
-		return 0, ErrProfileDoesNotExist
+		return id, ErrProfileDoesNotExist
 	}
 	return id, nil
 }
