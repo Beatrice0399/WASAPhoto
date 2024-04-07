@@ -11,9 +11,11 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
+// WebAPIConfiguration describes the web API configuration. This structure is automatically parsed by
+// loadConfiguration and values from flags, environment variable or configuration file will be loaded.
 type WebAPIConfiguration struct {
 	Config struct {
-		Path string `conf:"default:/conf/config.yml`
+		Path string `conf:"default:/conf/config.yml"`
 	}
 	Web struct {
 		APIHost         string        `conf:"default:0.0.0.0:3000"`
@@ -24,7 +26,7 @@ type WebAPIConfiguration struct {
 	}
 	Debug bool
 	DB    struct {
-		Filename string `conf:"default:/tmp/decaf.db"`
+		Filename string `conf:"default:/tmp/wasa.db"`
 	}
 }
 
