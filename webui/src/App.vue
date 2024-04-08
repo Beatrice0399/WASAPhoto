@@ -27,10 +27,25 @@ export default {
 
 <template>
 	
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col p-0">
+				<main >
+					<Navbar v-if="logged" 
+					@logoutNavbar="logout" 
+					@requestUpdateView="updateView"
+					@searchNavbar="search"/>
+
+					<RouterView 
+					@updatedLoggedChild="updateLogged" 
+					@requestUpdateView="updateView"
+					:searchValue="searchValue"/>
+				</main>
+			</div>
+		</div>
+	</div>
 	
-	<div class="Wasaphoto" style="width: 100%; height: 100%; position: relative">
-    <div class="Wasaphoto" style="left: 700px; top: 0px; position: absolute; text-align: center; color: #1E1E1E; font-size: 40px; font-family: Inter; font-style: italic; font-weight: 800; word-wrap: break-word">WASAPhoto</div>
-</div>
+
 
 </template>
 

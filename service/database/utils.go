@@ -1,7 +1,5 @@
 package database
 
-import "log"
-
 func (db *appdbimpl) removeAllComments(myId int, banned int) error {
 
 	/*
@@ -22,7 +20,6 @@ func (db *appdbimpl) removeAllComments(myId int, banned int) error {
 								);`, myId, banned)
 
 	if err != nil {
-		log.Println(err)
 		return err
 	}
 	affected, err := res.RowsAffected()
@@ -45,7 +42,6 @@ func (db *appdbimpl) removeAllLikes(myId int, banned int) error {
 								);`, myId, banned)
 
 	if err != nil {
-		log.Println(err)
 		return err
 	}
 	affected, err := res.RowsAffected()
@@ -54,6 +50,5 @@ func (db *appdbimpl) removeAllLikes(myId int, banned int) error {
 	} else if affected == 0 {
 		return ErrPhoto
 	}
-
 	return nil
 }

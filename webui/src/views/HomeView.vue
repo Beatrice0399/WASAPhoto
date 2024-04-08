@@ -74,20 +74,6 @@ export default {
 				<a href="javascript:" class="btn btn-primary" @click="newItem">Create a new fountain</a>
 			</div>
 		</div>
-
-		<div class="card" v-if="!loading" v-for="f in fountains">
-			<div class="card-header">
-				Fountain
-			</div>
-			<div class="card-body">
-				<p class="card-text">
-					Latitude: {{ f.latitude }}<br />
-					Longitude: {{ f.longitude }}<br />
-					Status: {{ f.status }}
-				</p>
-				<a href="javascript:" class="btn btn-danger" @click="deleteFountain(f.id)">Delete</a>
-			</div>
-		</div>
 	</div>
 </template>
 

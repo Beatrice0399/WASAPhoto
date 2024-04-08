@@ -19,6 +19,9 @@ func (db *appdbimpl) GetMyStream(myid int) ([]Photo, error) {
 			return stream, err
 		}
 		res, err := db.GetLikesPhoto(p.ID)
+		if err != nil {
+			return nil, err
+		}
 
 		for res.Next() {
 			var u User
@@ -28,16 +31,17 @@ func (db *appdbimpl) GetMyStream(myid int) ([]Photo, error) {
 			}
 			p.Likes = append(p.Likes, u)
 		}
-		if res.Err() != nil {
+		defer res.Close()
+		if err = res.Err(); err != nil {
 			return nil, err
 		}
-		defer res.Close()
+
 		com, err := db.GetPhotoComments(p.ID)
 		if err != nil {
 			return stream, err
 		}
 		defer com.Close()
-		for exist := com.Next(); exist; exist = com.Next() {
+		for com.Next() {
 			var c Comment
 			err = com.Scan(&c.ID, &c.User, &c.Text, &c.Date)
 			if err != nil {
@@ -45,12 +49,12 @@ func (db *appdbimpl) GetMyStream(myid int) ([]Photo, error) {
 			}
 			p.Comments = append(p.Comments, c)
 		}
-		if com.Err() != nil {
+		if err = com.Err(); err != nil {
 			return nil, err
 		}
 		stream = append(stream, p)
 	}
-	if rows.Err() != nil {
+	if err = rows.Err(); err != nil {
 		return nil, err
 	}
 	return stream, err

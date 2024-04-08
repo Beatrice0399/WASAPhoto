@@ -77,7 +77,7 @@ func (db *appdbimpl) GetFollowing(followedBy int) ([]User, error) {
 		}
 		users = append(users, u)
 	}
-	if rows.Err() != nil {
+	if err = rows.Err(); err != nil {
 		return nil, err
 	}
 	return users, err

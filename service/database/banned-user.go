@@ -17,9 +17,6 @@ func (db *appdbimpl) BannedUser(myId int) ([]User, error) {
 		banned = append(banned, user)
 	}
 	if err = rows.Err(); err != nil {
-		return banned, err
-	}
-	if rows.Err() != nil {
 		return nil, err
 	}
 

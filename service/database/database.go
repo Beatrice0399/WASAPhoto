@@ -8,24 +8,25 @@ import (
 )
 
 /*
-type DB struct {
-	Filename string `conf:""`
-}
+	type DB struct {
+		Filename string `conf:""`
+	}
 
 // Open IS USED TO CREATE A DB HANDLE
-func OpenDBConnection() (*sql.DB, error) {
-	logger.Println("inizializing database support")
-	db, err := sql.Open("sqlite3", "dataSourceName")
-	if err != nil {
-		logger.WithError(err).Error("error opening SQLite DB")
-		return db, fmt.Errorf("opening SQLite: %w", err)
+
+	func OpenDBConnection() (*sql.DB, error) {
+		logger.Println("inizializing database support")
+		db, err := sql.Open("sqlite3", "dataSourceName")
+		if err != nil {
+			logger.WithError(err).Error("error opening SQLite DB")
+			return db, fmt.Errorf("opening SQLite: %w", err)
+		}
+		defer func() {
+			logger.Debug("database stopping")
+			_ = db.Close()
+		}()
+		return db, nil
 	}
-	defer func() {
-		logger.Debug("database stopping")
-		_ = db.Close()
-	}()
-	return db, nil
-}
 */
 var ErrProfileDoesNotExist = errors.New("Profile doesn't exist")
 var ErrUsernameUsed = errors.New("Username already used")

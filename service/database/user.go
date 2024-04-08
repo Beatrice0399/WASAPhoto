@@ -3,7 +3,6 @@ package database
 import (
 	"database/sql"
 	"errors"
-	"log"
 )
 
 func (db *appdbimpl) SearchUser(myId int, username string) ([]User, error) {
@@ -19,12 +18,11 @@ func (db *appdbimpl) SearchUser(myId int, username string) ([]User, error) {
 		var u User
 		err = rows.Scan(&u.Uid, &u.Username)
 		if err != nil {
-			return users, err
+			return nil, err
 		}
-		// log.Printf("Function SearchUser. id: %d, name: %s\n", u.Uid, u.Username)
 		users = append(users, u)
 	}
-	if rows.Err() != nil {
+	if err := rows.Err(); err != nil {
 		return nil, err
 	}
 	return users, err
@@ -33,7 +31,6 @@ func (db *appdbimpl) SearchUser(myId int, username string) ([]User, error) {
 func (db *appdbimpl) SetMyUsername(id int, name string) error {
 	res, err := db.c.Exec(`UPDATE User SET username=? WHERE id=?`, name, id)
 	if err != nil {
-		log.Println("Errore durante l'aggiornamento:", err)
 		return err
 	}
 	affected, err := res.RowsAffected()

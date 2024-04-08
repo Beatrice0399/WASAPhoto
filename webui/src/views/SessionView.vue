@@ -34,42 +34,39 @@ export default {
 </script>
 
 <template>
-   
-    <div class="container-fluid login">
-        <head> 
-        <title> WASAPHOTO</title>
-        </head>
+  
+    <div class="container-fluid h-100 m-0 p-0 login">
+        
         <div  class="row">
             <div  class="col">
                 <ErrorMsg v-if="errorMsg" :msg="errorMsg"></ErrorMsg>
             </div>
         </div>
+        
+        <div class="row mt-5 mb-6">
+            <div class="col text-center">
+                <h1 class="head-title">Benvenuto su WASAPHOTO</h1>
+            </div>
+            </div>
+        
         <div class="row h-100 w-100 m-0">
 			
 			<form @submit.prevent="login" class="d-flex flex-column align-items-center justify-content-center p-0">
 
 				<div class="row mt-2 mb-3 border-bottom">
 					<div class="col">
-						<h2 class="login-title">WASAPHOTO Login</h2>
+						<h2 class="login-title">Login</h2>
 					</div>
 				</div>
-
-				<div class="row mt-2 mb-3">
-					<div class="col">
-						<input 
-						type="text" 
-						class="form-control" 
-						v-model="identifier" 
-						maxlength="16"
-						minlength="3"
-						placeholder="Your identifier" />
-					</div>
-				</div>
+                <div class="form-floating mb-3">
+                    <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com">
+                    <label for="floatingInput">Username</label>
+                </div>
 
 				<div class="row mt-2 mb-5 ">
 					<div class="col ">
 						<button class="btn btn-dark" :disabled="identifier == null || identifier.length >16 || identifier.length <3 || identifier.trim().length<3"> 
-						Register/Login 
+						Registration/Login 
 						</button>
 					</div>
 				</div>
@@ -80,7 +77,30 @@ export default {
 </template>
 
 <style>
+
+.login {
+    background-image: url("../assets/images/sfondo.jpg");
+    position: relative;
+    height: 100vh;
+    background-size: cover;
+    width: 100vw; 
+    
+  }
+
+  .absolute-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
 .login-title {
-    color: black;
+    color: #3F749C;
+    margin-top: 0px
 }
+
+.head-title {
+    color: #3F749C;
+}
+
 </style>
