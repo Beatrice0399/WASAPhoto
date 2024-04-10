@@ -17,7 +17,7 @@ export default {
                     username : this.username.trim()
 
                 });
-                localStorage.removeItem('token')
+                localStorage.setItem('token', response.data.uid)
                 this.$router.replace("/home")
                 this.$emit('updatedLoggedChild',true)
             } catch (e) {

@@ -10,7 +10,7 @@ export default {
 		}
 	},
 	methods: {
-		log(value){
+		logout(value){
 			this.logged = value
 			this.$router.replace("/session")
 		},
@@ -43,7 +43,7 @@ export default {
 			<div class="col p-0">
 				<main >
 				
-					<Navbar v-if="logged" 
+					<NavBar v-if="logged" 
 					@requestUpdateView="updateView"
 					@logoutNavbar="logout" 
 					@searchNavbar="search"/>

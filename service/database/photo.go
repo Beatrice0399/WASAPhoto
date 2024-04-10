@@ -59,32 +59,11 @@ func (db *appdbimpl) GetPhoto(phId int) (Photo, error) {
 	photo.Likes, err = db.GetLikesPhoto(photo.ID)
 	if err != nil {
 		return photo, err
-	} /*
-		for res.Next() {
-			var u User
-			err = res.Scan(&u.Uid, &u.Username)
-			if err != nil {
-				return photo, err
-			}
-			photo.Likes = append(photo.Likes, u)
-		}
-	*/
+	}
 	photo.Comments, err = db.GetPhotoComments(photo.ID)
 	if err != nil {
 		return photo, err
 	}
-	/*
-		defer com.Close()
-		for com.Next() {
-			var c Comment
-			err = com.Scan(&c.ID, &c.User, &c.Text, &c.Date)
-			if err != nil {
-				return photo, err
-			}
-			photo.Comments = append(photo.Comments, c)
-		}
-	*/
-	// photo.Comments = com
 	return photo, nil
 }
 
@@ -103,7 +82,6 @@ func (db *appdbimpl) GetPhotoComments(phId int) ([]Comment, error) {
 		if err != nil {
 			return nil, err
 		}
-		//log.Printf("phid: %d, user: %s, txt: %s, date: %s\n", c.ID, c.User, c.Text, c.Date)
 		comments = append(comments, c)
 	}
 	if rows.Err() != nil {

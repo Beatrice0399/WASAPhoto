@@ -48,8 +48,8 @@ export default {
             :key="index"
             :uid="users.uid"
             :username="users.username"/>
-        <p v-if="users.length == 0" class="no-result d-flexs justify-content-center"> No users found.</p>
-
+        <p v-if="users.length == 0" class="no-result d-flex justify-content-center"> No users found.</p>
+        
         <ErrorMsg v-if="errormsg" :msg="errormsg"></ErrorMsg>
     </div>
 </template>

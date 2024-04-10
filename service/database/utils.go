@@ -1,16 +1,6 @@
 package database
 
 func (db *appdbimpl) removeAllComments(myId int, banned int) error {
-
-	/*
-		res, err := db.c.Exec(`UPDATE Comment SET visible=0
-								WHERE id IN (
-									SELECT c.id
-									FROM Comment c
-									JOIN Photo p ON p.user = ?
-									WHERE c.user = ?
-									);`, myId, idProfile)
-	*/
 	res, err := db.c.Exec(`DELETE FROM Comment 
 							WHERE id IN (
 								SELECT c.id
