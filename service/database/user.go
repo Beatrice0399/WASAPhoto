@@ -22,7 +22,7 @@ func (db *appdbimpl) SearchUser(myId int, username string) ([]User, error) {
 		}
 		users = append(users, u)
 	}
-	if err := rows.Err(); err != nil {
+	if rows.Err() != nil {
 		return nil, err
 	}
 	return users, err

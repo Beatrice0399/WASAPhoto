@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -15,16 +16,19 @@ func (rt *_router) doLogin(w http.ResponseWriter, r *http.Request, ps httprouter
 	w.Header().Set("Content-Type", "application/json")
 
 	var user User
-	err := json.NewDecoder(r.Body).Decode(&user.Username)
+	var username Username
+	err := json.NewDecoder(r.Body).Decode(&username)
 	if err != nil {
+		log.Println("errore qui: ", err)
 		w.WriteHeader(http.StatusBadRequest)
 		return
-	} else if !validStringUsername(user.Username) {
+	} else if !validStringUsername(username.Username) {
+		log.Println("errore 2 qui: ", err)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
-	user.Uid, err = rt.db.DoLogin(user.Username)
+	user.Uid, err = rt.db.DoLogin(username.Username)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		ctx.Logger.WithError(err).Error("Error login")

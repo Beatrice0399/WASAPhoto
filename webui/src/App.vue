@@ -6,6 +6,7 @@ export default {
 	data() {
 		return{
 			logged: false,
+			searchValue: "",
 		}
 	},
 	methods: {
@@ -13,10 +14,20 @@ export default {
 			this.logged = value
 			this.$router.replace("/session")
 		},
+		updateLogged(newLogged) {
+			this.logged = newLogged
+		},
+		updateView(newRoute) {
+			this.$router.replace(newRoute)
+		},
+		search(queryParam) {
+			this.searchValue = queryParam
+			this.$router.replace("/search")
+		},
 	},
 
 	mounted() {
-		if (!localStorage.getItem("token")){
+		if (!localStorage.getItem('token')){
 			this.$router.replace("/session")
 		} else {
 			this.logged = true
@@ -31,14 +42,16 @@ export default {
 		<div class="row">
 			<div class="col p-0">
 				<main >
+				
 					<Navbar v-if="logged" 
+					@requestUpdateView="updateView"
 					@logoutNavbar="logout" 
-					@requestUpdateView="updateView"
 					@searchNavbar="search"/>
-
+					
 					<RouterView 
-					@updatedLoggedChild="updateLogged" 
 					@requestUpdateView="updateView"
+					@updatedLoggedChild="updateLogged" 
+					
 					:searchValue="searchValue"/>
 				</main>
 			</div>

@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"log"
 )
 
 /*
@@ -59,12 +58,12 @@ type AppDatabase interface {
 
 	IsBanned(myId int, idProfile int) bool
 	GetPhotoUser(id int) ([]Photo, error)
-	GetPhotoComments(phId int) (*sql.Rows, error)
+	GetPhotoComments(phId int) ([]Comment, error)
 	GetFollower(id int) ([]User, error)
 	GetFollowing(followedBy int) ([]User, error)
 	GetId(username string) (int, error)
 	GetNameById(id int) (string, error)
-	GetLikesPhoto(phid int) (*sql.Rows, error)
+	GetLikesPhoto(phid int) ([]User, error)
 
 	Ping() error
 }
@@ -158,7 +157,7 @@ func New(db *sql.DB) (AppDatabase, error) {
 	var Follow string
 	err = db.QueryRow(`SELECT name FROM sqlite_master WHERE type='table' AND name='Follow';`).Scan(&Follow)
 	if errors.Is(err, sql.ErrNoRows) {
-		sqlStmt := `CREATE TABLE IF NOT EXISTS Follow (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, user INTEGER NOT NULL, followedBy INTEGER NOT NULL,
+		sqlStmt := `CREATE TABLE IF NOT EXISTS Follow (user INTEGER NOT NULL, followedBy INTEGER NOT NULL,
 			UNIQUE(user, followedBy), FOREIGN KEY (user) REFERENCES User(id), FOREIGN KEY (followedBy) REFERENCES User(id));`
 		_, err = db.Exec(sqlStmt)
 		if err != nil {
@@ -169,7 +168,7 @@ func New(db *sql.DB) (AppDatabase, error) {
 	var Ban string
 	err = db.QueryRow(`SELECT name FROM sqlite_master WHERE type='table' AND name='Ban';`).Scan(&Ban)
 	if errors.Is(err, sql.ErrNoRows) {
-		sqlStmt := `CREATE TABLE IF NOT EXISTS Ban (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, banned INTEGER NOT NULL, whoBan INTEGER NOT NULL,
+		sqlStmt := `CREATE TABLE IF NOT EXISTS Ban (banned INTEGER NOT NULL, whoBan INTEGER NOT NULL,
 			UNIQUE(banned, whoBan), FOREIGN KEY (banned) REFERENCES User(id), FOREIGN KEY (whoBan) REFERENCES User(id));`
 		_, err = db.Exec(sqlStmt)
 		if err != nil {
@@ -189,24 +188,26 @@ func New(db *sql.DB) (AppDatabase, error) {
 	}
 
 	// Verifica se le chiavi esterne sono abilitate
-	rows, errF := db.Query("PRAGMA foreign_keys;")
-	if errF != nil {
-		// fmt.Println(errF)
-		return nil, errF
-	}
-	var foreignKeysEnabled int
-	for rows.Next() {
-		err := rows.Scan(&foreignKeysEnabled)
-		if err != nil {
-			// fmt.Println(err)
-			return nil, err
+	/*
+		rows, errF := db.Query("PRAGMA foreign_keys;")
+		if errF != nil {
+			// fmt.Println(errF)
+			return nil, errF
 		}
-	}
-	if foreignKeysEnabled == 1 {
-		log.Print("Le chiavi esterne sono abilitate.")
-	} else {
-		log.Print("Le chiavi esterne non sono abilitate.")
-	}
+		var foreignKeysEnabled int
+		for rows.Next() {
+			err := rows.Scan(&foreignKeysEnabled)
+			if err != nil {
+				// fmt.Println(err)
+				return nil, err
+			}
+		}
+		if foreignKeysEnabled == 1 {
+			log.Print("Le chiavi esterne sono abilitate.")
+		} else {
+			log.Print("Le chiavi esterne non sono abilitate.")
+		}
+	*/
 
 	return &appdbimpl{
 		c: db,

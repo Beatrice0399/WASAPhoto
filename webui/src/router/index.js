@@ -1,6 +1,7 @@
 import {createRouter, createWebHashHistory} from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import SessionView from '../views/SessionView.vue'
+import SearchView from '../views/SearchView.vue'
 
 const router = createRouter({
 	history: createWebHashHistory(import.meta.env.BASE_URL),
@@ -11,7 +12,17 @@ const router = createRouter({
 		},
 		{
 			path: '/session', 
-			component: SessionView},
+			component: SessionView
+		},
+		{
+			path: '/home',
+			component: HomeView
+		},
+		{
+			path: '/search',
+			component: SearchView
+		},
+			
 	]
 })
 

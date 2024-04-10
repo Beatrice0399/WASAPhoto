@@ -16,11 +16,11 @@ func (db *appdbimpl) GetPhotoUser(id int) ([]Photo, error) {
 			return photos, err
 		}
 
-		res, err := db.GetLikesPhoto(p.ID)
+		p.Likes, err = db.GetLikesPhoto(p.ID)
 		if err != nil {
 			return photos, err
 		}
-		defer res.Close()
+		/*defer res.Close()
 		for res.Next() {
 			var u User
 			err = res.Scan(&u.Uid, &u.Username)
@@ -32,22 +32,25 @@ func (db *appdbimpl) GetPhotoUser(id int) ([]Photo, error) {
 		if err = res.Err(); err != nil {
 			return nil, err
 		}
-		com, err := db.GetPhotoComments(p.ID)
+		*/
+		p.Comments, err = db.GetPhotoComments(p.ID)
 		if err != nil {
 			return photos, err
 		}
-		defer com.Close()
-		for com.Next() {
-			var c Comment
-			err = com.Scan(&c.ID, &c.User, &c.Text, &c.Date)
-			if err != nil {
-				return photos, err
+		/*
+			defer com.Close()
+			for com.Next() {
+				var c Comment
+				err = com.Scan(&c.ID, &c.User, &c.Text, &c.Date)
+				if err != nil {
+					return photos, err
+				}
+				p.Comments = append(p.Comments, c)
 			}
-			p.Comments = append(p.Comments, c)
-		}
-		if err = com.Err(); err != nil {
-			return nil, err
-		}
+			if err = com.Err(); err != nil {
+				return nil, err
+			}
+		*/
 		photos = append(photos, p)
 	}
 

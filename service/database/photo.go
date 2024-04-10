@@ -1,7 +1,6 @@
 package database
 
 import (
-	"database/sql"
 	"time"
 )
 
@@ -57,54 +56,58 @@ func (db *appdbimpl) GetPhoto(phId int) (Photo, error) {
 	if err != nil {
 		return photo, err
 	}
-	res, err := db.GetLikesPhoto(photo.ID)
+	photo.Likes, err = db.GetLikesPhoto(photo.ID)
+	if err != nil {
+		return photo, err
+	} /*
+		for res.Next() {
+			var u User
+			err = res.Scan(&u.Uid, &u.Username)
+			if err != nil {
+				return photo, err
+			}
+			photo.Likes = append(photo.Likes, u)
+		}
+	*/
+	photo.Comments, err = db.GetPhotoComments(photo.ID)
 	if err != nil {
 		return photo, err
 	}
-	for res.Next() {
-		var u User
-		err = res.Scan(&u.Uid, &u.Username)
-		if err != nil {
-			return photo, err
+	/*
+		defer com.Close()
+		for com.Next() {
+			var c Comment
+			err = com.Scan(&c.ID, &c.User, &c.Text, &c.Date)
+			if err != nil {
+				return photo, err
+			}
+			photo.Comments = append(photo.Comments, c)
 		}
-		photo.Likes = append(photo.Likes, u)
-	}
-
-	com, err := db.GetPhotoComments(photo.ID)
-	if err != nil {
-		return photo, err
-	}
-	defer com.Close()
-	for com.Next() {
-		var c Comment
-		err = com.Scan(&c.ID, &c.User, &c.Text, &c.Date)
-		if err != nil {
-			return photo, err
-		}
-		photo.Comments = append(photo.Comments, c)
-	}
+	*/
+	// photo.Comments = com
 	return photo, nil
 }
 
-func (db *appdbimpl) GetPhotoComments(phId int) (*sql.Rows, error) {
-	// var comments []Comment
+func (db *appdbimpl) GetPhotoComments(phId int) ([]Comment, error) {
+	var comments []Comment
 	rows, err := db.c.Query(`SELECT c.id, u.username, c.string, c.date FROM Comment c
 								JOIN User u ON c.user=u.id WHERE photo=?`, phId)
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 
-	/*
-		for rows.Next() {
-			var c Comment
-			err = rows.Scan(&c.ID, &c.User, &c.Text, &c.Date)
-			if err != nil {
-				return nil, err
-			}
-			//log.Printf("phid: %d, user: %s, txt: %s, date: %s\n", c.ID, c.User, c.Text, c.Date)
-			comments = append(comments, c)
+	for rows.Next() {
+		var c Comment
+		err = rows.Scan(&c.ID, &c.User, &c.Text, &c.Date)
+		if err != nil {
+			return nil, err
 		}
-	*/
-
-	return rows, err
+		//log.Printf("phid: %d, user: %s, txt: %s, date: %s\n", c.ID, c.User, c.Text, c.Date)
+		comments = append(comments, c)
+	}
+	if rows.Err() != nil {
+		return nil, err
+	}
+	return comments, err
 }

@@ -8,6 +8,10 @@ type ErrMsgJSON struct {
 	Message string `json:"message"` // Error message
 }
 
+type Username struct {
+	Username string `json:"username"`
+}
+
 type User struct {
 	Uid      int    `json:"uid"`
 	Username string `json:"username"`
