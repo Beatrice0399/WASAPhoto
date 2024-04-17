@@ -51,6 +51,7 @@ func (rt *_router) getUserProfile(w http.ResponseWriter, r *http.Request, ps htt
 		return
 	}
 	username := r.URL.Query().Get("username")
+
 	myId, err := strconv.Atoi(identifier)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("error get my id")

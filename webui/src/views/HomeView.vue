@@ -34,14 +34,14 @@ export default {
 		
 		<div class="row">
 			<Photo
-			v-for="(photo, index) in photos"
-			:key="index"
-			:phid="photo.phid"
-			:uid="photo.uid"
-			:comments="photo.comments != nil ? photo.comments : []"
-			:likes="photo.likes != nil ? photo.likes : []"
-			:date="photo.date"
-			/>
+				v-for="(photo, index) in photos"
+				:key="index"
+				:phid="photo.phid"
+				:uid="photo.uid"
+				:comments="photo.comments != nil ? photo.comments : []"
+				:likes="photo.likes != nil ? photo.likes : []"
+				:date="photo.date"
+				/>
 		</div>
 		
 		

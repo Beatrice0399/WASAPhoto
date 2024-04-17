@@ -38,19 +38,19 @@ export default {
 
 <template>
 	
-	<div class="container-fluid">
+	<div class="container-fluid app">
 		<div class="row">
 			<div class="col p-0">
 				<main >
 				
 					<NavBar v-if="logged" 
+					@logoutNavBar="logout" 
 					@requestUpdateView="updateView"
-					@logoutNavbar="logout" 
-					@searchNavbar="search"/>
+					@searchNavBar="search"/>
 					
 					<RouterView 
-					@requestUpdateView="updateView"
 					@updatedLoggedChild="updateLogged" 
+					@requestUpdateView="updateView"
 					
 					:searchValue="searchValue"/>
 				</main>
@@ -63,5 +63,9 @@ export default {
 </template>
 
 <style>
+.app {
+background: linear-gradient(to top, #abc9dc, #ffffff);
+  min-height: 100vh;
+}
 
 </style>

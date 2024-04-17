@@ -2,6 +2,7 @@ import {createRouter, createWebHashHistory} from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import SessionView from '../views/SessionView.vue'
 import SearchView from '../views/SearchView.vue'
+import ProfileView from '../views/ProfileView.vue'
 
 const router = createRouter({
 	history: createWebHashHistory(import.meta.env.BASE_URL),
@@ -22,7 +23,10 @@ const router = createRouter({
 			path: '/search',
 			component: SearchView
 		},
-			
+		{
+			path: '/users/:uid',
+			component: ProfileView
+		},
 	]
 })
 
