@@ -45,9 +45,8 @@ type AppDatabase interface {
 	GetPhoto(phId int) (Photo, error)
 	FollowUser(myId int, fid int) error
 	UnfollowUser(myId int, fid int) error
-	BanUser(myId int, bid int) error
-	BannedUser(myId int) ([]User, error)
-	UnbanUser(myId int, bid int) error
+	BanUser(bid int, uid int) error
+	UnbanUser(bid int, uid int) error
 	GetUserProfile(id int, myId int) (Profile, error)
 	GetMyStream(myId int) ([]Photo, error)
 	LikePhoto(phId int, uid int) error
@@ -56,7 +55,7 @@ type AppDatabase interface {
 	UncommentPhoto(cid int, phid int, uid int) error
 	DeletePhoto(phid int, myid int) error
 
-	IsBanned(myId int, idProfile int) bool
+	IsBanned(bid int, uid int) bool
 	GetPhotoUser(id int) ([]Photo, error)
 	GetPhotoComments(phId int) ([]Comment, error)
 	GetFollower(id int) ([]User, error)

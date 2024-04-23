@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 	"strconv"
 
@@ -10,8 +11,14 @@ import (
 )
 
 func (rt *_router) setMyUsername(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
-	var new_username string
+	var new_username Username
 	err := json.NewDecoder(r.Body).Decode(&new_username)
+	log.Println(new_username.Username)
+	if !validStringUsername(new_username.Username) {
+		log.Printf("stringa non valida")
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
 	if err != nil {
 		ctx.Logger.WithError(err).Error("error decoding json")
 		w.WriteHeader(http.StatusBadRequest)
@@ -30,7 +37,7 @@ func (rt *_router) setMyUsername(w http.ResponseWriter, r *http.Request, ps http
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	err = rt.db.SetMyUsername(myId, new_username)
+	err = rt.db.SetMyUsername(myId, new_username.Username)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("error executing query")
 		w.WriteHeader(http.StatusInternalServerError)
@@ -43,7 +50,7 @@ func (rt *_router) setMyUsername(w http.ResponseWriter, r *http.Request, ps http
 	// http.Redirect(w, r, newURL, http.StatusFound)
 }
 
-func (rt *_router) getUserProfile(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
+func (rt *_router) searchProfile(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	w.Header().Set("Content-Type", "application/json")
 	identifier := extractBearer(r.Header.Get("Authorization"))
 	if identifier == "" {
@@ -69,6 +76,7 @@ func (rt *_router) getUserProfile(w http.ResponseWriter, r *http.Request, ps htt
 
 }
 
+// ritorna le informazioni del profilo dell'utente cercato
 func (rt *_router) getProfile(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	w.Header().Set("Content-Type", "application/json")
 	string_myId := extractBearer(r.Header.Get("Authorization"))
@@ -85,6 +93,15 @@ func (rt *_router) getProfile(w http.ResponseWriter, r *http.Request, ps httprou
 		ctx.Logger.WithError(err).Error("error get my id")
 		w.WriteHeader(http.StatusInternalServerError)
 	}
+
+	/*
+		if rt.db.IsBanned(myId, uid) || rt.db.IsBanned(uid, myId) {
+			ctx.Logger.WithError(err).Error("Profile unavailable")
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+	*/
+
 	profile, err := rt.db.GetUserProfile(uid, myId)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("error get user profile")

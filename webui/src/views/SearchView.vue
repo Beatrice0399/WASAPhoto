@@ -52,7 +52,8 @@ export default {
         <UserContainer v-for="(user,index) in users"
             :key="index"
             :uid="user.uid"
-            :username="user.username"/>
+            :username="user.username"
+            @selectedUser="getProfile"/>
         <p v-if="users.length == 0" class="no-result d-flex justify-content-center"> No users found.</p>
         
         <ErrorMsg v-if="errormsg" :msg="errormsg"></ErrorMsg>

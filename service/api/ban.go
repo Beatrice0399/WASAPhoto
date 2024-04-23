@@ -10,19 +10,19 @@ import (
 
 func (rt *_router) banUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	string_bid := ps.ByName("bid")
-	myId, err := rt.get_uid_path(ps)
+	uid, err := rt.get_uid_path(ps)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 	requestingUid := extractBearer(r.Header.Get("Authorization"))
 	// users can't ban themselves
-	if requestingUid == string_bid {
+	if requestingUid == ps.ByName("uid") {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
-	if ps.ByName("uid") != requestingUid {
+	if string_bid != requestingUid {
 		w.WriteHeader(http.StatusBadRequest)
 
 		return
@@ -34,7 +34,7 @@ func (rt *_router) banUser(w http.ResponseWriter, r *http.Request, ps httprouter
 		return
 	}
 
-	err = rt.db.BanUser(myId, bid)
+	err = rt.db.BanUser(bid, uid)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
@@ -45,7 +45,7 @@ func (rt *_router) banUser(w http.ResponseWriter, r *http.Request, ps httprouter
 
 func (rt *_router) unbanUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	string_bid := ps.ByName("bid")
-	myId, err := rt.get_uid_path(ps)
+	uid, err := rt.get_uid_path(ps)
 
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -54,12 +54,12 @@ func (rt *_router) unbanUser(w http.ResponseWriter, r *http.Request, ps httprout
 	requestingUid := extractBearer(r.Header.Get("Authorization"))
 
 	// users can't unban themselves
-	if requestingUid == string_bid {
+	if requestingUid == ps.ByName("uid") {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
-	if ps.ByName("uid") != requestingUid {
+	if string_bid != requestingUid {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -70,7 +70,7 @@ func (rt *_router) unbanUser(w http.ResponseWriter, r *http.Request, ps httprout
 		return
 	}
 
-	err = rt.db.UnbanUser(myId, bid)
+	err = rt.db.UnbanUser(bid, uid)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return

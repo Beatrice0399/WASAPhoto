@@ -1,22 +1,22 @@
 package database
 
-func (db *appdbimpl) FollowUser(myId int, fid int) error {
+func (db *appdbimpl) FollowUser(fid int, uid int) error {
 	// Non posso seguire chi mi ha bannato
-	if db.IsBanned(fid, myId) {
+	if db.IsBanned(fid, uid) {
 		return ErrFollowUser
 	}
 
-	_ = db.UnbanUser(myId, fid)
+	_ = db.UnbanUser(fid, uid)
 	// insert row
-	_, err := db.c.Exec(`INSERT INTO Follow (user, followedBy) VALUES (?,?)`, fid, myId)
+	_, err := db.c.Exec(`INSERT INTO Follow (user, followedBy) VALUES (?,?)`, uid, fid)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (db *appdbimpl) UnfollowUser(myId int, fid int) error {
-	res, err := db.c.Exec(`DELETE FROM Follow WHERE user=? AND followedBy=?`, fid, myId)
+func (db *appdbimpl) UnfollowUser(fid int, uid int) error {
+	res, err := db.c.Exec(`DELETE FROM Follow WHERE user=? AND followedBy=?`, uid, fid)
 	if err != nil {
 		return err
 	}
@@ -62,7 +62,7 @@ func (db *appdbimpl) GetFollower(id int) ([]User, error) {
 
 func (db *appdbimpl) GetFollowing(followedBy int) ([]User, error) {
 	rows, err := db.c.Query(`SELECT u.* FROM User u
-							JOIN Follow f ON u.id=f.followedBy WHERE f.followedBy=?`, followedBy)
+							JOIN Follow f ON u.id=f.user WHERE f.followedBy=?`, followedBy)
 	if err != nil {
 		return nil, err
 	}

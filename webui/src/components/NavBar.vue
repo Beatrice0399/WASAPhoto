@@ -18,6 +18,9 @@ export default {
         goBackHome(){
             this.$emit('requestUpdateView',"/home")
         },
+        getMyProfile() {
+            this.$emit('requestUpdateView', "/users/" + localStorage.getItem('token'))
+        }
     },
 }
 </script>
@@ -47,7 +50,7 @@ export default {
             
             
 
-          <button @click="myProfile" class="my-trnsp-btn me-2" type="button">
+          <button @click="getMyProfile" class="my-trnsp-btn me-2" type="button">
               <!--Profile-->
        
               <svg class="feather"><use href="/feather-sprite-v4.29.0.svg#user"/></svg>

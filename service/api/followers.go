@@ -18,14 +18,14 @@ func (rt *_router) followUser(w http.ResponseWriter, r *http.Request, ps httprou
 	requestingUserId := extractBearer(r.Header.Get("Authorization"))
 
 	// users can't follow themselves
-	if requestingUserId == string_fid {
+	if requestingUserId == ps.ByName("uid") {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
-	if ps.ByName("uid") != requestingUserId {
+	if ps.ByName("fid") != requestingUserId {
 		w.WriteHeader(http.StatusBadRequest)
-
+		// log.Println(requestingUserId + " " + ps.ByName("uid") + " " + string_fid)
 		return
 	}
 	fid, err := strconv.Atoi(string_fid)
@@ -33,7 +33,7 @@ func (rt *_router) followUser(w http.ResponseWriter, r *http.Request, ps httprou
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	err = rt.db.FollowUser(myId, fid)
+	err = rt.db.FollowUser(fid, myId)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
@@ -53,12 +53,12 @@ func (rt *_router) unfollowUser(w http.ResponseWriter, r *http.Request, ps httpr
 	requestingUserId := extractBearer(r.Header.Get("Authorization"))
 
 	// users can't unfollow themselves
-	if requestingUserId == string_fid {
+	if requestingUserId == ps.ByName("uid") {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
-	if ps.ByName("uid") != requestingUserId {
+	if ps.ByName("fid") != requestingUserId {
 		w.WriteHeader(http.StatusBadRequest)
 
 		return
@@ -68,7 +68,7 @@ func (rt *_router) unfollowUser(w http.ResponseWriter, r *http.Request, ps httpr
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	err = rt.db.UnfollowUser(myId, fid)
+	err = rt.db.UnfollowUser(fid, myId)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return

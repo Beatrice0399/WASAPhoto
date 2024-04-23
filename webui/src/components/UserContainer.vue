@@ -15,8 +15,8 @@ export default {
             <div class="user-mini-card card bg-transparent border-start">
                 <div class="card-body">
                     
-                    <h5 @click="clickedUser" class="user-mini-card-title d-flex justify-content-center " > 
-                      <img class="profile-img" src="../assets/images/profile.png"> @{{username }}
+                    <h5 @click="selectedUser" class="user-mini-card-title d-flex justify-content-center " > 
+                      <img class="profile-img" src="../assets/images/profile.png">  @{{username }}
                     </h5>
                 </div>
             </div>
@@ -29,7 +29,7 @@ export default {
 
 .profile-img {
 
-  margin-left: 30px; /* Aggiunge un margine destro tra l'immagine e l'username */
+  margin-right: 20px; /* Aggiunge un margine destro tra l'immagine e l'username */
 
 }
 

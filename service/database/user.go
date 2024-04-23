@@ -1,10 +1,5 @@
 package database
 
-import (
-	"database/sql"
-	"errors"
-)
-
 func (db *appdbimpl) SearchUser(myId int, username string) ([]User, error) {
 	rows, err := db.c.Query(`SELECT *
 							FROM User
@@ -43,19 +38,27 @@ func (db *appdbimpl) SetMyUsername(id int, name string) error {
 }
 
 func (db *appdbimpl) GetUserProfile(id int, myId int) (Profile, error) {
-	ban := db.c.QueryRow(`SELECT id FROM Ban WHERE banned=? AND whoBan=?`, id, myId)
-	var ban_id int
-	exist := ban.Scan(&ban_id)
+	/*
+		ban := db.c.QueryRow(`SELECT id FROM Ban WHERE banned=? AND whoBan=?`, id, myId)
+		var ban_id int
+		exist := ban.Scan(&ban_id)
+		var profile Profile
+		if !errors.Is(exist, sql.ErrNoRows) {
+			return profile, exist
+		}
+		ban = db.c.QueryRow(`SELECT id FROM Ban WHERE banned=? AND whoBan=?`, myId, id)
+		exist = ban.Scan(&ban_id)
+		if !errors.Is(exist, sql.ErrNoRows) {
+			return profile, ErrUserBannedYou
+		}
+	*/
 	var profile Profile
-	if !errors.Is(exist, sql.ErrNoRows) {
-		return profile, ErrUserBanned
-	}
-	ban = db.c.QueryRow(`SELECT id FROM Ban WHERE banned=? AND whoBan=?`, myId, id)
-	exist = ban.Scan(&ban_id)
-	if !errors.Is(exist, sql.ErrNoRows) {
+	if db.IsBanned(id, myId) {
 		return profile, ErrUserBannedYou
 	}
-
+	if db.IsBanned(myId, id) {
+		return profile, ErrUserBanned
+	}
 	row := db.c.QueryRow(`SELECT * FROM User WHERE id=?`, id)
 
 	err := row.Scan(&profile.ID, &profile.Name)

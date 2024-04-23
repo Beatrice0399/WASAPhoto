@@ -1,14 +1,14 @@
 package database
 
-func (db *appdbimpl) BanUser(myId int, bid int) error {
-	_ = db.UnfollowUser(myId, bid)
-	_ = db.removeAllComments(myId, bid)
-	_ = db.removeAllComments(bid, myId)
-	_ = db.removeAllLikes(myId, bid)
-	_ = db.removeAllLikes(bid, myId)
-	_ = db.UnfollowUser(bid, myId)
+func (db *appdbimpl) BanUser(bid int, uid int) error {
+	_ = db.UnfollowUser(bid, uid)
+	_ = db.removeAllComments(bid, uid)
+	_ = db.removeAllComments(uid, bid)
+	_ = db.removeAllLikes(bid, uid)
+	_ = db.removeAllLikes(uid, bid)
+	_ = db.UnfollowUser(uid, bid)
 
-	_, err := db.c.Exec(`INSERT INTO Ban (banned, whoBan) VALUES (?,?)`, bid, myId)
+	_, err := db.c.Exec(`INSERT INTO Ban (banned, whoBan) VALUES (?,?)`, uid, bid)
 	if err != nil {
 		return err
 	}
@@ -16,8 +16,8 @@ func (db *appdbimpl) BanUser(myId int, bid int) error {
 	return nil
 }
 
-func (db *appdbimpl) UnbanUser(myId int, bid int) error {
-	res, err := db.c.Exec(`DELETE FROM Ban WHERE banned=? AND whoBan=?`, bid, myId)
+func (db *appdbimpl) UnbanUser(bid int, uid int) error {
+	res, err := db.c.Exec(`DELETE FROM Ban WHERE banned=? AND whoBan=?`, uid, bid)
 	if err != nil {
 		return err
 	}

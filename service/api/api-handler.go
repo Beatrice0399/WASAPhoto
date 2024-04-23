@@ -7,7 +7,7 @@ import (
 func (rt *_router) Handler() http.Handler {
 	rt.router.POST("/session", rt.wrap(rt.doLogin))
 
-	rt.router.GET("/users", rt.wrap(rt.getUserProfile))
+	rt.router.GET("/users", rt.wrap(rt.searchProfile))
 	rt.router.GET("/users/:uid", rt.wrap(rt.getProfile))
 	rt.router.PUT("/users/:uid", rt.wrap(rt.setMyUsername))
 
@@ -30,5 +30,6 @@ func (rt *_router) Handler() http.Handler {
 	rt.router.DELETE("/users/:uid/photos/:phid/comments/:cid", rt.wrap(rt.uncommentPhoto))
 
 	rt.router.GET("/liveness", rt.liveness)
+
 	return rt.router
 }
