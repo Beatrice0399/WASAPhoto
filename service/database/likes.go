@@ -25,23 +25,23 @@ func (db *appdbimpl) UnlikePhoto(phid int, myid int, lid int) error {
 	return nil
 }
 
-func (db *appdbimpl) GetLikesPhoto(phid int) ([]User, error) {
-	rows, err := db.c.Query(`SELECT u.id, u.username FROM Likes l JOIN user u ON u.id = l.uid WHERE phId=?`, phid)
+func (db *appdbimpl) GetLikesPhoto(phid int) ([]Like, error) {
+	rows, err := db.c.Query(`SELECT u.id FROM Likes l JOIN user u ON u.id = l.uid WHERE phId=?`, phid)
 	if err != nil {
 		return nil, err
 	}
-	var users []User
+	var likes []Like
 	defer rows.Close()
 	for rows.Next() {
-		var u User
-		err = rows.Scan(&u.Uid, &u.Username)
+		var l Like
+		err = rows.Scan(&l.Uid)
 		if err != nil {
 			return nil, err
 		}
-		users = append(users, u)
+		likes = append(likes, l)
 	}
 	if rows.Err() != nil {
 		return nil, err
 	}
-	return users, nil
+	return likes, nil
 }

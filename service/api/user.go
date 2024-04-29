@@ -87,20 +87,17 @@ func (rt *_router) getProfile(w http.ResponseWriter, r *http.Request, ps httprou
 		ctx.Logger.WithError(err).Error("error get my id")
 		w.WriteHeader(http.StatusInternalServerError)
 	}
-
 	uid, err := strconv.Atoi(string_uid)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("error get my id")
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 
-	/*
-		if rt.db.IsBanned(myId, uid) || rt.db.IsBanned(uid, myId) {
-			ctx.Logger.WithError(err).Error("Profile unavailable")
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-	*/
+	if rt.db.IsBanned(myId, uid) || rt.db.IsBanned(uid, myId) {
+		ctx.Logger.WithError(err).Error("Profile unavailable")
+		w.WriteHeader(http.StatusPartialContent)
+		return
+	}
 
 	profile, err := rt.db.GetUserProfile(uid, myId)
 	if err != nil {

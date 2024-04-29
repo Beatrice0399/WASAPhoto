@@ -3,17 +3,22 @@ package database
 import "time"
 
 type Photo struct {
-	ID       int       `json:"id"`
-	User     string    `json:"User"`
-	Path     string    `json:"image"`
+	ID       int       `json:"phid"`
+	User     string    `json:"user"`
+	Username string    `json:"username"`
+	Path     string    `json:"path"`
 	Date     time.Time `json:"date"`
-	Likes    []User    `json:"likes"`
+	Likes    []Like    `json:"likes"`
 	Comments []Comment `json:"comments"`
 }
 
 type User struct {
 	Uid      int    `json:"uid"`
 	Username string `json:"username"`
+}
+
+type Like struct {
+	Uid int `json:"uid"`
 }
 
 type Comment struct {

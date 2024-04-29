@@ -7,6 +7,7 @@ import LoadingSpinner from './components/LoadingSpinner.vue'
 import NavBar from './components/NavBar.vue'
 import Photo from './components/Photo.vue'
 import UserContainer from './components/UserContainer.vue'
+import Comment from './components/Comment.vue'
 
 import './assets/dashboard.css'
 import './assets/main.css'
@@ -18,5 +19,6 @@ app.component("LoadingSpinner", LoadingSpinner);
 app.component("NavBar", NavBar);
 app.component("Photo", Photo);
 app.component("UserContainer", UserContainer);
+app.component("Comment", Comment);
 app.use(router)
 app.mount('#app')

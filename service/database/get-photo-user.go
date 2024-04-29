@@ -2,7 +2,9 @@ package database
 
 func (db *appdbimpl) GetPhotoUser(id int) ([]Photo, error) {
 	var photos []Photo
-	rows, err := db.c.Query(`SELECT * FROM Photo WHERE user=? ORDER BY date DESC`, id)
+	rows, err := db.c.Query(`SELECT p.id, p.user, u.username, p.image_path, p.date
+							 FROM Photo p JOIN User u ON u.id=p.user 
+							 WHERE user=? ORDER BY date DESC`, id)
 	if err != nil {
 		return photos, err
 	}
@@ -10,7 +12,7 @@ func (db *appdbimpl) GetPhotoUser(id int) ([]Photo, error) {
 	defer rows.Close()
 	for rows.Next() {
 		var p Photo
-		err = rows.Scan(&p.ID, &p.User, &p.Path, &p.Date)
+		err = rows.Scan(&p.ID, &p.User, &p.Username, &p.Path, &p.Date)
 		if err != nil {
 			return photos, err
 		}

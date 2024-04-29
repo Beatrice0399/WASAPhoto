@@ -62,7 +62,7 @@ type AppDatabase interface {
 	GetFollowing(followedBy int) ([]User, error)
 	GetId(username string) (int, error)
 	GetNameById(id int) (string, error)
-	GetLikesPhoto(phid int) ([]User, error)
+	GetLikesPhoto(phid int) ([]Like, error)
 
 	Ping() error
 }

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"io"
+	"log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -91,13 +92,19 @@ func (rt *_router) uploadPhoto(w http.ResponseWriter, r *http.Request, ps httpro
 	}
 
 	result.Close()
-
+	username, err := rt.db.GetNameById(uid)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		ctx.Logger.WithError(err).Error("error update photo's path within the database")
+		return
+	}
 	w.WriteHeader(http.StatusCreated)
 	_ = json.NewEncoder(w).Encode(Photo{
-		Phid: phid,
-		User: uid,
-		Path: completePath,
-		Date: time.Now().UTC(),
+		Phid:     phid,
+		User:     uid,
+		Username: username,
+		Path:     completePath,
+		Date:     time.Now().UTC(),
 	})
 
 }
@@ -112,18 +119,21 @@ func (rt *_router) deletePhoto(w http.ResponseWriter, r *http.Request, ps httpro
 
 	myid, err := rt.get_uid_path(ps)
 	if err != nil {
+		log.Println("err1: ", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
 	phid, err := rt.getPhid(ps)
 	if err != nil {
+		log.Println("err2: ", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
 	err = rt.db.DeletePhoto(phid, myid)
 	if err != nil {
+		log.Println("err3: ", err)
 		ctx.Logger.WithError(err).Error("error removing phot from database")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
@@ -139,7 +149,7 @@ func (rt *_router) deletePhoto(w http.ResponseWriter, r *http.Request, ps httpro
 	// Remove the file from the user's photos folder
 	err = os.Remove(filepath.Join(path, ps.ByName("phid")))
 	if err != nil {
-		ctx.Logger.WithError(err).Error("photo to be removed is missing")
+		ctx.Logger.WithError(err).Error("photo to be removed not found")
 	}
 
 	w.WriteHeader(http.StatusNoContent)
@@ -147,27 +157,29 @@ func (rt *_router) deletePhoto(w http.ResponseWriter, r *http.Request, ps httpro
 }
 
 func (rt *_router) getPhoto(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
-	w.Header().Set("Content-Type", "application/json")
+	// w.Header().Set("Content-Type", "application/json")
 
-	token := extractBearer(r.Header.Get("Authorization"))
-	valid := validateRequestingUser(ps.ByName("uid"), token)
-	if valid != 0 {
-		w.WriteHeader(valid)
-		return
-	}
-	phid, err := rt.getPhid(ps)
-	if err != nil {
-		ctx.Logger.WithError(err).Error("error get photo's id")
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-	photo, err := rt.db.GetPhoto(phid)
-	if err != nil {
-		ctx.Logger.WithError(err).Error("error get photo from database")
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-	w.WriteHeader(http.StatusOK)
-	_ = json.NewEncoder(w).Encode(photo)
+	// token := extractBearer(r.Header.Get("Authorization"))
+	// valid := validateRequestingUser(ps.ByName("uid"), token)
+	// if valid != 0 {
+	// 	w.WriteHeader(valid)
+	// 	return
+	// }
+	// phid, err := rt.getPhid(ps)
+	// if err != nil {
+	// 	ctx.Logger.WithError(err).Error("error get photo's id")
+	// 	w.WriteHeader(http.StatusInternalServerError)
+	// 	return
+	// }
+	// photo, err := rt.db.GetPhoto(phid)
+	// if err != nil {
+	// 	ctx.Logger.WithError(err).Error("error get photo from database")
+	// 	w.WriteHeader(http.StatusInternalServerError)
+	// 	return
+	// }
+	// w.WriteHeader(http.StatusOK)
+	// _ = json.NewEncoder(w).Encode(photo)
 
+	http.ServeFile(w, r,
+		filepath.Join(photoFolder, ps.ByName("uid"), "photos", ps.ByName("phid")))
 }

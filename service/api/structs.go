@@ -18,10 +18,11 @@ type User struct {
 }
 
 type Photo struct {
-	Phid int       `json:"uid"`
-	User int       `json:"user"`
-	Path string    `json:"path"`
-	Date time.Time `json:"date"`
+	Phid     int       `json:"uid"`
+	User     int       `json:"user"`
+	Username string    `json:"username"`
+	Path     string    `json:"path"`
+	Date     time.Time `json:"date"`
 }
 
 type CommentID struct {

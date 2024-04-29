@@ -48,11 +48,11 @@ func (db *appdbimpl) DeletePhoto(pid int, myid int) error {
 
 func (db *appdbimpl) GetPhoto(phId int) (Photo, error) {
 	var photo Photo
-	row := db.c.QueryRow(`SELECT p.id, p.user, p.image_path, p.date
-							FROM Photo p 
-							WHERE id = ?`, phId)
+	row := db.c.QueryRow(`SELECT p.id, p.user, u.username, p.image_path, p.date
+							FROM Photo p JOIN User u ON u.id=p.user
+							WHERE p.id = ?`, phId)
 
-	err := row.Scan(&photo.ID, &photo.User, &photo.Path, &photo.Date)
+	err := row.Scan(&photo.ID, &photo.User, &photo.Username, &photo.Path, &photo.Date)
 	if err != nil {
 		return photo, err
 	}

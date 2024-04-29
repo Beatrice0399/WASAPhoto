@@ -25,7 +25,6 @@ export default {
 			this.$router.replace("/search")
 		},
 	},
-
 	mounted() {
 		if (!localStorage.getItem('token')){
 			this.$router.replace("/session")

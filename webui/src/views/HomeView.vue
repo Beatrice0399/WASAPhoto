@@ -10,7 +10,7 @@ export default {
 		async loadStream() {
 			try {
 				this.errorMsg = null
-				let response = await this.$axios.get("users" + localStorage.getItem('token') + "/home")
+				let response = await this.$axios.get("/users/" + localStorage.getItem('token') + "/home")
 				
 				if (response.data != null) {
 					this.photos = response.data
@@ -37,9 +37,11 @@ export default {
 				v-for="(photo, index) in photos"
 				:key="index"
 				:phid="photo.phid"
-				:uid="photo.uid"
-				:comments="photo.comments != nil ? photo.comments : []"
-				:likes="photo.likes != nil ? photo.likes : []"
+				:uid="photo.user"
+				:username="photo.username"
+				:path="photo.path"
+				:comments="photo.comments"
+				:likes="photo.likes"
 				:date="photo.date"
 				/>
 		</div>

@@ -4,8 +4,8 @@ export default {
         return {
           textVar: "",  
         }
-      
     },
+    
     methods:{
         logout() {
             localStorage.removeItem('token')
