@@ -42,7 +42,7 @@ export default {
 				:path="photo.path"
 				:comments="photo.comments"
 				:likes="photo.likes"
-				:date="photo.date"
+				:date="photo.date"		
 				/>
 		</div>
 		

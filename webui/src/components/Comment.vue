@@ -1,20 +1,58 @@
 <script>
 export default {
-    props: ["cid", "username", "text", "date"],
+    data(){
+        return{
+            owner: false,
+        }
+    },
+    props: ["cid", "userid", "username", "text", "date", "isOwner", "phid"],
 
     methods: {
-        async addComment() {
-            await this.$axios.post("/users/"+this.uid+"/photos/"+this.phid+"/comments")
-        }
+        async removeComment() {
+            console.log(this.cid)
+            console.log("phid: ", this.phid)
+            try {
+                await this.$axios.delete("/users/"+this.userid+"/photos/"+this.phid+"/comments/"+this.cid, {
+                username : localStorage.getItem('token')}) 
+                this.$emit("eliminateComment", this.cid)
+            } catch (e) {
+                console.log(e)
+            }    
+        },       
     },  
-
 }
 </script>
 
 <template>
-
+    <div class="container-fluid my-comment" style="border: 1px solid black;">
+        <div class="d-flex justify-content-between">
+            <div class="my-card-name" style="background: #d2dee9;">
+                <strong>{{this.username}}</strong>:
+            </div>
+            <div>  <span style="opacity: 0.6;"> {{this.date}} </span> </div>
+        </div> {{this.text}}
+        <div class="d-flex justify-content-end my-btn">
+            <button v-if="this.isOwner" @click="removeComment" type="button" class="btn btn-link" >
+                remove
+            </button>
+        </div>
+    </div>
 </template>
 
 <style>
-
+.btn-link {
+    color: black;
+}
+.btn-link {
+    font-size: 15px;
+    text-align: center;
+}
+.my-comment {
+    padding: 8px;
+    background: #dce9f5;
+    border-radius: 10px;
+}
+.my-card-name {  
+    font-style: italic;
+}
 </style>

@@ -23,6 +23,7 @@ type Like struct {
 
 type Comment struct {
 	ID   int       `json:"id"`
+	Uid  int       `json:"uid"`
 	User string    `json:"user"`
 	Text string    `json:"string"`
 	Date time.Time `json:"date"`
