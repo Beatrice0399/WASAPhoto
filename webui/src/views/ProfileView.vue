@@ -18,7 +18,6 @@ export default {
 
             newName: "",
             showPanel: false,
-            reloadingPage: false,
         }
     },
 
@@ -29,20 +28,11 @@ export default {
                 window.location.reload();
             }
         },
-        countingPhoto(newcountPhoto, oldcountPhoto) {
-            if (newcountPhoto !== oldcountPhoto) {
-                this.getInfo()
-                //window.location.reload()
-            }
-        }
     },
 
     computed:{
         currentPath() {
             return this.$route.params.uid
-        },
-        countingPhoto() {
-            return this.countPhoto
         },
 
         isOwner() {
@@ -93,7 +83,6 @@ export default {
         },
 
         async getInfo() {
-            this.photos = [];
             try {
                 let response = await this.$axios.get("/users/"+this.$route.params.uid);
                 if (response.status === 206){
@@ -114,8 +103,7 @@ export default {
                             this.isFollowed = true;
                         }
                     }
-                }   
-                    
+                }       
             } catch (e) {
                 this.errormsg = e.toString();
                 this.isBanned = true;
@@ -136,7 +124,6 @@ export default {
             this.getInfo()
         },
         async addPhoto() {
-            this.photos = []
             let fileInput = document.getElementById('fileUploader');
             const file = fileInput.files[0];
             const reader = new FileReader();
@@ -149,16 +136,15 @@ export default {
                     headers: {
                         'Content-Type': file.type
                     },
-
                 });
                 this.photos.unshift(response.data);
                 this.countPhoto += 1;
             };
+            // window.location.reload();
         },
         removePhoto(phid){
 			this.photos = this.photos.filter(item => item.phid !== phid)
-            this.countPhoto -= 1
-            // window.location.reload();
+            window.location.reload();
 		},
         
     },
