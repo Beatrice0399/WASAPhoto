@@ -24,10 +24,11 @@ func (db *appdbimpl) removeAllComments(myId int, banned int) error {
 
 func (db *appdbimpl) removeAllLikes(myId int, banned int) error {
 	res, err := db.c.Exec(`DELETE FROM Likes 
-							WHERE uid = ? AND phid IN (
-								SELECT p.id
-								FROM Photo p 
-								WHERE p.user = ?
+							WHERE id IN (
+								SELECT c.id
+								FROM Comment c
+								JOIN Photo p ON p.user = ?
+								WHERE c.user = ?
 								);`, myId, banned)
 
 	if err != nil {

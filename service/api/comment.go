@@ -2,7 +2,6 @@ package api
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 	"strconv"
 
@@ -74,34 +73,29 @@ func (rt *_router) uncommentPhoto(w http.ResponseWriter, r *http.Request, ps htt
 	token := extractBearer(r.Header.Get("Authorization"))
 	// Check if the user isn't logged
 	if isNotLogged(token) {
-		log.Printf("err logged")
 		w.WriteHeader(http.StatusForbidden)
 		return
 	}
 
 	cid, err := rt.getCid(ps)
 	if err != nil {
-		log.Printf("err cid")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
 	phid, err := rt.getPhid(ps)
 	if err != nil {
-		log.Printf("err phid")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
 	myID, err := strconv.Atoi(token)
 	if err != nil {
-		log.Printf("err myid")
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 
 	err = rt.db.UncommentPhoto(cid, phid, myID)
 	if err != nil {
-		log.Printf("err query")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}

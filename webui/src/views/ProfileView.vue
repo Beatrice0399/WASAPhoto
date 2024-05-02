@@ -1,7 +1,7 @@
 <script>
 
 export default {
-    
+
     data: function() {
         return {
             errormsg: "",
@@ -55,7 +55,7 @@ export default {
         },
         closePanel() { 
             this.showPanel = false
-            // window.location.reload();
+            window.location.reload();
             // this.$router.replace("/users/" + localStorage.getItem('token')) 
         },
         async follow(){
@@ -186,7 +186,7 @@ export default {
                                         <div class="pannello-contenuto ">
                                             <input type="text" class="form-control" v-model="newName" maxlength="16" minlength="3" placeholder="New username" style="margin-bottom: 10px;"/>
                                             <button @click="setUsername" class="btn" :disabled="newName == null || newName.length >16 || newName.length <3 || newName.trim().length<3">Save</button>
-                                            <button @click="showPanel = false" class="btn">Cancel</button>
+                                            <button @click="closePanel" class="btn">Cancel</button>
                                         </div>
                                         
                                     </div>
@@ -199,8 +199,7 @@ export default {
                             <p> Photo: {{countPhoto}}</p>
                             <input id="fileUploader" type="file" class="profile-file-upload" @change="addPhoto" accept=".jpg, .png">
                             <label v-if="isOwner" class="btn my-btn-add-photo ms-2" for="fileUploader" style="background-color: rgb(114, 152, 174); margin-top: 10px; margin-bottom: 10px;"> Add photo</label>
-    
-
+  
                             <button v-if="!isOwner && !isBanned" @click="follow" class="btn ms-3" style="background-color: rgb(114, 152, 174); margin-top: 10px; margin-bottom: 10px;">
                                     {{isFollowed ? "Unfollow" : "Follow"}}
                                 </button>
@@ -209,7 +208,6 @@ export default {
                                     {{isBanned ? "Unban" : "Ban"}}
                                 </button>
                         </div>
-                        
                     </div>
                 </div>
             </div>

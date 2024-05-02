@@ -8,6 +8,7 @@ import NavBar from './components/NavBar.vue'
 import Photo from './components/Photo.vue'
 import UserContainer from './components/UserContainer.vue'
 import Comment from './components/Comment.vue'
+
 import './assets/dashboard.css'
 import './assets/main.css'
 

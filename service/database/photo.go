@@ -69,7 +69,7 @@ func (db *appdbimpl) GetPhoto(phId int) (Photo, error) {
 
 func (db *appdbimpl) GetPhotoComments(phId int) ([]Comment, error) {
 	var comments []Comment
-	rows, err := db.c.Query(`SELECT c.id, c.user, u.username, c.string, c.date FROM Comment c
+	rows, err := db.c.Query(`SELECT c.id, u.username, c.string, c.date FROM Comment c
 								JOIN User u ON c.user=u.id WHERE photo=?`, phId)
 	if err != nil {
 		return nil, err
@@ -78,7 +78,7 @@ func (db *appdbimpl) GetPhotoComments(phId int) ([]Comment, error) {
 
 	for rows.Next() {
 		var c Comment
-		err = rows.Scan(&c.ID, &c.Uid, &c.User, &c.Text, &c.Date)
+		err = rows.Scan(&c.ID, &c.User, &c.Text, &c.Date)
 		if err != nil {
 			return nil, err
 		}
