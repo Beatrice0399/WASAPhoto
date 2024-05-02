@@ -3,11 +3,14 @@ export default {
     data(){
         return{
             photoPATH: "",
+            photoid: 0,
             liked: false,
             owner: false,
             totalComments: [],
             totalLikes: [],
-            countLikes: 0
+            countLikes: 0,
+            countComments: 0,
+            newComment: ""
         }
     },
     props: ["phid", "uid", "username", "path", "comments", "likes", "date"],
@@ -18,6 +21,8 @@ export default {
         },
         loadPhoto() { 
             this.photoPATH = __API_URL__+ "/users/"+this.uid+"/photos/"+this.phid
+            this.photoid = this.phid
+            this.loadComments()
             this.loadLikes()
             this.isOwner()  
         },
@@ -44,6 +49,22 @@ export default {
 
             }
         },
+        async addComment() {
+            await this.$axios.post("/users/"+this.uid+"/photos/"+this.phid+"/comments", {
+
+            })
+        },
+        loadComments() {
+            if (this.comments != null) {
+                for (let i = 0; i < this.comments.length; i++) {
+                    this.countComments += 1
+                    this.totalComments.push(this.comments[i])
+                    if (this.comments[i].uid === localStorage.getItem('token')) {
+                        this.comments[i].isOwner = false
+                    }
+                }
+            }
+        },
         
         loadLikes() {
             if (this.likes != null) {
@@ -56,6 +77,14 @@ export default {
                 }
             }
         },
+        isOwnerComment(myvar) {
+            return  myvar == localStorage.getItem('token') ? true : false    
+        },
+        removeCommentFromList(commentId){
+            this.totalComments = this.totalComments.filter(item => item.cid !== commentId);
+            window.location.reload();
+        },
+
     },
 
     async mounted() {
@@ -82,21 +111,51 @@ export default {
             <div class="d-flex justify-content-center">
                 <img :src="photoPATH" class="card-img-top img-fluid">
             </div>
+            
 
             <div class="d-flex">
-            <button @click="addLike" class="my-trnsp-btn me-2" type="button">
-                        <svg v-if="this.liked" class="feather"><use href="/feather-sprite-v4.29.0.svg#heart" style="fill: red"/></svg>
-                        <svg v-else class="feather"><use href="/feather-sprite-v4.29.0.svg#heart" /> </svg> {{countLikes}}
-                    </button>
-            <button v-if="isOwner" @click="addComment" class="my-trnsp-btn me-2" type="button">
-                        <svg class="feather"><use href="/feather-sprite-v4.29.0.svg#message-circle"/></svg>
-                    </button>
+                <button @click="addLike" class="my-trnsp-btn me-2" type="button">
+                    <svg v-if="this.liked" class="feather"><use href="/feather-sprite-v4.29.0.svg#heart" style="fill: red"/></svg>
+                    <svg v-else class="feather"><use href="/feather-sprite-v4.29.0.svg#heart" /> </svg> {{countLikes}}
+                </button>
+
+
+
+
+                <button v-if="isOwner" @click="addComment" class="my-trnsp-btn me-2" type="button">
+                    <svg class="feather"><use href="/feather-sprite-v4.29.0.svg#message-circle"/></svg> {{countComments}}
+                </button>
+
+
             </div>
+            <div v-if="totalComments!= undefined &&totalComments.length>0" class="container-comments">
+                <div class="scrollable-content ">
+                <Comment 
+                    v-for="(comment, index) in this.comments"
+                    :key="index"
+                    :cid="comment.id"
+                    :userid="comment.uid"
+                    :username="comment.user"
+                    :text="comment.string"
+                    :date="comment.date"
+                    :isOwner="isOwnerComment(comment.uid)"
+                    :phid="photoid"
+                    @eliminateComment="removeCommentFromList(comment.cid)"
+                />
+                </div>
+            </div>
+            
+            
         </div>
     </div>
 </template>
 
 <style>
+
+.scrollable-content {
+  height: 100%; /* Utilizza tutta l'altezza del container */
+  overflow-y: auto; /* Aggiunge una scrollbar verticale se il contenuto è più alto del container */
+}
 .feather {
     fill: red; /* Specifica il colore del riempimento (fill) per l'SVG */
 }

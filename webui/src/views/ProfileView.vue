@@ -32,7 +32,6 @@ export default {
         countingPhoto(newcountPhoto, oldcountPhoto) {
             if (newcountPhoto !== oldcountPhoto) {
                 this.getInfo()
-                //window.location.reload()
             }
         }
     },
@@ -88,8 +87,7 @@ export default {
                 }
             } catch (e) {
                 this.errormsg = e.toString();
-            }
-            
+            }        
         },
 
         async getInfo() {
@@ -114,12 +112,11 @@ export default {
                             this.isFollowed = true;
                         }
                     }
-                }                  
+                }          
             } catch (e) {
                 this.errormsg = e.toString();
                 this.isBanned = true;
-            }
-            
+            } 
         },
         async setUsername() {        
             try {
