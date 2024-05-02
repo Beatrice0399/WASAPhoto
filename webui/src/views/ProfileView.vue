@@ -140,7 +140,7 @@ export default {
                 this.photos.unshift(response.data);
                 this.countPhoto += 1;
             };
-            window.location.reload();
+            // window.location.reload();
         },
         removePhoto(phid){
 			this.photos = this.photos.filter(item => item.phid !== phid)
