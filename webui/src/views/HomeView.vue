@@ -2,14 +2,14 @@
 export default {
 	data: function() {
 		return {
-			errorMsg: null,
+			errormsg: null,
 			photos: [],
 		}
 	},
 	methods: {
 		async loadStream() {
 			try {
-				this.errorMsg = null
+				this.errormsg = null
 				let response = await this.$axios.get("/users/" + localStorage.getItem('token') + "/home")
 				
 				if (response.data != null) {
@@ -30,7 +30,7 @@ export default {
 <template>
 	<div class="container-fluid">
 	
-		<ErrorMsg v-if="errorMsg" :msg="errorMsg"></ErrorMsg>
+		<ErrorMsg v-if="errormsg" :msg="errormsg"></ErrorMsg>
 		
 		<div class="row">
 			<Photo
