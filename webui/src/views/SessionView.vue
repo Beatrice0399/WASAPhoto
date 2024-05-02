@@ -40,7 +40,7 @@ export default {
         
         <div  class="row">
             <div  class="col">
-                <ErrorMsg v-if="errorMsg" :msg="errorMsg"></ErrorMsg>
+                <ErrorMsg v-if="errormsg" :msg="errormsg"></ErrorMsg>
             </div>
         </div>
         

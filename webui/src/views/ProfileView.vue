@@ -1,7 +1,7 @@
 <script>
 
 export default {
-
+    
     data: function() {
         return {
             errormsg: "",
@@ -18,6 +18,7 @@ export default {
 
             newName: "",
             showPanel: false,
+            reloadingPage: false,
         }
     },
 
@@ -28,11 +29,20 @@ export default {
                 window.location.reload();
             }
         },
+        countingPhoto(newcountPhoto, oldcountPhoto) {
+            if (newcountPhoto !== oldcountPhoto) {
+                this.getInfo()
+                //window.location.reload()
+            }
+        }
     },
 
     computed:{
         currentPath() {
             return this.$route.params.uid
+        },
+        countingPhoto() {
+            return this.countPhoto
         },
 
         isOwner() {
@@ -45,7 +55,7 @@ export default {
         },
         closePanel() { 
             this.showPanel = false
-            window.location.reload();
+            // window.location.reload();
             // this.$router.replace("/users/" + localStorage.getItem('token')) 
         },
         async follow(){
@@ -83,6 +93,7 @@ export default {
         },
 
         async getInfo() {
+            this.photos = [];
             try {
                 let response = await this.$axios.get("/users/"+this.$route.params.uid);
                 if (response.status === 206){
@@ -103,7 +114,7 @@ export default {
                             this.isFollowed = true;
                         }
                     }
-                }       
+                }                  
             } catch (e) {
                 this.errormsg = e.toString();
                 this.isBanned = true;
@@ -124,6 +135,7 @@ export default {
             this.getInfo()
         },
         async addPhoto() {
+            this.photos = []
             let fileInput = document.getElementById('fileUploader');
             const file = fileInput.files[0];
             const reader = new FileReader();
@@ -136,15 +148,16 @@ export default {
                     headers: {
                         'Content-Type': file.type
                     },
+
                 });
                 this.photos.unshift(response.data);
                 this.countPhoto += 1;
             };
-            // window.location.reload();
         },
         removePhoto(phid){
 			this.photos = this.photos.filter(item => item.phid !== phid)
-            window.location.reload();
+            this.countPhoto -= 1
+            // window.location.reload();
 		},
         
     },
@@ -172,7 +185,7 @@ export default {
                                         <div class="pannello-contenuto ">
                                             <input type="text" class="form-control" v-model="newName" maxlength="16" minlength="3" placeholder="New username" style="margin-bottom: 10px;"/>
                                             <button @click="setUsername" class="btn" :disabled="newName == null || newName.length >16 || newName.length <3 || newName.trim().length<3">Save</button>
-                                            <button @click="closePanel" class="btn">Cancel</button>
+                                            <button @click="showPanel = false" class="btn">Cancel</button>
                                         </div>
                                         
                                     </div>
@@ -185,7 +198,8 @@ export default {
                             <p> Photo: {{countPhoto}}</p>
                             <input id="fileUploader" type="file" class="profile-file-upload" @change="addPhoto" accept=".jpg, .png">
                             <label v-if="isOwner" class="btn my-btn-add-photo ms-2" for="fileUploader" style="background-color: rgb(114, 152, 174); margin-top: 10px; margin-bottom: 10px;"> Add photo</label>
-  
+    
+
                             <button v-if="!isOwner && !isBanned" @click="follow" class="btn ms-3" style="background-color: rgb(114, 152, 174); margin-top: 10px; margin-bottom: 10px;">
                                     {{isFollowed ? "Unfollow" : "Follow"}}
                                 </button>
@@ -194,6 +208,7 @@ export default {
                                     {{isBanned ? "Unban" : "Ban"}}
                                 </button>
                         </div>
+                        
                     </div>
                 </div>
             </div>

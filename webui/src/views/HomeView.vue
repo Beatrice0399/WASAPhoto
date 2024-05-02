@@ -2,7 +2,7 @@
 export default {
 	data: function() {
 		return {
-			errorMsg: null,
+			errormsg: null,
 			photos: [],
 		}
 	},
@@ -30,7 +30,7 @@ export default {
 <template>
 	<div class="container-fluid">
 	
-		<ErrorMsg v-if="errorMsg" :msg="errorMsg"></ErrorMsg>
+		<ErrorMsg v-if="errormsg" :msg="errormsg"></ErrorMsg>
 		
 		<div class="row">
 			<Photo
