@@ -9,7 +9,7 @@ export default {
 	methods: {
 		async loadStream() {
 			try {
-				this.errorMsg = null
+				this.errormsg = null
 				let response = await this.$axios.get("/users/" + localStorage.getItem('token') + "/home")
 				
 				if (response.data != null) {
