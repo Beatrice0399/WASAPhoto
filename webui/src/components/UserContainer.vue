@@ -16,7 +16,7 @@ export default {
                 <div class="card-body">
                     
                     <h5 @click="selectedUser" class="user-mini-card-title d-flex justify-content-center " > 
-                      <img class="profile-img" src="../assets/images/profile.png">  @{{username }}
+                      <svg class="feather"><use href="/feather-sprite-v4.29.0.svg#user"/></svg> @{{ username }}
                     </h5>
                 </div>
             </div>
