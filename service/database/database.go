@@ -51,7 +51,7 @@ type AppDatabase interface {
 	GetMyStream(myId int) ([]Photo, error)
 	LikePhoto(phId int, uid int) error
 	UnlikePhoto(id int, uid int, lid int) error
-	CommentPhoto(uid int, phid int, text string) (int, error)
+	CommentPhoto(uid int, phid int, text string) (Comment, error)
 	UncommentPhoto(cid int, phid int, uid int) error
 	DeletePhoto(phid int, myid int) error
 

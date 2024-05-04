@@ -30,7 +30,7 @@ export default {
     <nav class="navbar navbar-expand-lg d-flex justify-content-between sticky-top mb-3 my-nav" style="background-color: #e3f2fd;">
       <div class="col-4">
           <a class="navbar-brand ms-2 d-flex" @click="goBackHome" style="background-color: #e3f2fd;" type="button">
-              <img class="home-img" src="../assets/images/home.png">
+              <svg class="feather"><use href="/feather-sprite-v4.29.0.svg#home"/></svg>
               <div>WASAPhoto</div>
               
           </a>

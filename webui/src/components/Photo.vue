@@ -4,16 +4,32 @@ export default {
         return{
             photoPATH: "",
             photoid: 0,
+            userid: 0,
             liked: false,
             owner: false,
             totalComments: [],
             totalLikes: [],
             countLikes: 0,
             countComments: 0,
-            newComment: ""
+            isModalVisible: false,
+            commentKey: 0
         }
     },
     props: ["phid", "uid", "username", "path", "comments", "likes", "date"],
+
+    watch: {
+        countingComments(newcountComments, oldcountComments) {
+            if (newcountComments !== oldcountComments) {
+                this.loadPhoto()
+                this.loadComments()
+            }
+        }
+    },
+    computed: {
+        countingComments() {
+            return this.countComments
+        }
+    },
 
     methods: {
         isOwner() {
@@ -22,6 +38,7 @@ export default {
         loadPhoto() { 
             this.photoPATH = __API_URL__+ "/users/"+this.uid+"/photos/"+this.phid
             this.photoid = this.phid
+            this.userid = this.uid
             this.loadComments()
             this.loadLikes()
             this.isOwner()  
@@ -49,12 +66,14 @@ export default {
 
             }
         },
-        async addComment() {
-            await this.$axios.post("/users/"+this.uid+"/photos/"+this.phid+"/comments", {
+        // async addComment() {
+        //     await this.$axios.post("/users/"+this.uid+"/photos/"+this.phid+"/comments", {
 
-            })
-        },
+        //     })
+        // },
         loadComments() {
+            this.countComments = 0
+            this.totalComments = []
             if (this.comments != null) {
                 for (let i = 0; i < this.comments.length; i++) {
                     this.countComments += 1
@@ -81,8 +100,24 @@ export default {
             return  myvar == localStorage.getItem('token') ? true : false    
         },
         removeCommentFromList(commentId){
+            console.log(commentId)
+            console.log(this.totalComments.length)
             this.totalComments = this.totalComments.filter(item => item.cid !== commentId);
-            window.location.reload();
+            console.log(this.totalComments.length)
+            // window.location.reload();
+            this.loadComments()
+        },
+        showModal() {
+            this.isModalVisible = true;
+        },
+        closeModal() {
+            this.isModalVisible = false;
+        },
+        addCommentToList(comment) {
+            console.log(this.totalComments.length)
+            this.totalComments.push(comment)
+            console.log(this.totalComments.length)
+            this.countComments +=1
         },
 
     },
@@ -118,15 +153,22 @@ export default {
                     <svg v-if="this.liked" class="feather"><use href="/feather-sprite-v4.29.0.svg#heart" style="fill: red"/></svg>
                     <svg v-else class="feather"><use href="/feather-sprite-v4.29.0.svg#heart" /> </svg> {{countLikes}}
                 </button>
+           
 
-
-
-
-                <button v-if="isOwner" @click="addComment" class="my-trnsp-btn me-2" type="button">
+                <!-- <button @click="addComment" class="my-trnsp-btn me-2" type="button">
                     <svg class="feather"><use href="/feather-sprite-v4.29.0.svg#message-circle"/></svg> {{countComments}}
+                </button> -->
+            <!-- ########### -->    
+
+                <button type="button" class="btn" @click="showModal"> 
+                    <svg class="feather"><use href="/feather-sprite-v4.29.0.svg#message-circle"/></svg> {{this.countComments}}
                 </button>
+                <ModalComment v-if="isModalVisible" @close="closeModal" 
+                    :uid="this.userid"
+                    :phid="this.photoid"
+                    @addComment="addCommentToList"/>
 
-
+            <!-- ########### -->
             </div>
             <div v-if="totalComments!= undefined &&totalComments.length>0" class="container-comments">
                 <div class="scrollable-content ">
@@ -140,7 +182,7 @@ export default {
                     :date="comment.date"
                     :isOwner="isOwnerComment(comment.uid)"
                     :phid="photoid"
-                    @eliminateComment="removeCommentFromList(comment.cid)"
+                    @eliminateComment="removeCommentFromList(comment.cid)"                    
                 />
                 </div>
             </div>
@@ -151,6 +193,10 @@ export default {
 </template>
 
 <style>
+.container-comments {
+    height: 102px; /* Altezza fissa desiderata */
+}
+
 
 .scrollable-content {
   height: 100%; /* Utilizza tutta l'altezza del container */

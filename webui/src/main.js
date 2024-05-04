@@ -8,6 +8,8 @@ import NavBar from './components/NavBar.vue'
 import Photo from './components/Photo.vue'
 import UserContainer from './components/UserContainer.vue'
 import Comment from './components/Comment.vue'
+import Modal from './components/ModalComment.vue'
+import ModalSettings from './components/ModalSettings.vue'
 
 import './assets/dashboard.css'
 import './assets/main.css'
@@ -20,5 +22,7 @@ app.component("NavBar", NavBar);
 app.component("Photo", Photo);
 app.component("UserContainer", UserContainer);
 app.component("Comment", Comment);
+app.component('ModalComment', Modal)
+app.component('ModalSettings', ModalSettings)
 app.use(router)
 app.mount('#app')

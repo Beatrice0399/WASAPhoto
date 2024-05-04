@@ -16,9 +16,8 @@ export default {
             countFollowing: 0,
             countPhoto: 0,
 
-            newName: "",
-            showPanel: false,
             reloadingPage: false,
+            isModalVisible: false,
         }
     },
 
@@ -49,14 +48,6 @@ export default {
         },
     },
     methods: {
-        togglePanel() {
-            this.showPanel = true;
-        },
-        closePanel() { 
-            this.showPanel = false
-            // window.location.reload();
-            // this.$router.replace("/users/" + localStorage.getItem('token')) 
-        },
         async follow(){
             try{
                 if (this.isFollowed) {
@@ -118,19 +109,7 @@ export default {
                 this.isBanned = true;
             } 
         },
-        async setUsername() {        
-            try {
-                let response = await this.$axios.put("/users/" + this.$route.params.uid, {
-                    username : this.newName.trim(), 
-                })
-                this.showPanel = false
-            } catch (e) {
-                console.log(e)
-                this.errormsg = e.toString();
-            }
-            this.closePanel()
-            this.getInfo()
-        },
+
         async addPhoto() {
             this.photos = []
             let fileInput = document.getElementById('fileUploader');
@@ -156,6 +135,15 @@ export default {
             this.countPhoto -= 1
             // window.location.reload();
 		},
+        showModal() {
+            this.isModalVisible = true;
+        },
+        closeModal() {
+            this.isModalVisible = false;
+        },
+        newUsername() {
+            this.getInfo()
+        }
         
     },
 
@@ -176,17 +164,14 @@ export default {
                         <div class="col">
                             <div class="card-body">
                                 <h5 class="card-title p-0 me-auto mt-auto">{{this.$route.params.uid}} @{{this.username}}
-                                <button v-if="isOwner" @click="togglePanel" class="my-trnsp-btn me-2" type="button" style="border: null">
-                                    <svg class="feather"><use href="/feather-sprite-v4.29.0.svg#edit-3"/></svg>
-                                    <div v-if="showPanel" class="pannello" style="position: absolute;">
-                                        <div class="pannello-contenuto ">
-                                            <input type="text" class="form-control" v-model="newName" maxlength="16" minlength="3" placeholder="New username" style="margin-bottom: 10px;"/>
-                                            <button @click="setUsername" class="btn" :disabled="newName == null || newName.length >16 || newName.length <3 || newName.trim().length<3">Save</button>
-                                            <button @click="showPanel = false" class="btn">Cancel</button>
-                                        </div>
-                                        
-                                    </div>
+
+                                <button v-if="isOwner" type="button" class="btn" @click="showModal"> 
+                                  <svg class="feather"><use href="/feather-sprite-v4.29.0.svg#edit-3"/></svg> 
                                 </button>
+                                <ModalSettings v-if="isModalVisible" @close="closeModal" 
+                                    @setUsername="newUsername"
+                                    />
+
                                
                                 </h5>                  
                             </div>

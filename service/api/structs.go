@@ -28,3 +28,7 @@ type Photo struct {
 type CommentID struct {
 	Cid int `json:"cid"`
 }
+
+type CommentText struct {
+	Comment string `json:"comment"`
+}

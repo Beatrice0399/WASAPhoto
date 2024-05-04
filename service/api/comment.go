@@ -39,20 +39,20 @@ func (rt *_router) commentPhoto(w http.ResponseWriter, r *http.Request, ps httpr
 		return
 	}
 
-	var msg string
+	var msg CommentText
 	err = json.NewDecoder(r.Body).Decode(&msg)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		ctx.Logger.WithError(err).Error("error decoding request body json")
 		return
 	}
-	if len(msg) > 400 {
+	if len(msg.Comment) > 400 {
 		w.WriteHeader(http.StatusBadRequest)
 		ctx.Logger.WithError(err).Error("error comment longer than 400 characters")
 		return
 	}
 
-	cid, err := rt.db.CommentPhoto(myID, phid, msg)
+	comment, err := rt.db.CommentPhoto(myID, phid, msg.Comment)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		ctx.Logger.WithError(err).Error("error insert comment within databse")
@@ -60,7 +60,7 @@ func (rt *_router) commentPhoto(w http.ResponseWriter, r *http.Request, ps httpr
 	}
 	w.WriteHeader(http.StatusCreated)
 
-	err = json.NewEncoder(w).Encode(CommentID{Cid: cid})
+	err = json.NewEncoder(w).Encode(comment)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		ctx.Logger.WithError(err).Error("error convert id photo")
