@@ -1,5 +1,12 @@
 <script>
+import ModalComment from './ModalComment.vue';
+import Comment from './Comment.vue';
+
 export default {
+    components: {
+        ModalComment,
+        Comment
+    },
     data(){
         return{
             photoPATH: "",
@@ -16,20 +23,6 @@ export default {
         }
     },
     props: ["phid", "uid", "username", "path", "comments", "likes", "date"],
-
-    watch: {
-        countingComments(newcountComments, oldcountComments) {
-            if (newcountComments !== oldcountComments) {
-                this.loadPhoto()
-                this.loadComments()
-            }
-        }
-    },
-    computed: {
-        countingComments() {
-            return this.countComments
-        }
-    },
 
     methods: {
         isOwner() {
@@ -66,11 +59,6 @@ export default {
 
             }
         },
-        // async addComment() {
-        //     await this.$axios.post("/users/"+this.uid+"/photos/"+this.phid+"/comments", {
-
-        //     })
-        // },
         loadComments() {
             this.countComments = 0
             this.totalComments = []
@@ -87,6 +75,7 @@ export default {
         
         loadLikes() {
             if (this.likes != null) {
+                this.countLikes = 0
                 for (let i = 0; i < this.likes.length; i++) {
                     this.countLikes += 1
                     this.totalLikes.push(this.likes[i].uid)
@@ -100,12 +89,8 @@ export default {
             return  myvar == localStorage.getItem('token') ? true : false    
         },
         removeCommentFromList(commentId){
-            console.log(commentId)
-            console.log(this.totalComments.length)
-            this.totalComments = this.totalComments.filter(item => item.cid !== commentId);
-            console.log(this.totalComments.length)
-            // window.location.reload();
-            this.loadComments()
+            this.totalComments = this.totalComments.filter(item => item.id !== commentId);
+            this.countComments -=1
         },
         showModal() {
             this.isModalVisible = true;
@@ -114,12 +99,10 @@ export default {
             this.isModalVisible = false;
         },
         addCommentToList(comment) {
-            console.log(this.totalComments.length)
             this.totalComments.push(comment)
-            console.log(this.totalComments.length)
             this.countComments +=1
+            this.$emit('commentAdded', this.totalComments)
         },
-
     },
 
     async mounted() {
@@ -166,14 +149,14 @@ export default {
                 <ModalComment v-if="isModalVisible" @close="closeModal" 
                     :uid="this.userid"
                     :phid="this.photoid"
-                    @addComment="addCommentToList"/>
+                    @commentAdded="addCommentToList"/>
 
             <!-- ########### -->
             </div>
             <div v-if="totalComments!= undefined &&totalComments.length>0" class="container-comments">
                 <div class="scrollable-content ">
                 <Comment 
-                    v-for="(comment, index) in this.comments"
+                    v-for="(comment, index) in this.totalComments"
                     :key="index"
                     :cid="comment.id"
                     :userid="comment.uid"
@@ -182,7 +165,7 @@ export default {
                     :date="comment.date"
                     :isOwner="isOwnerComment(comment.uid)"
                     :phid="photoid"
-                    @eliminateComment="removeCommentFromList(comment.cid)"                    
+                    @commentRemoved="removeCommentFromList(comment.id)"                    
                 />
                 </div>
             </div>

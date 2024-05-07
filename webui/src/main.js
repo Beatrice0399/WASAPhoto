@@ -24,5 +24,6 @@ app.component("UserContainer", UserContainer);
 app.component("Comment", Comment);
 app.component('ModalComment', Modal)
 app.component('ModalSettings', ModalSettings)
+
 app.use(router)
 app.mount('#app')

@@ -23,7 +23,7 @@ export default {
 
     watch:{
         currentPath(newuid,olduid){
-            if (newuid !== olduid && (this.$route.path !== '/home' && this.$route.path !== '/search')) {  
+            if (newuid !== olduid && (this.$route.path !== '/home' && this.$route.path !== '/search' )) {  
                 this.getInfo()
                 window.location.reload();
             }
@@ -171,7 +171,6 @@ export default {
                                 <ModalSettings v-if="isModalVisible" @close="closeModal" 
                                     @setUsername="newUsername"
                                     />
-
                                
                                 </h5>                  
                             </div>

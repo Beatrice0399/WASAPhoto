@@ -12,22 +12,22 @@ export default {
             this.$emit('close')
         },
         async addComment() {
+          try{
             let response = await this.$axios.post("/users/"+this.uid+"/photos/"+this.phid+"/comments", {
                 comment: this.newComment
             }, {
                 headers: {
                     'Content-Type': 'application/json'
                 }
-            })
-            this.$emit('addComment', {
-                cid: response.data.id,
-                userid: response.data.uid,
-                username: response.data.user,
-                text: response.data.string,
-                date: response.data.date
-            })
-            this.newComment = ""
+            });
+            this.$emit('commentAdded', response.data)
+            this.newComment = "" 
             this.close() 
+            } catch(e) {
+              console.error(e)
+            }
+
+            
         },
         updateComment() {
             this.$emit('addComment', newCommentJSON)

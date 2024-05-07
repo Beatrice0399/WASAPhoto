@@ -9,12 +9,10 @@ export default {
 
     methods: {
         async removeComment() {
-            console.log(this.cid)
-            console.log("phid: ", this.phid)
             try {
                 await this.$axios.delete("/users/"+this.userid+"/photos/"+this.phid+"/comments/"+this.cid, {
                 username : localStorage.getItem('token')}) 
-                this.$emit("eliminateComment", this.cid)
+                this.$emit("commentRemoved", this.cid)
             } catch (e) {
                 console.log(e)
             }    
