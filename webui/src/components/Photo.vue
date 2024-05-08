@@ -66,9 +66,9 @@ export default {
                 for (let i = 0; i < this.comments.length; i++) {
                     this.countComments += 1
                     this.totalComments.push(this.comments[i])
-                    if (this.comments[i].uid === localStorage.getItem('token')) {
-                        this.comments[i].isOwner = false
-                    }
+                    // if (this.comments[i].uid === localStorage.getItem('token')) {
+                    //     this.comments[i].isOwner = false
+                    // }
                 }
             }
         },
@@ -84,9 +84,6 @@ export default {
                     }
                 }
             }
-        },
-        isOwnerComment(myvar) {
-            return  myvar == localStorage.getItem('token') ? true : false    
         },
         removeCommentFromList(commentId){
             this.totalComments = this.totalComments.filter(item => item.id !== commentId);
@@ -163,7 +160,7 @@ export default {
                     :username="comment.user"
                     :text="comment.string"
                     :date="comment.date"
-                    :isOwner="isOwnerComment(comment.uid)"
+                    
                     :phid="photoid"
                     @commentRemoved="removeCommentFromList(comment.id)"                    
                 />

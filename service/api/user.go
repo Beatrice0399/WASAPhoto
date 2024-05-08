@@ -15,8 +15,12 @@ func (rt *_router) setMyUsername(w http.ResponseWriter, r *http.Request, ps http
 	err := json.NewDecoder(r.Body).Decode(&new_username)
 	log.Println(new_username.Username)
 	if !validStringUsername(new_username.Username) {
-		log.Printf("stringa non valida")
 		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	if rt.db.UsernameExist(new_username.Username) {
+		ctx.Logger.Error("Username already used")
+		w.WriteHeader(http.StatusNoContent)
 		return
 	}
 	if err != nil {
@@ -44,7 +48,7 @@ func (rt *_router) setMyUsername(w http.ResponseWriter, r *http.Request, ps http
 		return
 	}
 
-	w.WriteHeader(http.StatusNoContent)
+	w.WriteHeader(http.StatusOK)
 
 	// newURL := "/users/" + new_username
 	// http.Redirect(w, r, newURL, http.StatusFound)

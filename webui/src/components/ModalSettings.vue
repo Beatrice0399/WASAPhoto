@@ -4,6 +4,8 @@ export default {
     data() {
         return {
             newUsername: "",
+            nameIsUsed: false,
+            errormsg: "",
         }
     },
     props: ["uid", "username"], 
@@ -12,17 +14,21 @@ export default {
             this.$emit('close')
         },
         async setUsername() {        
-            try {
+            
                 let response = await this.$axios.put("/users/" + this.$route.params.uid, {
                     username : this.newUsername.trim(), 
                 })
+                if (response.status === 204){
+                  
+                    this.nameIsUsed = true
+                    this.errormsg = "Username already used"
+                    return
+                }
                 this.$emit('setUsername')
-            } catch (e) {
-                console.log(e)
-                this.errormsg = e.toString();
-            }
-            this.newUsername = ""
-            this.close() 
+                this.newUsername = ""
+                this.close() 
+            
+            
         },
         
     },
@@ -46,6 +52,7 @@ export default {
                     <input type="text" class="form-control" id="floatingInput" v-model="newUsername" maxlength="16" minlength="3" placeholder="newUsername" />
                     <label for="floatingInput">New username</label>
                 </div>
+          <ErrorMsg v-if="nameIsUsed" :msg="errormsg"></ErrorMsg>
                 
         </section>
 

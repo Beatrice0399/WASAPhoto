@@ -63,6 +63,7 @@ type AppDatabase interface {
 	GetId(username string) (int, error)
 	GetNameById(id int) (string, error)
 	GetLikesPhoto(phid int) ([]Like, error)
+	UsernameExist(name string) bool
 
 	Ping() error
 }

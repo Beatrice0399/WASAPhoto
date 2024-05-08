@@ -41,3 +41,17 @@ func (db *appdbimpl) removeAllLikes(myId int, banned int) error {
 	}
 	return nil
 }
+
+func (db *appdbimpl) UsernameExist(name string) bool {
+	row := db.c.QueryRow(`SELECT count(*) FROM user WHERE username=?`, name)
+	var count int
+	err := row.Scan(&count)
+	if err != nil {
+		return false
+	}
+	if count > 0 {
+		return true
+	} else {
+		return false
+	}
+}

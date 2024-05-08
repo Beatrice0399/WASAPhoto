@@ -5,7 +5,7 @@ export default {
             owner: false,
         }
     },
-    props: ["cid", "userid", "username", "text", "date", "isOwner", "phid"],
+    props: ["cid", "userid", "username", "text", "date",  "phid"],
 
     methods: {
         async removeComment() {
@@ -16,8 +16,16 @@ export default {
             } catch (e) {
                 console.log(e)
             }    
-        },       
+        },  
+        async photoOwner() {
+            if (this.userid == localStorage.getItem('token')) {
+                this.owner = true;
+            }
+        }     
     },  
+    async mounted() {
+        await this.photoOwner()
+    },
 }
 </script>
 
@@ -30,7 +38,7 @@ export default {
             <div>  <span style="opacity: 0.6;"> {{this.date}} </span> </div>
         </div> {{this.text}}
         <div class="d-flex justify-content-end my-btn">
-            <button v-if="this.isOwner" @click="removeComment" type="button" class="btn btn-link" >
+            <button v-if="this.owner" @click="removeComment" type="button" class="btn btn-link" >
                 remove
             </button>
         </div>
