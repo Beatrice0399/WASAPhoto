@@ -14,20 +14,20 @@ export default {
             this.$emit('close')
         },
         async setUsername() {        
-            
+          try {
                 let response = await this.$axios.put("/users/" + this.$route.params.uid, {
                     username : this.newUsername.trim(), 
-                })
-                if (response.status === 204){
-                  
+                }) 
+                this.$emit('setUsername')
+                this.newUsername = ""
+                this.close() 
+            } catch (e) {
+              if (response.status === 403){
                     this.nameIsUsed = true
                     this.errormsg = "Username already used"
                     return
                 }
-                this.$emit('setUsername')
-                this.newUsername = ""
-                this.close() 
-            
+            }
             
         },
         
