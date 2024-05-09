@@ -37,7 +37,7 @@ export default {
 </script>
 
 <template>
-  <transition name="modal-fade">
+  <div name="modal-fade">
     <div class="modal-backdrop">
       <div class="modal" role="dialog" aria-labelledby="modalTitle" aria-describedby="modalDescription">
         <header class="modal-header" id="modalTitle">
@@ -65,7 +65,7 @@ export default {
         </footer>
       </div>
     </div>
-  </transition>
+  </div>
 </template>
 
 <style>

@@ -6,28 +6,31 @@ export default {
             newUsername: "",
             nameIsUsed: false,
             errormsg: "",
+            isModalVisible: false,
         }
     },
     props: ["uid", "username"], 
     methods: {
         close() {
+            
             this.$emit('close')
         },
         async setUsername() {        
           try {
-                let response = await this.$axios.put("/users/" + this.$route.params.uid, {
-                    username : this.newUsername.trim(), 
-                }) 
-                this.$emit('setUsername')
-                this.newUsername = ""
-                this.close() 
-            } catch (e) {
-              if (response.status === 403){
-                    this.nameIsUsed = true
-                    this.errormsg = "Username already used"
-                    return
-                }
+            let response = await this.$axios.put("/users/" + this.$route.params.uid, {
+                username : this.newUsername.trim(), 
+            })
+            
+            this.$emit('setUsername')
+            this.newUsername = ""
+            this.close() 
+          } catch (e) {
+            if (e.response.status === 403){     
+              this.nameIsUsed = true
+              this.errormsg = "Username already used"
+              return
             }
+          }
             
         },
         
@@ -36,7 +39,7 @@ export default {
 </script>
 
 <template>
-  <transition name="modal-fade">
+  <div name="modal-fade" >
     <div class="modal-backdrop">
       <div class="modal" role="dialog" aria-labelledby="modalTitle" aria-describedby="modalDescription">
         <header class="modal-header" id="modalTitle">
@@ -65,7 +68,7 @@ export default {
         </footer>
       </div>
     </div>
-  </transition>
+  </div>
 </template>
 
 <style>
@@ -86,12 +89,12 @@ export default {
   box-shadow: 2px 2px 20px 1px;
   overflow-x: auto;
   width: 50%;
-  max-height: 30%;
+  max-height: 35%;
   padding: 20px;
   display: flex;
   flex-direction: column;
   position: relative;
-  top: 10%;
+  top: 8%;
   transform: translateY(-50%);
 }
 

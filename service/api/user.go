@@ -19,7 +19,6 @@ func (rt *_router) setMyUsername(w http.ResponseWriter, r *http.Request, ps http
 		return
 	}
 	if rt.db.UsernameExist(new_username.Username) {
-		ctx.Logger.Error("Username already used")
 		w.WriteHeader(http.StatusForbidden)
 		return
 	}
