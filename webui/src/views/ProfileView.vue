@@ -23,7 +23,7 @@ export default {
 
     watch:{
         currentPath(newuid,olduid){
-            if (newuid !== olduid && (this.$route.path !== '/home' && this.$route.path !== '/search' )) {  
+            if (newuid !== olduid && (this.$route.path !== '/home' && this.$route.path !== '/search' && this.$route.path !== '/session')) {  
                 this.getInfo()
                 window.location.reload();
             }
