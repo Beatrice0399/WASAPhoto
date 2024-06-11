@@ -1,5 +1,6 @@
 package database
 
+// Database function that allows an user (fid) to follow another one (uid)
 func (db *appdbimpl) FollowUser(fid int, uid int) error {
 	// Non posso seguire chi mi ha bannato
 	if db.IsBanned(fid, uid) {
@@ -15,6 +16,7 @@ func (db *appdbimpl) FollowUser(fid int, uid int) error {
 	return nil
 }
 
+// Database function that allows an user (fid) to unfollow another one (uid)
 func (db *appdbimpl) UnfollowUser(fid int, uid int) error {
 	res, err := db.c.Exec(`DELETE FROM Follow WHERE user=? AND followedBy=?`, uid, fid)
 	if err != nil {
@@ -29,6 +31,7 @@ func (db *appdbimpl) UnfollowUser(fid int, uid int) error {
 	return nil
 }
 
+// Database function that returns the list of users' followers
 func (db *appdbimpl) GetFollower(id int) ([]User, error) {
 	rows, err := db.c.Query(`SELECT f.followedBy
 							FROM Follow f
@@ -60,6 +63,7 @@ func (db *appdbimpl) GetFollower(id int) ([]User, error) {
 	return users, err
 }
 
+// Database function that returns the list of the users that the given id followed
 func (db *appdbimpl) GetFollowing(followedBy int) ([]User, error) {
 	rows, err := db.c.Query(`SELECT u.* FROM User u
 							JOIN Follow f ON u.id=f.user WHERE f.followedBy=?`, followedBy)

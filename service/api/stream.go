@@ -8,10 +8,10 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
+// Function that retrieves all the photo of the users that the requesting user is following
 func (rt *_router) getMyStream(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	w.Header().Set("Content-Type", "application/json")
 
-	// A user can only see his/her home
 	valid := validateRequestingUser(ps.ByName("uid"), extractBearer(r.Header.Get("Authorization")))
 	if valid != 0 {
 		w.WriteHeader(valid)

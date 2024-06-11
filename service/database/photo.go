@@ -4,6 +4,7 @@ import (
 	"time"
 )
 
+// Database function that allows the user to add a new photo
 func (db *appdbimpl) NewPhoto(id int) (int, error) {
 	var photo Photo
 	istante := time.Now()
@@ -24,14 +25,7 @@ func (db *appdbimpl) NewPhoto(id int) (int, error) {
 	return int(lastInsertID), nil
 }
 
-func (db *appdbimpl) UpdatePathPhoto(phid int, path string) error {
-	_, err := db.c.Exec(`UPDATE Photo SET image_path = ? WHERE id = ? `, path, phid)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
+// Database function that allows an user to delete the photo
 func (db *appdbimpl) DeletePhoto(pid int, myid int) error {
 	res, err := db.c.Exec(`DELETE FROM Photo WHERE id=? AND user=?`, pid, myid)
 	if err != nil {
@@ -46,13 +40,14 @@ func (db *appdbimpl) DeletePhoto(pid int, myid int) error {
 	return nil
 }
 
+// Database function that returns the photo with the given id
 func (db *appdbimpl) GetPhoto(phId int) (Photo, error) {
 	var photo Photo
-	row := db.c.QueryRow(`SELECT p.id, p.user, u.username, p.image_path, p.date
+	row := db.c.QueryRow(`SELECT p.id, p.user, u.username, p.date
 							FROM Photo p JOIN User u ON u.id=p.user
 							WHERE p.id = ?`, phId)
 
-	err := row.Scan(&photo.ID, &photo.User, &photo.Username, &photo.Path, &photo.Date)
+	err := row.Scan(&photo.ID, &photo.User, &photo.Username, &photo.Date)
 	if err != nil {
 		return photo, err
 	}
@@ -67,6 +62,7 @@ func (db *appdbimpl) GetPhoto(phId int) (Photo, error) {
 	return photo, nil
 }
 
+// Database function that returns the photo's list of comments
 func (db *appdbimpl) GetPhotoComments(phId int) ([]Comment, error) {
 	var comments []Comment
 	rows, err := db.c.Query(`SELECT c.id, c.user, u.username, c.string, c.date FROM Comment c

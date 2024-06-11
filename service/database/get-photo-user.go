@@ -1,8 +1,9 @@
 package database
 
+// Database function that returns the user's list of photos
 func (db *appdbimpl) GetPhotoUser(id int) ([]Photo, error) {
 	var photos []Photo
-	rows, err := db.c.Query(`SELECT p.id, p.user, u.username, p.image_path, p.date
+	rows, err := db.c.Query(`SELECT p.id, p.user, u.username, p.date
 							 FROM Photo p JOIN User u ON u.id=p.user 
 							 WHERE user=? ORDER BY date DESC`, id)
 	if err != nil {
@@ -12,7 +13,7 @@ func (db *appdbimpl) GetPhotoUser(id int) ([]Photo, error) {
 	defer rows.Close()
 	for rows.Next() {
 		var p Photo
-		err = rows.Scan(&p.ID, &p.User, &p.Username, &p.Path, &p.Date)
+		err = rows.Scan(&p.ID, &p.User, &p.Username, &p.Date)
 		if err != nil {
 			return photos, err
 		}

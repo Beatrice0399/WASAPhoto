@@ -12,6 +12,7 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
+// function that allows to login
 func (rt *_router) doLogin(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	w.Header().Set("Content-Type", "application/json")
 
@@ -50,6 +51,7 @@ func (rt *_router) doLogin(w http.ResponseWriter, r *http.Request, ps httprouter
 	}
 }
 
+// Function that creates a user's directory locally
 func createUserFolder(identifier int, ctx reqcontext.RequestContext) error {
 	path := filepath.Join(photoFolder, strconv.Itoa(identifier))
 

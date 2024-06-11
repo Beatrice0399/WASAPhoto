@@ -8,6 +8,7 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
+// Function that adds a like
 func (rt *_router) likePhoto(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	token := extractBearer(r.Header.Get("Authorization"))
 	if isNotLogged(token) {
@@ -55,6 +56,7 @@ func (rt *_router) likePhoto(w http.ResponseWriter, r *http.Request, ps httprout
 	w.WriteHeader(http.StatusNoContent)
 }
 
+// Function that removes a like from a photo
 func (rt *_router) unlikePhoto(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	token := extractBearer(r.Header.Get("Authorization"))
 	if isNotLogged(token) {

@@ -10,27 +10,13 @@ import (
 	"strings"
 )
 
+// Function that checks if the string is valid
 func validStringUsername(identifier string) bool {
 	var trimmedId = strings.TrimSpace(identifier)
 	return len(identifier) >= 3 && len(identifier) <= 16 && trimmedId != "" && !strings.ContainsAny(trimmedId, "?_")
 }
 
-/*
-func (rt *_router) getProfiles(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	rows, err := rt.db.GetAllProfiles()
-	if err != nil {
-		return
-	}
-	w.Header().Set("Content-type", "application/json")
-	for _, value := range rows {
-		// str := fmt.Sprintf("id: %d, Name: %s, Follower: %d, Following: %d, Photo: %d\n", value.ID, value.Name, value.Followers, value.Following, value.NumberPhotos)
-		// w.Write([]byte(str))
-		_ = json.NewEncoder(w).Encode(value)
-
-	}
-}
-*/
-
+// Function that extracts the bearer token from the authorization header
 func extractBearer(authorization string) string {
 	var tokens = strings.Split(authorization, " ")
 	if len(tokens) == 2 {
@@ -39,25 +25,27 @@ func extractBearer(authorization string) string {
 	return ""
 }
 
+// Function that checks if a user is logged
 func isNotLogged(auth string) bool {
 	return auth == ""
 }
 
+// Function that checks if the user has a valid token for the operation
 func validateRequestingUser(identifier string, bearerToken string) int {
-	// If the requesting user has an invalid token then respond with a fobidden status
+	// If the user has an invalid token then respond with a fobidden status
 	if isNotLogged(bearerToken) {
 		return http.StatusForbidden
 	}
 
-	//  If the requesting user's id is different than the one in the path then respond with a unathorized status.
+	//  If the user's id is different than the one in the path then respond with a unathorized status.
 	if identifier != bearerToken {
 		return http.StatusUnauthorized
 	}
 	return 0
 }
 
+// Functiopn that checks if the photo's format is valid
 func checkFormatPhoto(body io.ReadCloser, newReader io.ReadCloser) error {
-
 	_, errJpg := jpeg.Decode(body)
 	if errJpg != nil {
 

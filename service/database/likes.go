@@ -1,5 +1,6 @@
 package database
 
+// Database funtion that add a like to the given photo
 func (db *appdbimpl) LikePhoto(phId int, uid int) error {
 	_, err := db.c.Exec(`INSERT INTO Likes (phId, uid) VALUES (?,?);`, phId, uid)
 	if err != nil {
@@ -8,6 +9,7 @@ func (db *appdbimpl) LikePhoto(phId int, uid int) error {
 	return err
 }
 
+// Database function that allows an user to remove the like from the photo
 func (db *appdbimpl) UnlikePhoto(phid int, myid int, lid int) error {
 	if myid != lid {
 		return ErrLike
@@ -25,6 +27,7 @@ func (db *appdbimpl) UnlikePhoto(phid int, myid int, lid int) error {
 	return nil
 }
 
+// Databse funtion that retuns ther list of the users who like the photo
 func (db *appdbimpl) GetLikesPhoto(phid int) ([]Like, error) {
 	rows, err := db.c.Query(`SELECT u.id FROM Likes l JOIN user u ON u.id = l.uid WHERE phId=?`, phid)
 	if err != nil {

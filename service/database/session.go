@@ -6,8 +6,8 @@ import (
 	"log"
 )
 
+// Database function that searches the user with the given username. If it doesn't exist, it'll create it. The function returns user's id
 func (db *appdbimpl) DoLogin(username string) (int, error) {
-
 	row := db.c.QueryRow(`SELECT id FROM User WHERE username=?;`, username)
 	var id int
 	exist := row.Scan(&id)

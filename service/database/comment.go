@@ -4,6 +4,7 @@ import (
 	"time"
 )
 
+// Databse function that adds a new comment to the photo
 func (db *appdbimpl) CommentPhoto(uid int, phid int, text string) (Comment, error) {
 	istante := time.Now()
 	date := istante.Format("2006-01-02 15:04:05")
@@ -24,6 +25,7 @@ func (db *appdbimpl) CommentPhoto(uid int, phid int, text string) (Comment, erro
 	return c, nil
 }
 
+// Database function that allows an user to delete a comment from the photo
 func (db *appdbimpl) UncommentPhoto(cid int, phid int, uid int) error {
 	res, err := db.c.Exec(`DELETE FROM Comment WHERE id=? AND user=? AND photo=?`, cid, uid, phid)
 	if err != nil {

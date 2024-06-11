@@ -1,5 +1,6 @@
 package database
 
+// Database function that searches users with the given username
 func (db *appdbimpl) SearchUser(myId int, username string) ([]User, error) {
 	rows, err := db.c.Query(`SELECT *
 							FROM User
@@ -23,6 +24,7 @@ func (db *appdbimpl) SearchUser(myId int, username string) ([]User, error) {
 	return users, err
 }
 
+// Database function that modifies the username with the newone given
 func (db *appdbimpl) SetMyUsername(id int, name string) error {
 	res, err := db.c.Exec(`UPDATE User SET username=? WHERE id=?`, name, id)
 	if err != nil {
@@ -37,21 +39,8 @@ func (db *appdbimpl) SetMyUsername(id int, name string) error {
 	return nil
 }
 
+// Database function that return the user's profile
 func (db *appdbimpl) GetUserProfile(id int, myId int) (Profile, error) {
-	/*
-		ban := db.c.QueryRow(`SELECT id FROM Ban WHERE banned=? AND whoBan=?`, id, myId)
-		var ban_id int
-		exist := ban.Scan(&ban_id)
-		var profile Profile
-		if !errors.Is(exist, sql.ErrNoRows) {
-			return profile, exist
-		}
-		ban = db.c.QueryRow(`SELECT id FROM Ban WHERE banned=? AND whoBan=?`, myId, id)
-		exist = ban.Scan(&ban_id)
-		if !errors.Is(exist, sql.ErrNoRows) {
-			return profile, ErrUserBannedYou
-		}
-	*/
 	var profile Profile
 	if db.IsBanned(id, myId) {
 		return profile, ErrUserBannedYou
@@ -63,25 +52,22 @@ func (db *appdbimpl) GetUserProfile(id int, myId int) (Profile, error) {
 
 	err := row.Scan(&profile.ID, &profile.Name)
 	if err != nil {
-		// log.Print("errUser")
 		return profile, ErrProfileDoesNotExist
 	}
 
 	follower, err := db.GetFollower(id)
 	if err != nil {
-		// log.Print("errFolower")
 		return profile, err
 	}
 	profile.Followers = follower
 
 	following, err := db.GetFollowing(id)
 	if err != nil {
-		// log.Print("errFollowing")
 		return profile, err
 	}
 	profile.Following = following
 
-	profile.NumberPhotos, _ = db.GetNumberPhotoUser(id)
+	// profile.NumberPhotos, _ = db.GetNumberPhotoUser(id)
 	profile.Photos, _ = db.GetPhotoUser(id)
 
 	return profile, err

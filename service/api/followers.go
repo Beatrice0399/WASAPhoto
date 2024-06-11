@@ -8,6 +8,7 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
+// function that allows to follow a user
 func (rt *_router) followUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	string_fid := ps.ByName("fid")
 	myId, err := rt.get_uid_path(ps)
@@ -25,7 +26,6 @@ func (rt *_router) followUser(w http.ResponseWriter, r *http.Request, ps httprou
 
 	if ps.ByName("fid") != requestingUserId {
 		w.WriteHeader(http.StatusBadRequest)
-		// log.Println(requestingUserId + " " + ps.ByName("uid") + " " + string_fid)
 		return
 	}
 	fid, err := strconv.Atoi(string_fid)
@@ -42,6 +42,7 @@ func (rt *_router) followUser(w http.ResponseWriter, r *http.Request, ps httprou
 
 }
 
+// Function that allows to unfollow a user
 func (rt *_router) unfollowUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	string_fid := ps.ByName("fid")
 

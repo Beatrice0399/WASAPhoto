@@ -2,7 +2,6 @@ package api
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 	"strconv"
 
@@ -10,10 +9,26 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
+// Function that updates an user's username
 func (rt *_router) setMyUsername(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
+
+	uid := ps.ByName("uid")
+	// check the user's identity for the operation
+	valid := validateRequestingUser(uid, extractBearer(r.Header.Get("Authorization")))
+	if valid != 0 {
+		w.WriteHeader(valid)
+		return
+	}
+	myId, err := strconv.Atoi(uid)
+	if err != nil {
+		ctx.Logger.WithError(err).Error("error converting uid to int")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
 	var new_username Username
-	err := json.NewDecoder(r.Body).Decode(&new_username)
-	log.Println(new_username.Username)
+	err = json.NewDecoder(r.Body).Decode(&new_username)
+
 	if !validStringUsername(new_username.Username) {
 		w.WriteHeader(http.StatusBadRequest)
 		return
@@ -27,19 +42,7 @@ func (rt *_router) setMyUsername(w http.ResponseWriter, r *http.Request, ps http
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	uid := ps.ByName("uid")
 
-	valid := validateRequestingUser(uid, extractBearer(r.Header.Get("Authorization")))
-	if valid != 0 {
-		w.WriteHeader(valid)
-		return
-	}
-	myId, err := strconv.Atoi(uid)
-	if err != nil {
-		ctx.Logger.WithError(err).Error("error converting uid to int")
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
 	err = rt.db.SetMyUsername(myId, new_username.Username)
 	if err != nil {
 		ctx.Logger.WithError(err).Error("error executing query")
@@ -49,10 +52,9 @@ func (rt *_router) setMyUsername(w http.ResponseWriter, r *http.Request, ps http
 
 	w.WriteHeader(http.StatusOK)
 
-	// newURL := "/users/" + new_username
-	// http.Redirect(w, r, newURL, http.StatusFound)
 }
 
+// function that retrives all the users whose username contains the given one
 func (rt *_router) searchProfile(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	w.Header().Set("Content-Type", "application/json")
 	identifier := extractBearer(r.Header.Get("Authorization"))
@@ -79,7 +81,7 @@ func (rt *_router) searchProfile(w http.ResponseWriter, r *http.Request, ps http
 
 }
 
-// ritorna le informazioni del profilo dell'utente cercato
+// Function that returns the information of the selected user
 func (rt *_router) getProfile(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	w.Header().Set("Content-Type", "application/json")
 	string_myId := extractBearer(r.Header.Get("Authorization"))
@@ -96,8 +98,8 @@ func (rt *_router) getProfile(w http.ResponseWriter, r *http.Request, ps httprou
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 
+	// check if the user is banned
 	if rt.db.IsBanned(myId, uid) || rt.db.IsBanned(uid, myId) {
-		ctx.Logger.WithError(err).Error("Profile unavailable")
 		w.WriteHeader(http.StatusPartialContent)
 		return
 	}

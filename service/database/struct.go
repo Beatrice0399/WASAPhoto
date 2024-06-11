@@ -6,7 +6,6 @@ type Photo struct {
 	ID       int       `json:"phid"`
 	User     string    `json:"user"`
 	Username string    `json:"username"`
-	Path     string    `json:"path"`
 	Date     time.Time `json:"date"`
 	Likes    []Like    `json:"likes"`
 	Comments []Comment `json:"comments"`
@@ -30,10 +29,9 @@ type Comment struct {
 }
 
 type Profile struct {
-	ID           int     `json:"id"`
-	Name         string  `json:"name"`
-	Followers    []User  `json:"followers"`
-	Following    []User  `json:"following"`
-	NumberPhotos int     `json:"numberPhotos"`
-	Photos       []Photo `json:"photos"`
+	ID        int     `json:"id"`
+	Name      string  `json:"name"`
+	Followers []User  `json:"followers"`
+	Following []User  `json:"following"`
+	Photos    []Photo `json:"photos"`
 }

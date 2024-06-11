@@ -41,7 +41,7 @@ type AppDatabase interface {
 	SearchUser(myId int, username string) ([]User, error)
 	SetMyUsername(id int, name string) error
 	NewPhoto(id int) (int, error)
-	UpdatePathPhoto(phid int, path string) error
+
 	GetPhoto(phId int) (Photo, error)
 	FollowUser(myId int, fid int) error
 	UnfollowUser(myId int, fid int) error
@@ -79,43 +79,44 @@ func New(db *sql.DB) (AppDatabase, error) {
 
 	// DROP TABLE
 	/*
-		tableName := "Follow" // Sostituisci con il nome effettivo della tua tabella
+		tableName := "Follow"
 		_, erro := db.Exec("DROP TABLE IF EXISTS " + tableName)
 		if erro != nil {
 			fmt.Println(erro)
 			return nil, erro
 		}
-		tableName = "Ban" // Sostituisci con il nome effettivo della tua tabella
+		tableName = "Ban"
 		_, erro = db.Exec("DROP TABLE IF EXISTS " + tableName)
 		if erro != nil {
 			fmt.Println(erro)
 			return nil, erro
 		}
-		tableName = "Likes" // Sostituisci con il nome effettivo della tua tabella
+		tableName = "Likes"
 		_, erro = db.Exec("DROP TABLE IF EXISTS " + tableName)
 		if erro != nil {
 			fmt.Println(erro)
 			return nil, erro
 		}
-		tableName = "Comment" // Sostituisci con il nome effettivo della tua tabella
+		tableName = "Comment"
 		_, erro = db.Exec("DROP TABLE IF EXISTS " + tableName)
 		if erro != nil {
 			fmt.Println(erro)
 			return nil, erro
 		}
-		tableName = "Photo" // Sostituisci con il nome effettivo della tua tabella
+		tableName = "Photo"
 		_, erro = db.Exec("DROP TABLE IF EXISTS " + tableName)
 		if erro != nil {
 			fmt.Println(erro)
 			return nil, erro
 		}
-		tableName = "User" // Sostituisci con il nome effettivo della tua tabella
+		tableName = "User"
 		_, erro = db.Exec("DROP TABLE IF EXISTS " + tableName)
 		if erro != nil {
 			fmt.Println(erro)
 			return nil, erro
 		}
 	*/
+
 	_, err := db.Exec("PRAGMA foreign_keys = ON;")
 	if err != nil {
 		return nil, ErrWithForeignKey
@@ -134,7 +135,7 @@ func New(db *sql.DB) (AppDatabase, error) {
 	var Photo string
 	err = db.QueryRow(`SELECT name FROM sqlite_master WHERE type='table' AND name='Photo';`).Scan(&Photo)
 	if errors.Is(err, sql.ErrNoRows) {
-		sqlStmt := `CREATE TABLE IF NOT EXISTS Photo (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, user INTEGER NOT NULL, image_path TEXT,
+		sqlStmt := `CREATE TABLE IF NOT EXISTS Photo (id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, user INTEGER NOT NULL,
 			date DATETIME NOT NULL,
 			FOREIGN KEY (user) REFERENCES User(id) ON DELETE CASCADE);`
 		_, err = db.Exec(sqlStmt)

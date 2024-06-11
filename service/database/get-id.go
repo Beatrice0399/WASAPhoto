@@ -5,6 +5,7 @@ import (
 	"errors"
 )
 
+// Database function that returns the user's id with the given username.
 func (db *appdbimpl) GetId(username string) (int, error) {
 	row := db.c.QueryRow(`SELECT id FROM User WHERE username=?`, username)
 	var id int
