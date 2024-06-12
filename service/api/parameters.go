@@ -15,16 +15,6 @@ func (rt *_router) get_uid_path(ps httprouter.Params) (int, error) {
 	return myid, nil
 }
 
-/*
-	func (rt *_router) get_uid_query(r *http.Request) (int, error) {
-		myid, err := strconv.Atoi(r.URL.Query().Get("uid"))
-		if err != nil {
-			return 0, err
-		}
-		return myid, nil
-	}
-*/
-
 func (rt *_router) getPhid(ps httprouter.Params) (int, error) {
 	string_pid := ps.ByName("phid")
 	pid, err := strconv.Atoi(string_pid)

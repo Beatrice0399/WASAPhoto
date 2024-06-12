@@ -44,7 +44,7 @@ func (rt *_router) banUser(w http.ResponseWriter, r *http.Request, ps httprouter
 	w.WriteHeader(http.StatusNoContent)
 }
 
-// function that allows to unban an user
+// function that allows to unban an user+++
 func (rt *_router) unbanUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	string_bid := ps.ByName("bid")
 	uid, err := rt.get_uid_path(ps)
